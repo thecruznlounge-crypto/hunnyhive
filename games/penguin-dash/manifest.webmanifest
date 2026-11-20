@@ -1,0 +1,51 @@
+{
+  "name": "Penguin Dash",
+  "short_name": "Penguin Dash",
+  "description": "Endless ice runner. Swipe to change lanes, jump and slide.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b2545",
+  "theme_color": "#0b2545",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/penguin-dash/1.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/penguin-dash/2.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/penguin-dash/3.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

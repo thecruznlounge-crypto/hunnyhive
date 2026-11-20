@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#090a16" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#f3f4fa" media="(prefers-color-scheme: light)" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="ONEDRFUL — businesses post referral payouts, people share tracked links and QR codes, and businesses pay them directly." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ONEDRFUL" />
+  <meta name="application-name" content="ONEDRFUL" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml" />
+  <link rel="icon" href="./assets/icons/icon-96.png" sizes="96x96" type="image/png" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-180.png" />
+  <link rel="preload" href="./assets/fonts/InterDisplay-ExtraBold.woff" as="font" type="font/woff" crossorigin />
+  <link rel="stylesheet" href="./css/styles.css" />
+  <title>ONEDRFUL — Referral payouts</title>
+  <script>
+    // Apply saved theme before first paint (no flash)
+    try { var t = localStorage.getItem('onedrful_theme'); if (t && t !== 'system') document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <!-- Icon sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+      <symbol id="i-offers" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 6v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-6z"/><path d="M15 5v14" stroke-dasharray="2 2.5"/></symbol>
+      <symbol id="i-activity" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></symbol>
+      <symbol id="i-trust" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+      <symbol id="i-me" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+      <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+      <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4h11l-1.5 4L16 12H5"/></symbol>
+      <symbol id="i-offline" viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 5-3M22 8.5a15 15 0 0 0-11.5-4.4M5 12.5a10 10 0 0 1 3.5-2.2M19 12.5a10 10 0 0 0-3-2M8.5 16a5 5 0 0 1 7 0M12 20h.01M3 3l18 18"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+      <symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h4v4h-4"/></symbol>
+      <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4 3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></symbol>
+      <symbol id="c-transport" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="3"/><path d="M3 11h18M7 17v3M17 17v3"/><circle cx="7.5" cy="14" r=".6"/><circle cx="16.5" cy="14" r=".6"/></symbol>
+      <symbol id="c-nightlife" viewBox="0 0 24 24"><path d="M6 3h12l-1 6a5 5 0 0 1-10 0z"/><path d="M12 14v7M8 21h8"/></symbol>
+      <symbol id="c-travel" viewBox="0 0 24 24"><path d="M3 20V8M3 13h18v7M21 13a3 3 0 0 0-3-3h-7v3"/><circle cx="7" cy="11" r="1.6"/></symbol>
+      <symbol id="c-events" viewBox="0 0 24 24"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="m10 9 1.2 2.4L14 12l-2 1.8.5 2.7L10 15.3"/></symbol>
+      <symbol id="c-wellness" viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></symbol>
+      <symbol id="c-other" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M9.5 9.5h5v5h-5z"/></symbol>
+    </defs>
+  </svg>
+
+  <a class="skip" href="#view">Skip to content</a>
+
+  <div class="shell">
+    <aside class="rail" aria-label="Main">
+      <a class="brand" href="#/home" aria-label="ONEDRFUL home">
+        <img src="./assets/icons/icon.svg" alt="" width="40" height="40" />
+        <span class="brand-word">ONEDRFUL</span>
+      </a>
+      <nav class="rail-nav" id="railNav"></nav>
+      <div class="rail-foot" id="railFoot"></div>
+    </aside>
+
+    <div class="main-col">
+      <header class="appbar" id="appbar">
+        <button class="icon-btn back hidden" id="backBtn" aria-label="Back"><svg><use href="#i-back"/></svg></button>
+        <a class="appbar-brand" href="#/home" aria-label="ONEDRFUL home">
+          <img src="./assets/icons/icon.svg" alt="" width="32" height="32" />
+        </a>
+        <h1 class="appbar-title" id="viewTitle">Home</h1>
+        <div class="appbar-actions">
+          <span class="net-pill hidden" id="netPill" role="status"><svg><use href="#i-offline"/></svg>Offline</span>
+          <button class="mode-pill" id="modePill" aria-label="Switch account mode"></button>
+        </div>
+      </header>
+
+      <main id="view" class="view" tabindex="-1" aria-live="polite"></main>
+    </div>
+  </div>
+
+  <nav class="tabbar" id="tabbar" aria-label="Main"></nav>
+
+  <!-- Bottom sheet / side panel -->
+  <div class="scrim" id="scrim" hidden></div>
+  <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+    <div class="sheet-grip" aria-hidden="true"></div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </section>
+
+  <!-- Confirm dialog -->
+  <dialog class="confirm" id="confirm">
+    <form method="dialog">
+      <h2 id="confirmTitle">Are you sure?</h2>
+      <p id="confirmText"></p>
+      <div class="confirm-actions">
+        <button class="btn ghost" value="cancel">Cancel</button>
+        <button class="btn danger" value="ok" id="confirmOk">Confirm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- First-run onboarding -->
+  <section class="onboard" id="onboard" hidden aria-labelledby="obTitle"></section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <noscript><p style="padding:24px">ONEDRFUL needs JavaScript turned on.</p></noscript>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/qr.js"></script>
+  <script src="./js/data.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

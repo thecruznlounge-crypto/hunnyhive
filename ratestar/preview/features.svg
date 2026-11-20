@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1000" viewBox="0 0 720 1000">
+<rect width="720" height="1000" rx="60" fill="#ffffff"/>
+<rect x="50" y="70" width="620" height="160" rx="38" fill="#f1f5f9"/>
+<text x="80" y="135" font-family="Arial" font-size="42" font-weight="700" fill="#0f172a">RateStar</text>
+<text x="80" y="190" font-family="Arial" font-size="26" fill="#64748b">Business</text>
+<rect x="50" y="280" width="280" height="180" rx="36" fill="#dbeafe"/><rect x="390" y="280" width="280" height="180" rx="36" fill="#fce7f3"/>
+<rect x="50" y="510" width="620" height="90" rx="26" fill="#0f172a"/>
+<text x="90" y="565" font-family="Arial" font-size="30" font-weight="700" fill="#ffffff">Open live app</text>
+<text x="50" y="700" font-family="Arial" font-size="34" font-weight="700" fill="#0f172a">Features</text>
+<text x="50" y="760" font-family="Arial" font-size="25" fill="#475569">Uniform card flow, preview blocks,</text>
+<text x="50" y="800" font-family="Arial" font-size="25" fill="#475569">and domain-aware launch links.</text>
+</svg>

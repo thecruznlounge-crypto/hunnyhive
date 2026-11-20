@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Orcastra</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#06203d">
+<meta name="description" content="Rhythm game. Tap bubbles in four lanes as they reach the line.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Orcastra">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@700;800&display=swap">
+<script src="install.js"></script>
+<script src="/sdk/install.js"></script>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game" aria-label="Orcastra game"></canvas>
+
+<div id="hud" class="hud">
+  <div class="hud-top">
+    <span class="pill" id="hudL"></span>
+    <span class="display hud-c" id="hudC"></span>
+    <div class="sqs">
+      <span class="pill" id="hudR"></span>
+      <button class="sq" id="btnPause" type="button" aria-label="Pause"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+      <button class="sq" id="btnMute" type="button" aria-label="Sound on or off"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="muteWave" d="M16.5 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+    </div>
+  </div>
+  <div class="crowd"><i id="crowdFill"></i></div>
+</div>
+<div id="banner" class="banner" aria-live="polite"></div>
+<div id="toast" class="toast"></div>
+
+<section id="title" class="screen show title-screen">
+  <div class="title-top">
+    <h1 class="logo"><small>RHYTHM</small>Orcastra</h1>
+    <p class="tag">Conduct the deep-sea orchestra. Tap the bubbles in time to play the melody.</p>
+    <canvas id="titleArt" class="title-art"></canvas>
+  </div>
+  <div class="btn-row">
+    <button class="btn primary" id="btnPlay" type="button">Play</button>
+    <button class="btn ghost" id="btnHow" type="button">How to play</button>
+    <button class="btn ghost install install-btn" type="button">Install app</button>
+  </div>
+</section>
+
+<section id="songs" class="screen dim">
+  <h2 class="sel-title">Pick a song</h2>
+  <div class="songlist" id="songlist"></div>
+  <button class="btn ghost" id="btnSongsBack" type="button">Back</button>
+</section>
+
+
+<section id="pause" class="screen dim">
+  <h2 class="sel-title">Paused</h2>
+  <div class="sync">
+  <span>Tap timing</span>
+  <button class="sq" id="syncM" type="button" aria-label="Earlier">&minus;</button>
+  <b id="syncV">0 ms</b>
+  <button class="sq" id="syncP" type="button" aria-label="Later">+</button>
+</div>
+<p class="synchint">Tapping late? Raise it. Tapping early? Lower it.</p>
+
+  <div class="btn-row">
+    <button class="btn primary" id="btnResume" type="button">Resume</button>
+    <button class="btn ghost" id="btnRestart" type="button">Restart</button>
+    <button class="btn ghost" id="btnQuit" type="button">Quit to menu</button>
+  </div>
+</section>
+
+<section id="over" class="screen dim">
+  <h2 class="sel-title" id="resTitle">Game over</h2>
+  <canvas id="resPortrait" class="res-portrait"></canvas>
+  <div class="res-stats" id="resStats"></div>
+  <div class="btn-row">
+    <button class="btn primary" id="btnAgain" type="button">Play again</button>
+    <button class="btn ghost" id="btnMenu" type="button">Menu</button>
+    <button class="btn ghost install install-btn" type="button">Install app</button>
+  </div>
+</section>
+
+<div id="how" class="modal">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="howTitle">
+    <h2 id="howTitle">How to play</h2>
+    <div class="modal-body"><ul><li>Bubbles rise toward the glowing line in <b>four lanes</b>.</li><li><b>Tap the lane</b> as a bubble reaches the line. Keys: D F J K.</li><li>Every hit plays a note, so you are the lead melody over the band.</li><li>Keep your combo going to raise the multiplier. Misses drain the crowd meter; empty it and the show ends.</li><li>If hits feel early or late, change <b>Sync</b> in the pause menu.</li></ul></div>
+    <button class="btn primary" id="howClose" type="button">Got it</button>
+  </div>
+</div>
+
+<script src="chars.js"></script>
+<script src="kit.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

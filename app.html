@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>App – Hunnyhive</title>
+<meta name="description" content="Preview and install on Hunnyhive.">
+<meta name="application-name" content="Hunnyhive">
+<meta name="theme-color" content="#F2A900">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/sdk/install.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/store.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><div class="row"><a class="brand" href="/"><img src="/icons/icon-192.png" alt="" width="38" height="38">Hunnyhive</a><span class="grow"></span><button class="iconbtn" id="themeBtn" aria-label="Toggle theme">🌙</button></div></div></header>
+<main class="wrap det" id="main"><p class="empty">Loading…</p></main>
+<script src="/assets/store.js"></script>
+<script>
+(function(){
+  var main=document.getElementById('main');
+  function slug(){var p=new URLSearchParams(location.search).get('slug');if(p) return p;var m=location.pathname.match(/^\/apps\/([a-z0-9-]+)/);return m?m[1]:''}
+  function host(u){try{return new URL(u,location.href).host}catch(e){return ''}}
+  function addMeta(a){
+    document.title=a.name+' – Hunnyhive';
+    function set(sel,attr,val){var el=document.querySelector(sel);if(el) el.setAttribute(attr,val)}
+    set('meta[name=description]','content',a.name+': '+a.tagline);
+    var h=document.head;[['og:title',a.name+' – Hunnyhive'],['og:description',a.tagline],['og:image','https://hunnyhive.app'+a.icon],['og:type','website']].forEach(function(x){var m=document.createElement('meta');m.setAttribute('property',x[0]);m.content=x[1];h.appendChild(m)});
+  }
+  Store.theme();Store.nav('apps');
+  Store.load().then(function(D){
+    var a=D.apps.filter(function(x){return x.slug===slug()})[0];
+    if(!a){main.innerHTML='<a class="crumb" href="/">‹ All apps</a><p class="empty">We couldn’t find that app.<br><a href="/" style="color:var(--acc);font-weight:800">Browse the store</a></p>';return}
+    addMeta(a);
+    var home=(a.domain&&a.domainLive)?a.domain:'', ext=a.type==='external'||a.type==='redirect'||!!home, inst=home||a.installUrl||a.url, openUrl=home||a.url;
+    var sep=inst.indexOf('?')>-1?'&':'?'; var installHref=inst+sep+'install=1&from=store';
+    var shots=(a.screenshots||[]);
+    var catObj=D.categories.filter(function(c){return c.id===a.category})[0]||{};
+    var where=home?'Lives at '+host(home):a.type==='hosted'?'Hosted on Hunnyhive':a.type==='redirect'?'Opens '+host(a.url):'Lives at '+host(a.url);
+    var more=D.apps.filter(function(x){return x.slug!==a.slug&&(a.collection?x.collection===a.collection:x.category===a.category)}).slice(0,8);
+    var statusTag=a.status==='preview'?'<span class="tag preview">Preview</span>':a.status==='beta'?'<span class="tag beta">Beta</span>':'';
+    main.innerHTML='<a class="crumb" href="/?cat='+encodeURIComponent(a.category)+(a.collection?'&coll='+a.collection:'')+'">‹ '+Store.esc(a.collection?Store.collName(a.collection):a.category)+'</a>'+
+      '<div class="hd" style="margin-top:14px"><img class="big" src="'+Store.esc(a.icon)+'" alt="'+Store.esc(a.name)+' icon" width="112" height="112"><div><h1>'+Store.esc(a.name)+'</h1><p class="dev">'+Store.esc(a.developer)+'</p><div class="meta" style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag">'+(catObj.icon||'')+' '+Store.esc(a.category)+'</span>'+(a.collection?'<span class="tag">'+Store.esc(Store.collName(a.collection))+'</span>':'')+statusTag+'</div></div></div>'+
+      '<div class="cta"><a class="btn" id="install" href="'+Store.esc(installHref)+'">⬇️ Install</a><a class="btn ghost" id="open" href="'+Store.esc(openUrl)+'"'+(ext?' rel="noopener"':'')+'>'+(ext?'Visit site':'▶ Open')+'</a></div>'+
+      '<p class="note">One tap to install. '+(ext?'You’ll be taken to '+Store.esc(host(openUrl))+' to finish.':'')+'</p>'+
+      (shots.length?'<div class="sec"><h2 style="font-size:18px;margin:0 0 10px">Preview</h2><div class="shots">'+shots.map(function(s,i){return '<img src="'+Store.esc(s)+'" alt="'+Store.esc(a.name)+' screenshot '+(i+1)+'" loading="lazy">'}).join('')+'</div></div>':'')+
+      '<div class="panel"><h2>About</h2><p>'+Store.esc(a.description||a.tagline)+'</p></div>'+
+      '<div class="panel"><h2>Details</h2><dl class="kv"><dt>Developer</dt><dd>'+Store.esc(a.developer)+'</dd><dt>Category</dt><dd>'+Store.esc(a.category)+'</dd>'+(a.collection?'<dt>Collection</dt><dd>'+Store.esc(Store.collName(a.collection))+'</dd>':'')+'<dt>Where it runs</dt><dd>'+Store.esc(where)+'</dd><dt>Status</dt><dd style="text-transform:capitalize">'+Store.esc(a.status||'live')+'</dd><dt>Type</dt><dd>Progressive Web App</dd></dl></div>'+
+      (more.length?'<section class="sec"><div class="head"><h2>More like this</h2></div><div class="row-scroll">'+more.map(Store.card).join('')+'</div></section>':'')+
+      Store.footer();
+    /* hosted + game pages: if user already runs this app installed, show Open only */
+    var ins=document.getElementById('install');
+    if(window.MyPWA&&MyPWA.isInstalled()){}
+  }).catch(function(){main.innerHTML='<p class="empty">Could not load the catalog. Check your connection and refresh.</p>'});
+})();
+</script>
+</body>
+</html>

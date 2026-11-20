@@ -1,0 +1,51 @@
+{
+  "name": "Sand Castle",
+  "short_name": "Sand Castle",
+  "description": "Falling-sand castle builder. Survive the waves.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2a1608",
+  "theme_color": "#2a1608",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/sand-castle/1.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/sand-castle/2.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/sand-castle/3.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "name": "Queendom Come",
+  "short_name": "Queendom Come",
+  "description": "Win the two queens, start a campaign and take every card in the queendom.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#050807",
+  "theme_color": "#340712",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/queendom-come/1.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/queendom-come/2.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/queendom-come/3.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/queendom-come/4.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/queendom-come/5.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ]
+}

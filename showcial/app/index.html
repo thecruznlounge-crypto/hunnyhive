@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Showcial — The AI Artist Talent Show</title>
+  <meta name="description" content="Create an AI artist, enter them in a live talent show, vote for your favorites and watch the eliminations. Installable, works offline." />
+  <meta name="theme-color" content="#06051a" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Showcial" />
+  <meta property="og:title" content="Showcial — The AI Artist Talent Show" />
+  <meta property="og:description" content="Build an AI artist. Win the crowd. Vote, eliminate, crown a champion." />
+  <meta property="og:image" content="icons/icon-512.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Unbounded:wght@500;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-beams" aria-hidden="true"><i></i><i></i></div>
+
+  <header class="top">
+    <a class="logo" href="#stage" aria-label="Home"><span class="logo-mark"></span><b data-brand>Showcial</b></a>
+    <nav class="desk-nav" aria-label="Main">
+      <a href="#stage" data-nav="stage">Stage</a>
+      <a href="#showdown" data-nav="showdown">Showdown</a>
+      <a href="#charts" data-nav="charts">Charts</a>
+      <a href="#me" data-nav="me">My Studio</a>
+    </nav>
+    <div class="top-actions">
+      <span class="votes-pill" id="votesPill" title="Votes left this round">★ <b>5</b></span>
+      <button class="btn small ghost" id="installBtn" hidden>⤓ Install</button>
+      <a class="btn small desk-only" href="#create">+ Create AI Artist</a>
+    </div>
+  </header>
+
+  <main id="view" tabindex="-1"></main>
+
+  <div class="minibar" id="minibar" hidden>
+    <div class="mb-progress"><i id="mbProg"></i></div>
+    <button class="mb-art" id="mbArt" aria-label="Open artist"></button>
+    <div class="mb-meta"><b id="mbTitle">—</b><span id="mbSub">—</span></div>
+    <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <button class="icon-btn" id="mbVote" aria-label="Vote">★</button>
+    <button class="icon-btn play" id="mbPlay" aria-label="Stop">■</button>
+  </div>
+
+  <nav class="tabbar" aria-label="Tabs">
+    <a href="#stage" data-nav="stage"><span>◉</span>Stage</a>
+    <a href="#showdown" data-nav="showdown"><span>★</span>Vote</a>
+    <a href="#create" data-nav="create" class="tab-create"><span>＋</span>Create</a>
+    <a href="#charts" data-nav="charts"><span>▲</span>Charts</a>
+    <a href="#me" data-nav="me"><span>☺</span>Studio</a>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="sheet-wrap" id="sheet" hidden><div class="sheet" role="dialog" aria-modal="true"></div></div>
+  <div class="burst" id="burst" aria-hidden="true"></div>
+
+  <noscript><p style="padding:2rem;text-align:center">Showcial needs JavaScript to run the show.</p></noscript>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

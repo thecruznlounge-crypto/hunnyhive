@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hunnyhive – Install web apps and games</title>
+<meta name="description" content="A store for installable web apps (PWAs) and games. Browse by category, preview, and install in one tap.">
+<meta name="application-name" content="Hunnyhive">
+<meta name="theme-color" content="#F2A900">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="canonical" href="https://hunnyhive.app/">
+<meta property="og:title" content="Hunnyhive"><meta property="og:description" content="Install web apps and games in one tap."><meta property="og:image" content="https://hunnyhive.app/icons/icon-512.png">
+<script src="/sdk/install.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/store.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="row">
+    <a class="brand" href="/"><img src="/icons/icon-192.png" alt="" width="38" height="38">Hunnyhive</a>
+    <span class="grow"></span>
+    <button class="iconbtn" id="themeBtn" aria-label="Toggle theme">🌙</button>
+  </div>
+  <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search apps and games" autocomplete="off" enterkeyhint="search"></div>
+  <div class="chips" id="cats" role="toolbar" aria-label="Categories"></div>
+  <div class="chips sub" id="colls" role="toolbar" aria-label="Game collections" hidden></div>
+</div></header>
+<main class="wrap" id="main"><p class="empty">Loading…</p></main>
+<script src="/assets/store.js"></script>
+<div class="wrap"><script>document.write(Store.footer())</script></div>
+<script>
+(function(){
+  var cats=document.getElementById('cats'), colls=document.getElementById('colls'), main=document.getElementById('main'), q=document.getElementById('q');
+  var st={cat:'',coll:'',q:''}, D=null;
+  function readUrl(){var p=new URLSearchParams(location.search);st.cat=p.get('cat')||'';st.coll=p.get('coll')||'';st.q=p.get('q')||'';q.value=st.q}
+  function pushUrl(){var p=new URLSearchParams();if(st.cat)p.set('cat',st.cat);if(st.coll)p.set('coll',st.coll);if(st.q)p.set('q',st.q);history.replaceState(null,'',p.toString()?'/?'+p:'/')}
+  function count(c){return D.apps.filter(function(a){return a.category===c}).length}
+  function chips(){
+    var h='<button class="chip" aria-pressed="'+(!st.cat)+'" data-cat="">All<small>'+D.apps.length+'</small></button>';
+    D.categories.forEach(function(c){var n=count(c.id);if(n) h+='<button class="chip" aria-pressed="'+(st.cat===c.id)+'" data-cat="'+Store.esc(c.id)+'">'+c.icon+' '+Store.esc(c.id)+'<small>'+n+'</small></button>'});
+    cats.innerHTML=h;
+    if(st.cat==='Games'){
+      var g='<button class="chip" aria-pressed="'+(!st.coll)+'" data-coll="">All games</button>';
+      D.collections.forEach(function(c){var n=D.apps.filter(function(a){return a.collection===c.id}).length;if(n) g+='<button class="chip" aria-pressed="'+(st.coll===c.id)+'" data-coll="'+c.id+'">'+Store.esc(c.name)+'<small>'+n+'</small></button>'});
+      colls.innerHTML=g;colls.hidden=false;
+    } else colls.hidden=true;
+  }
+  function filtered(){
+    var t=st.q.trim().toLowerCase();
+    return D.apps.filter(function(a){
+      if(st.cat&&a.category!==st.cat) return false;
+      if(st.coll&&a.collection!==st.coll) return false;
+      if(t){var hay=(a.name+' '+a.tagline+' '+a.developer+' '+a.category+' '+(a.collection?Store.collName(a.collection):'')+' '+(a.tags||[]).join(' ')).toLowerCase();return t.split(/\s+/).every(function(w){return hay.indexOf(w)>-1})}
+      return true;
+    });
+  }
+  function row(list){return '<div class="row-scroll">'+list.map(Store.card).join('')+'</div>'}
+  function grid(list){return list.length?'<div class="grid">'+list.map(Store.card).join('')+'</div>':'<p class="empty">Nothing matches. <a href="/submit/" style="color:var(--acc);font-weight:800">Submit an app</a>?</p>'}
+  function home(){
+    var h='<section class="hero"><h2>Install web apps and games in one tap.</h2><p>No app store, no waiting. Pick something, tap Install, and it lands on your home screen.</p><div class="btns"><button class="btn light" id="installStore">Install Hunnyhive</button><a class="btn" style="background:rgba(255,249,236,.14);color:#FFF9EC;border:1px solid rgba(255,249,236,.28)" href="/submit/">Submit your PWA</a></div></section>';
+    var feat=D.apps.filter(function(a){return a.featured});
+    if(feat.length) h+='<section class="sec"><div class="head"><h2>👑 Queen’s Picks</h2></div>'+row(feat)+'</section>';
+    D.categories.forEach(function(c){
+      var list=D.apps.filter(function(a){return a.category===c.id}); if(!list.length) return;
+      if(c.id==='Games'){
+        h+='<section class="sec"><div class="head"><h2>'+c.icon+' Games</h2><button data-cat="Games">See all '+list.length+'</button></div><p class="blurb">'+Store.esc(c.blurb)+'</p><div class="colls">'+D.collections.map(function(k){
+          var gs=list.filter(function(a){return a.collection===k.id}); if(!gs.length) return '';
+          return '<button class="coll" data-cat="Games" data-coll="'+k.id+'"><div class="stack">'+gs.slice(0,4).map(function(a){return '<img src="'+Store.esc(a.icon)+'" alt="" loading="lazy">'}).join('')+'</div><b>'+Store.esc(k.name)+'</b><span>'+gs.length+' games · '+Store.esc(k.blurb)+'</span></button>'}).join('')+'</div>'+
+          (list.filter(function(a){return !a.collection}).length?'<div style="margin-top:14px">'+row(list.filter(function(a){return !a.collection}))+'</div>':'')+'</section>';
+      } else h+='<section class="sec"><div class="head"><h2>'+c.icon+' '+Store.esc(c.id)+'</h2>'+(list.length>3?'<button data-cat="'+Store.esc(c.id)+'">See all '+list.length+'</button>':'')+'</div><p class="blurb">'+Store.esc(c.blurb)+'</p>'+row(list)+'</section>';
+    });
+    return h;
+  }
+  function render(){
+    chips(); var list=filtered(), focus=st.cat||st.q;
+    if(!focus){main.innerHTML=home();var b=document.getElementById('installStore');if(b) b.onclick=Store.installStore;}
+    else{
+      var title=st.q?'Results for “'+Store.esc(st.q)+'”':(st.coll?Store.esc(Store.collName(st.coll)):Store.esc(st.cat));
+      main.innerHTML='<section class="sec"><div class="head"><h2>'+title+'</h2><span style="color:var(--mut);font-size:14px">'+list.length+' app'+(list.length===1?'':'s')+'</span></div>'+grid(list)+'</section>';
+    }
+    document.title=(focus?(st.q||st.coll&&Store.collName(st.coll)||st.cat)+' – ':'')+'Hunnyhive';
+  }
+  function go(cat,coll){st.cat=cat||'';st.coll=coll||'';st.q='';q.value='';pushUrl();render();window.scrollTo({top:0})}
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-cat],[data-coll]'); if(!t||t.tagName==='A') return;
+    e.preventDefault();
+    if(t.hasAttribute('data-cat')) go(t.getAttribute('data-cat'),t.getAttribute('data-coll')||''); else go(st.cat,t.getAttribute('data-coll'));
+  });
+  q.addEventListener('input',function(){st.q=q.value;if(st.q&&!st.cat) st.coll='';pushUrl();render()});
+  document.getElementById('navSearch');
+  Store.theme(); Store.nav('apps');
+  document.getElementById('navSearch').addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});q.focus()});
+  readUrl();
+  Store.load().then(function(j){D=j;render()}).catch(function(){main.innerHTML='<p class="empty">Could not load the catalog. Check your connection and refresh.</p>'});
+})();
+</script>
+</body>
+</html>

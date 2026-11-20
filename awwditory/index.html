@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/sdk/install.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0b1020"/>
+  <meta name="description" content="Awwditory is a mood-based music and sound PWA with creator uploads, custom feelings, and local-first playback."/>
+  <link rel="manifest" href="./manifest.webmanifest"/>
+  <link rel="apple-touch-icon" href="./icons/icon-192.svg"/>
+  <title>Awwditory</title>
+  <style>
+    :root{
+      --bg:#0b1020;--panel:#121832;--panel2:#171f3e;--line:rgba(255,255,255,.13);
+      --text:#f7f7fb;--muted:#aeb3c8;--brand:#7F5AF0;--pink:#F25DA3;--green:#2CB67D;
+      --warn:#ffcf5a;--bad:#ff6b6b;--ok:#25d0a2;--shadow:0 22px 80px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body{
+      background:
+      radial-gradient(900px 500px at 90% -10%,rgba(127,90,240,.42),transparent 60%),
+      radial-gradient(900px 600px at -15% 110%,rgba(44,182,125,.24),transparent 56%),
+      linear-gradient(135deg,#0b1020,#16183a 58%,#0d1428);
+      padding-bottom:92px;
+    }
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer;color:inherit}
+    a{color:inherit;text-decoration:none}
+    .app{max-width:1180px;margin:0 auto;padding:14px}
+    .topbar{position:sticky;top:0;z-index:30;margin:-14px -14px 0;padding:10px 14px;background:rgba(8,10,22,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+    .topinner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:12px}
+    .logo{display:flex;align-items:center;gap:9px;font-weight:950;letter-spacing:-.04em}
+    .logo svg{width:34px;height:34px;filter:drop-shadow(0 8px 18px rgba(242,93,163,.25))}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);background:rgba(255,255,255,.075);border-radius:999px;font-size:12px;color:var(--muted)}
+    .spacer{flex:1}
+    .btn{border:1px solid var(--line);background:rgba(255,255,255,.08);padding:10px 13px;border-radius:14px;font-weight:800;box-shadow:none}
+    .btn.primary{background:#fff;color:#101525;border-color:#fff}
+    .btn.brand{background:linear-gradient(135deg,var(--brand),var(--pink));border:0;color:#fff}
+    .btn.small{padding:7px 10px;border-radius:12px;font-size:12px}
+    .grid{display:grid;gap:14px}
+    .cols2{grid-template-columns:1fr}
+    .cols3{grid-template-columns:1fr}
+    @media(min-width:820px){.cols2{grid-template-columns:1.15fr .85fr}.cols3{grid-template-columns:repeat(3,1fr)}}
+    .card{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+    .card.pad{padding:16px}
+    .title{font-size:clamp(36px,8vw,76px);line-height:.96;margin:20px 0 12px;font-weight:1000;letter-spacing:-.07em}
+    .h2{font-size:26px;margin:0 0 8px;font-weight:1000;letter-spacing:-.04em}
+    .h3{font-size:18px;margin:0;font-weight:950}
+    .muted{color:var(--muted)}
+    .hero{padding:44px 0 20px}
+    .section{padding:22px 0}
+    .field{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.93);color:#101525;outline:none}
+    textarea.field{min-height:92px;resize:vertical}
+    select.field{appearance:auto}
+    .darkfield{background:rgba(255,255,255,.08);color:#fff}
+    .darkfield option{color:#111}
+    .tabs{display:flex;gap:8px;overflow:auto;padding:4px 0}
+    .tab{white-space:nowrap;border:1px solid var(--line);background:rgba(255,255,255,.075);border-radius:999px;padding:9px 12px;font-weight:800;color:var(--muted)}
+    .tab.active{background:#fff;color:#101525;border-color:#fff}
+    .view{display:none;animation:fade .22s ease-out}.view.active{display:block}
+    @keyframes fade{from{opacity:.5;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(7,9,20,.86);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:8px max(8px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom))}
+    .bottominner{max-width:680px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .navbtn{border:0;background:transparent;color:var(--muted);border-radius:18px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px}
+    .navbtn b{font-size:20px;line-height:20px}.navbtn.active{background:rgba(255,255,255,.11);color:#fff}
+    .moodwheel{position:relative;width:min(88vw,340px);height:min(88vw,340px);margin:18px auto;border-radius:50%;border:1px solid var(--line);background:conic-gradient(from 20deg,#2a1757,#22256a,#133758,#145145,#2a1757);box-shadow:inset 0 0 65px rgba(255,255,255,.06)}
+    .centerorb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:136px;height:136px;border-radius:36px;background:rgba(0,0,0,.24);border:1px solid var(--line);display:grid;place-items:center;text-align:center;padding:14px}
+    .moodbtn{position:absolute;transform:translate(-50%,-50%);border:1px solid var(--line);background:rgba(255,255,255,.14);border-radius:999px;padding:8px 11px;font-size:12px;font-weight:900}
+    .moodbtn.active{background:#fff;color:#101525}
+    .track{display:grid;grid-template-columns:44px 1fr auto;gap:11px;align-items:center;padding:12px;border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:18px}
+    .art{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--brand),var(--pink),var(--green));display:grid;place-items:center;font-weight:1000}
+    .tracktitle{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .meta{font-size:12px;color:var(--muted);display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+    .tag{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 7px;background:rgba(255,255,255,.07)}
+    .player{position:fixed;left:10px;right:10px;bottom:78px;z-index:45;max-width:720px;margin:auto;background:rgba(12,17,37,.92);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:10px;display:none}
+    .player.show{display:block}
+    .playerrow{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center}
+    .progress{width:100%}
+    .toast{position:fixed;z-index:90;left:50%;bottom:158px;transform:translateX(-50%);background:#fff;color:#101525;border-radius:16px;padding:11px 14px;font-weight:900;display:none;box-shadow:var(--shadow)}
+    .toast.show{display:block}
+    .modal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.58);display:none;align-items:flex-end}
+    .modal.show{display:flex}
+    .sheet{width:100%;max-width:560px;margin:0 auto;background:#10172d;border:1px solid var(--line);border-radius:28px 28px 0 0;padding:18px;max-height:86vh;overflow:auto}
+    .list{display:grid;gap:10px}
+    .empty{padding:22px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center}
+    .stat{padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:18px}
+    .stat strong{font-size:24px;display:block}
+    .inline{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+    .danger{color:var(--bad)}
+    .ok{color:var(--ok)}
+    .hidden{display:none!important}
+    @media(max-width:600px){
+      .desktopOnly{display:none}.topinner{gap:8px}.btn{padding:9px 10px}.track{grid-template-columns:40px 1fr auto}.art{width:40px;height:40px}
+    }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topinner">
+    <div class="logo">
+      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="64" y2="64"><stop stop-color="#7F5AF0"/><stop offset=".62" stop-color="#F25DA3"/><stop offset="1" stop-color="#2CB67D"/></linearGradient></defs>
+        <path d="M32 54s-18-9.5-18-24C14 18 22 10 32 20c10-10 18-2 18 10 0 14.5-18 24-18 24z" stroke="url(#lg)" stroke-width="2.8" fill="none"/>
+        <g transform="translate(17,26)" fill="url(#lg)"><rect x="0" y="9" width="5" height="10" rx="2.5"/><rect x="11" y="0" width="5" height="19" rx="2.5"/><rect x="22" y="5" width="5" height="14" rx="2.5"/></g>
+      </svg>
+      <span>Awwditory</span>
+    </div>
+    <span class="pill desktopOnly" id="onlinePill">Local-first PWA</span>
+    <div class="spacer"></div>
+    <button class="btn small" id="installBtn">Install</button>
+    <button class="btn small primary" id="authBtn">Sign in</button>
+  </div>
+</div>
+
+<div class="app">
+  <section class="hero view active" id="homeView">
+    <div class="grid cols2">
+      <div>
+        <span class="pill">Mood-based music • creator sounds • monetization</span>
+        <h1 class="title">Play by feeling.</h1>
+        <p class="muted">Create a feeling, pick a genre, upload sounds, save tracks, tip creators, and build your own mood-based library. This PWA works locally now and is ready for a backend later.</p>
+        <div class="inline" style="margin-top:18px">
+          <button class="btn primary" data-nav="discover">Start listening</button>
+          <button class="btn brand" data-nav="create">Create feeling</button>
+        </div>
+      </div>
+      <div class="card pad">
+        <div class="inline" style="justify-content:space-between">
+          <div><h2 class="h2">Mood Wheel</h2><p class="muted" style="margin-top:0">Mood + genre controls recommendations.</p></div>
+          <select id="genreFilter" class="field darkfield" style="width:auto;min-width:120px"></select>
+        </div>
+        <div class="moodwheel" id="moodWheel">
+          <div class="centerorb"><div><div style="font-size:28px">🎧</div><strong id="selectedMoodName">Calm</strong><div class="muted" style="font-size:12px">current feeling</div></div></div>
+        </div>
+      </div>
+    </div>
+    <section class="section">
+      <div class="grid cols3" id="homeStats"></div>
+    </section>
+  </section>
+
+  <section class="section view" id="discoverView">
+    <div class="inline" style="justify-content:space-between">
+      <div><h2 class="h2">Discover</h2><p class="muted">Recommendations from app tracks, creator uploads, and your custom feelings.</p></div>
+      <input id="searchInput" class="field darkfield" placeholder="Search sounds, creators, moods..." style="max-width:320px"/>
+    </div>
+    <div class="tabs" id="discoverTabs"></div>
+    <div class="list" id="trackList" style="margin-top:14px"></div>
+  </section>
+
+  <section class="section view" id="createView">
+    <div class="grid cols2">
+      <div class="card pad">
+        <h2 class="h2">Create a Feeling</h2>
+        <p class="muted">Build custom play-by-mood presets like Rainy Commute, Gym Beast, Beach Day, or Miami Nights.</p>
+        <form id="feelingForm" class="list">
+          <input class="field" id="feelingName" placeholder="Feeling name" required/>
+          <select class="field" id="feelingMood"></select>
+          <select class="field" id="feelingGenre"></select>
+          <textarea class="field" id="feelingDesc" placeholder="Describe this feeling"></textarea>
+          <button class="btn primary" type="submit">Save Feeling</button>
+        </form>
+      </div>
+      <div class="card pad">
+        <h2 class="h2">Upload Sound / Music</h2>
+        <p class="muted">Uploads are stored in your browser with IndexedDB for local playback.</p>
+        <form id="uploadForm" class="list">
+          <input class="field" id="uploadTitle" placeholder="Track title" required/>
+          <input class="field" id="uploadCreator" placeholder="Creator name" required/>
+          <select class="field" id="uploadMood"></select>
+          <select class="field" id="uploadGenre"></select>
+          <select class="field" id="uploadMonetize">
+            <option value="free">Free</option><option value="tip">Tippable</option><option value="sale">For Sale</option>
+          </select>
+          <input class="field" id="uploadFile" type="file" accept="audio/*" required/>
+          <button class="btn brand" type="submit">Upload to Library</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="section view" id="libraryView">
+    <div class="inline" style="justify-content:space-between">
+      <div><h2 class="h2">Library</h2><p class="muted">Saved, purchased, uploaded, and custom feelings.</p></div>
+      <button class="btn small" id="exportBtn">Export Data</button>
+    </div>
+    <div class="tabs" id="libraryTabs">
+      <button class="tab active" data-lib="saved">Saved</button>
+      <button class="tab" data-lib="purchased">Purchased</button>
+      <button class="tab" data-lib="uploads">Uploads</button>
+      <button class="tab" data-lib="feelings">Feelings</button>
+    </div>
+    <div class="list" id="libraryList" style="margin-top:14px"></div>
+  </section>
+
+  <section class="section view" id="profileView">
+    <div class="grid cols2">
+      <div class="card pad">
+        <h2 class="h2">Profile</h2>
+        <div id="profileBox"></div>
+      </div>
+      <div class="card pad">
+        <h2 class="h2">Creator Wallet</h2>
+        <div class="grid cols3" id="walletStats"></div>
+        <p class="muted">Tips and purchases are simulated locally. Connect Stripe/Supabase later for real payouts.</p>
+      </div>
+    </div>
+    <div class="card pad" style="margin-top:14px">
+      <h2 class="h2">Settings</h2>
+      <div class="inline">
+        <button class="btn" id="seedBtn">Reload starter sounds</button>
+        <button class="btn danger" id="resetBtn">Reset local app data</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="player" id="player">
+  <div class="playerrow">
+    <div class="art" id="playerArt">♪</div>
+    <div>
+      <div class="tracktitle" id="playerTitle">Nothing playing</div>
+      <div class="muted" id="playerMeta" style="font-size:12px">Select a track</div>
+      <input type="range" class="progress" id="progress" min="0" value="0" step="1"/>
+    </div>
+    <div class="inline" style="gap:6px">
+      <button class="btn small" id="playPause">▶</button>
+      <button class="btn small" id="closePlayer">×</button>
+    </div>
+  </div>
+  <audio id="audio"></audio>
+</div>
+
+<div class="bottomnav">
+  <div class="bottominner">
+    <button class="navbtn active" data-nav="home"><b>⌂</b><span>Home</span></button>
+    <button class="navbtn" data-nav="discover"><b>◎</b><span>Discover</span></button>
+    <button class="navbtn" data-nav="create"><b>＋</b><span>Create</span></button>
+    <button class="navbtn" data-nav="library"><b>▣</b><span>Library</span></button>
+    <button class="navbtn" data-nav="profile"><b>◉</b><span>Profile</span></button>
+  </div>
+</div>
+
+<div class="modal" id="authModal">
+  <div class="sheet">
+    <div class="inline" style="justify-content:space-between"><h2 class="h2">Sign in locally</h2><button class="btn small" id="closeAuth">×</button></div>
+    <p class="muted">This creates a local profile on this device. Backend login can be added later.</p>
+    <form id="authForm" class="list">
+      <input class="field" id="authName" placeholder="Display name" required/>
+      <input class="field" id="authEmail" type="email" placeholder="Email" required/>
+      <button class="btn primary" type="submit">Continue</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DB_NAME='awwd_1';
+const DB_VERSION=1;
+const STORE='state';
+const moods=[
+ {key:'calm',label:'Calm',x:'50%',y:'8%'},{key:'focus',label:'Focus',x:'88%',y:'32%'},{key:'happy',label:'Happy',x:'82%',y:'72%'},
+ {key:'energized',label:'Energized',x:'50%',y:'92%'},{key:'melancholy',label:'Melancholy',x:'18%',y:'72%'},{key:'breezy',label:'Breezy',x:'12%',y:'32%'}
+];
+const genres=['Any','Lo-Fi','Ambient','R&B','EDM','Classical','Hip-Hop','Acoustic','Cinematic','Pop','Afrobeats','Jazz'];
+const starterTracks=[
+ {id:'s1',title:'Soft Tides',creator:'LoFi Shores',mood:'calm',genre:'Lo-Fi',duration:'3:11',monetize:'tip',type:'starter',src:''},
+ {id:'s2',title:'Night Bloom',creator:'Aurora Lane',mood:'calm',genre:'Ambient',duration:'2:57',monetize:'free',type:'starter',src:''},
+ {id:'s3',title:'Deep Work 02',creator:'Beta Waves',mood:'focus',genre:'Ambient',duration:'4:20',monetize:'tip',type:'starter',src:''},
+ {id:'s4',title:'Sparkplug',creator:'Voltage Vibes',mood:'energized',genre:'EDM',duration:'2:42',monetize:'sale',type:'starter',src:''},
+ {id:'s5',title:'Seabreeze',creator:'Isla Mono',mood:'breezy',genre:'Acoustic',duration:'2:01',monetize:'free',type:'starter',src:''},
+ {id:'s6',title:'Blue Lanterns',creator:'Cursive Film',mood:'melancholy',genre:'Cinematic',duration:'3:31',monetize:'sale',type:'starter',src:''}
+];
+const $=id=>document.getElementById(id);
+let db, state, selectedMood='calm', selectedGenre='Any', activeLib='saved', currentTrack=null, deferredPrompt=null;
+
+function openDB(){
+ return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(DB_NAME,DB_VERSION);
+  req.onupgradeneeded=()=>req.result.createObjectStore(STORE);
+  req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+ });
+}
+function dbGet(key){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readonly');const r=tx.objectStore(STORE).get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+function dbSet(key,val){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');const r=tx.objectStore(STORE).put(val,key);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function defaultState(){
+ return {user:null,tracks:[...starterTracks],saved:[],purchased:[],feelings:[
+  {id:uid(),name:'Rainy Commute',mood:'calm',genre:'Lo-Fi',desc:'Soft songs for slow traffic and rain.'},
+  {id:uid(),name:'Gym Beast',mood:'energized',genre:'EDM',desc:'High energy session.'}
+ ],wallet:{tips:0,sales:0,plays:0}};
+}
+function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+async function save(){await dbSet('app',state); renderAll();}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function escapeHTML(str){return String(str||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[m]))}
+
+function trackRow(track){
+ const saved=state.saved.includes(track.id);
+ const bought=state.purchased.includes(track.id);
+ return `<div class="track">
+   <div class="art">${track.type==='upload'?'U':'♪'}</div>
+   <div>
+    <div class="tracktitle">${escapeHTML(track.title)}</div>
+    <div class="meta"><span>${escapeHTML(track.creator)}</span><span>•</span><span>${track.duration||'—'}</span><span class="tag">${track.mood}</span><span class="tag">${track.genre}</span><span class="tag">${track.monetize}</span></div>
+   </div>
+   <div class="inline" style="gap:5px;justify-content:flex-end">
+    <button class="btn small" onclick="playTrack('${track.id}')">▶</button>
+    <button class="btn small" onclick="toggleSave('${track.id}')">${saved?'★':'☆'}</button>
+    ${track.monetize==='sale'&&!bought?`<button class="btn small primary" onclick="buyTrack('${track.id}')">Buy</button>`:''}
+    ${track.monetize==='tip'?`<button class="btn small" onclick="tipTrack('${track.id}')">Tip</button>`:''}
+   </div>
+  </div>`;
+}
+function renderAll(){renderMoodWheel();renderSelectors();renderDiscover();renderLibrary();renderProfile();renderStats();renderAuth();renderTabs();}
+function renderMoodWheel(){
+ const w=$('moodWheel'); [...w.querySelectorAll('.moodbtn')].forEach(n=>n.remove());
+ moods.forEach(m=>{
+  const b=document.createElement('button'); b.className='moodbtn'+(m.key===selectedMood?' active':''); b.style.left=m.x;b.style.top=m.y;b.textContent=m.label;b.onclick=()=>{selectedMood=m.key;$('selectedMoodName').textContent=m.label;renderAll();}; w.appendChild(b);
+ });
+ $('selectedMoodName').textContent=moods.find(m=>m.key===selectedMood)?.label||'Mood';
+}
+function renderSelectors(){
+ const optGenres=genres.map(g=>`<option ${g===selectedGenre?'selected':''}>${g}</option>`).join('');
+ $('genreFilter').innerHTML=optGenres;
+ $('genreFilter').onchange=e=>{selectedGenre=e.target.value;renderAll()};
+ ['feelingGenre','uploadGenre'].forEach(id=>$(id).innerHTML=genres.filter(g=>g!=='Any').map(g=>`<option>${g}</option>`).join(''));
+ ['feelingMood','uploadMood'].forEach(id=>$(id).innerHTML=moods.map(m=>`<option value="${m.key}">${m.label}</option>`).join(''));
+}
+function filteredTracks(){
+ const q=($('searchInput')?.value||'').toLowerCase().trim();
+ return state.tracks.filter(t=>(selectedGenre==='Any'||t.genre===selectedGenre)&&(t.mood===selectedMood||selectedMood==='all')&&(!q||[t.title,t.creator,t.genre,t.mood].join(' ').toLowerCase().includes(q)));
+}
+function renderDiscover(){
+ if(!$('trackList'))return;
+ const list=filteredTracks();
+ $('trackList').innerHTML=list.length?list.map(trackRow).join(''):`<div class="empty">No tracks match this mood and genre yet. Upload one or create a feeling.</div>`;
+ $('searchInput').oninput=renderDiscover;
+}
+function renderTabs(){
+ const t=$('discoverTabs');
+ t.innerHTML=[...moods,{key:'all',label:'All'}].map(m=>`<button class="tab ${selectedMood===m.key?'active':''}" onclick="selectedMood='${m.key}';renderAll()">${m.label}</button>`).join('');
+}
+function renderLibrary(){
+ let items=[];
+ if(activeLib==='saved') items=state.tracks.filter(t=>state.saved.includes(t.id));
+ if(activeLib==='purchased') items=state.tracks.filter(t=>state.purchased.includes(t.id));
+ if(activeLib==='uploads') items=state.tracks.filter(t=>t.type==='upload');
+ if(activeLib==='feelings'){
+  $('libraryList').innerHTML=state.feelings.length?state.feelings.map(f=>`<div class="track"><div class="art">♡</div><div><div class="tracktitle">${escapeHTML(f.name)}</div><div class="meta"><span class="tag">${f.mood}</span><span class="tag">${f.genre}</span><span>${escapeHTML(f.desc)}</span></div></div><button class="btn small" onclick="applyFeeling('${f.id}')">Play</button></div>`).join(''):`<div class="empty">No custom feelings saved.</div>`;
+  return;
+ }
+ $('libraryList').innerHTML=items.length?items.map(trackRow).join(''):`<div class="empty">Nothing here yet.</div>`;
+}
+function renderProfile(){
+ $('profileBox').innerHTML=state.user?`<div class="stat"><strong>${escapeHTML(state.user.name)}</strong><span class="muted">${escapeHTML(state.user.email)}</span></div><div class="inline" style="margin-top:12px"><button class="btn" onclick="logout()">Sign out</button></div>`:`<div class="empty">Sign in locally to save a profile on this device.</div><button class="btn primary" style="margin-top:12px" onclick="openAuth()">Sign in</button>`;
+ $('walletStats').innerHTML=`<div class="stat"><strong>$${state.wallet.tips.toFixed(2)}</strong><span class="muted">Tips</span></div><div class="stat"><strong>$${state.wallet.sales.toFixed(2)}</strong><span class="muted">Sales</span></div><div class="stat"><strong>${state.wallet.plays}</strong><span class="muted">Plays</span></div>`;
+}
+function renderStats(){
+ $('homeStats').innerHTML=`<div class="stat"><strong>${state.tracks.length}</strong><span class="muted">Sounds</span></div><div class="stat"><strong>${state.feelings.length}</strong><span class="muted">Feelings</span></div><div class="stat"><strong>${state.saved.length}</strong><span class="muted">Saved</span></div>`;
+}
+function renderAuth(){ $('authBtn').textContent=state.user?state.user.name.split(' ')[0]:'Sign in'; }
+
+window.playTrack=async id=>{
+ const t=state.tracks.find(x=>x.id===id); if(!t)return;
+ currentTrack=t; state.wallet.plays++; await dbSet('app',state);
+ $('player').classList.add('show'); $('playerTitle').textContent=t.title; $('playerMeta').textContent=`${t.creator} • ${t.mood} • ${t.genre}`;
+ const audio=$('audio');
+ if(t.blob){ audio.src=URL.createObjectURL(t.blob); audio.play().then(()=>$('playPause').textContent='Ⅱ').catch(()=>toast('Tap play to start audio')); }
+ else { audio.removeAttribute('src'); toast('Starter tracks are placeholders. Upload audio for real playback.'); $('playPause').textContent='▶'; }
+ renderStats();renderProfile();
+}
+window.toggleSave=async id=>{ state.saved=state.saved.includes(id)?state.saved.filter(x=>x!==id):[...state.saved,id]; await save(); toast(state.saved.includes(id)?'Saved':'Removed'); }
+window.buyTrack=async id=>{ if(!state.purchased.includes(id))state.purchased.push(id); state.wallet.sales+=1.99; await save(); toast('Purchased locally'); }
+window.tipTrack=async id=>{ state.wallet.tips+=0.99; await save(); toast('Tip sent locally'); }
+window.applyFeeling=id=>{ const f=state.feelings.find(x=>x.id===id); if(f){selectedMood=f.mood;selectedGenre=f.genre;nav('discover');toast(`Playing ${f.name}`)} }
+window.logout=async()=>{state.user=null;await save();toast('Signed out')}
+
+function nav(name){
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); $(name+'View').classList.add('active');
+ document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>nav(b.dataset.nav));
+document.querySelectorAll('#libraryTabs .tab').forEach(b=>b.onclick=()=>{activeLib=b.dataset.lib;document.querySelectorAll('#libraryTabs .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderLibrary();});
+
+$('feelingForm').onsubmit=async e=>{
+ e.preventDefault();
+ state.feelings.unshift({id:uid(),name:$('feelingName').value,mood:$('feelingMood').value,genre:$('feelingGenre').value,desc:$('feelingDesc').value});
+ e.target.reset(); await save(); toast('Feeling saved');
+};
+$('uploadForm').onsubmit=async e=>{
+ e.preventDefault();
+ const file=$('uploadFile').files[0]; if(!file){toast('Choose audio file');return}
+ const blob=file.slice(0,file.size,file.type);
+ const item={id:uid(),title:$('uploadTitle').value,creator:$('uploadCreator').value,mood:$('uploadMood').value,genre:$('uploadGenre').value,monetize:$('uploadMonetize').value,type:'upload',duration:'local',blob};
+ state.tracks.unshift(item); e.target.reset(); await save(); toast('Audio uploaded');
+};
+$('playPause').onclick=()=>{const a=$('audio'); if(!currentTrack?.blob){toast('Upload a real audio file first');return} if(a.paused){a.play();$('playPause').textContent='Ⅱ'}else{a.pause();$('playPause').textContent='▶'}};
+$('closePlayer').onclick=()=>{$('audio').pause();$('player').classList.remove('show')};
+$('audio').ontimeupdate=()=>{const a=$('audio'); if(a.duration)$('progress').value=(a.currentTime/a.duration)*100||0};
+$('progress').oninput=e=>{const a=$('audio'); if(a.duration)a.currentTime=(e.target.value/100)*a.duration};
+function openAuth(){$('authModal').classList.add('show')}
+$('authBtn').onclick=openAuth; $('closeAuth').onclick=()=>$('authModal').classList.remove('show');
+$('authForm').onsubmit=async e=>{e.preventDefault();state.user={name:$('authName').value,email:$('authEmail').value};$('authModal').classList.remove('show');await save();toast('Profile saved locally')};
+$('seedBtn').onclick=async()=>{state.tracks=[...starterTracks,...state.tracks.filter(t=>t.type==='upload')];await save();toast('Starter sounds restored')};
+$('resetBtn').onclick=async()=>{if(confirm('Reset all local Awwditory data?')){state=defaultState();await save();location.reload()}};
+$('exportBtn').onclick=()=>{
+ const copy={...state,tracks:state.tracks.map(t=>({...t,blob:t.blob?'[local audio blob]':undefined}))};
+ const url=URL.createObjectURL(new Blob([JSON.stringify(copy,null,2)],{type:'application/json'}));
+ const a=document.createElement('a');a.href=url;a.download='awwdtory-data.json';a.click();URL.revokeObjectURL(url);
+};
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.add('brand')});
+$('installBtn').onclick=async()=>{ if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null}else toast('Deploy with HTTPS to install this PWA'); };
+
+(async function init(){
+ db=await openDB(); state=await dbGet('app')||defaultState(); renderAll();
+ if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+})();
+</script>
+</body>
+</html>

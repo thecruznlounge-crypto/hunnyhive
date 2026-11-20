@@ -1,0 +1,57 @@
+{
+  "name": "Orcastra",
+  "short_name": "Orcastra",
+  "description": "Rhythm game. Tap bubbles in four lanes as they reach the line.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06203d",
+  "theme_color": "#06203d",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/orcastra/1.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/orcastra/2.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/orcastra/3.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/orcastra/4.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

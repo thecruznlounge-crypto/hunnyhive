@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Roadesy – Hunnyhive</title>
+<meta name="application-name" content="Roadesy"><meta name="theme-color" content="#0f1115">
+<link rel="manifest" href="/roadesy/manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="/roadesy/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/roadesy/icons/apple-touch-icon.png">
+<script src="/sdk/install.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/store.css">
+<style>body{display:grid;place-items:center;min-height:100vh;padding:20px 16px;margin:0}.box{width:100%;max-width:400px;text-align:center}.box img{width:116px;height:116px;border-radius:22.5%;box-shadow:0 12px 34px rgba(15,23,42,.3)}.box h1{margin:16px 0 4px;font-size:28px;letter-spacing:-.02em}.box p{margin:0 0 22px;color:var(--mut)}.box .btn{width:100%;margin-top:10px;padding:16px;font-size:17px;border-radius:16px}.box small{display:block;margin-top:18px;color:var(--mut)}</style>
+</head><body>
+<main class="box">
+  <img src="/roadesy/icons/icon-512.png" alt="" width="116" height="116">
+  <h1>Roadesy</h1>
+  <p>Roadside help near you: towing, mobile mechanics, tire service, shops and plazas, with one-tap highway patrol and an in-app map.</p>
+  <button class="btn" data-mypwa-install>⬇️ Install</button>
+  <a class="btn ghost" href="/roadesy/app/">Open app</a>
+  <small><a href="/apps/roadesy" style="color:var(--acc);font-weight:700">Details</a> · <a href="/" style="color:var(--acc);font-weight:700">Hunnyhive</a></small>
+</main>
+<script>
+/* Installed copy opened from the home screen: go straight to the app. */
+if(window.MyPWA&&MyPWA.isInstalled()) location.replace("/roadesy/app/");
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/roadesy/sw.js',{scope:'/roadesy/'}).catch(function(){});
+</script>
+</body></html>

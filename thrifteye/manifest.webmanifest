@@ -1,0 +1,48 @@
+{
+  "name": "ThriftEyes",
+  "short_name": "ThriftEyes",
+  "description": "AI-powered resale discovery: yard sales, estate sales, thrift and hosted sales.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0b0f14",
+  "background_color": "#0b0f14",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "marketplace"
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/thrifteye/1.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/thrifteye/2.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

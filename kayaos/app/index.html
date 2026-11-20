@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Kayaos" />
+  <title>Kayaos.space</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <style>
+    :root{
+      --bg:#f7f2e8;--panel:#fffaf0;--panel2:#ffffff;--ink:#171717;--muted:#6b6257;--line:rgba(23,23,23,.12);
+      --brand:#111827;--accent:#f97316;--green:#22c55e;--yellow:#facc15;--red:#ef4444;--blue:#38bdf8;
+      --shadow:0 18px 50px rgba(17,24,39,.14);--radius:24px;--nav:82px;
+    }
+    [data-theme="dark"]{--bg:#101014;--panel:#18181d;--panel2:#202029;--ink:#f8fafc;--muted:#aaa5b2;--line:rgba(255,255,255,.12);--brand:#f8fafc;--shadow:0 18px 50px rgba(0,0,0,.35)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top left,rgba(249,115,22,.18),transparent 32%),var(--bg);color:var(--ink);padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom));}
+    button,input,select,textarea{font:inherit;color:inherit} button{cursor:pointer;-webkit-tap-highlight-color:transparent} .app{max-width:1180px;margin:0 auto;padding:14px 14px 0}.top{position:sticky;top:0;z-index:20;margin:-1px -14px 0;padding:12px 14px 10px;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+    .toprow{display:flex;gap:10px;align-items:center}.mark{width:44px;height:44px;border-radius:16px;background:var(--brand);color:var(--bg);display:grid;place-items:center;font-weight:1000;font-size:25px;transform:rotate(-3deg);box-shadow:var(--shadow)}
+    .brand{line-height:1}.brand b{font-size:18px;letter-spacing:-.04em}.brand span{display:block;color:var(--muted);font-size:12px;margin-top:1px}.topActions{margin-left:auto;display:flex;gap:8px}.iconbtn,.pillbtn{border:1px solid var(--line);background:var(--panel2);border-radius:16px;min-height:42px;padding:0 13px;box-shadow:0 8px 22px rgba(0,0,0,.05)}.iconbtn{width:42px;padding:0}.search{margin-top:12px;display:flex;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:18px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.05)}.search input{border:0;outline:0;background:transparent;width:100%;font-size:15px}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:16px}.card{background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 92%,white),var(--panel));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}.hero h1{font-size:clamp(34px,7vw,74px);letter-spacing:-.075em;line-height:.88;margin:8px 0 10px}.scribble{font-family:"Comic Sans MS","Marker Felt",cursive;font-style:italic;text-decoration:underline;text-decoration-thickness:4px;text-decoration-style:wavy;text-underline-offset:7px}.hero p{color:var(--muted);font-size:16px;line-height:1.45;margin:0 0 14px}.row{display:flex;gap:10px;flex-wrap:wrap}.primary{background:var(--brand);color:var(--bg);border:0;border-radius:18px;padding:13px 16px;font-weight:900}.ghost{background:transparent;border:1px solid var(--line);border-radius:18px;padding:13px 16px;font-weight:800}.clockCard{display:grid;gap:12px}.clock{font-size:46px;letter-spacing:-.06em;font-weight:1000}.sub{color:var(--muted);font-size:13px}.progress{height:14px;background:rgba(128,128,128,.18);border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;width:50%;background:linear-gradient(90deg,#22c55e,#facc15,#ef4444)}.section{margin-top:18px}.sectionHead{display:flex;align-items:end;justify-content:space-between;margin:0 2px 10px}.sectionHead h2{margin:0;font-size:22px;letter-spacing:-.04em}.week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.day{border:1px solid var(--line);background:var(--panel2);border-radius:18px;padding:10px 6px;min-height:76px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.04)}.day.active{outline:3px solid color-mix(in srgb,var(--accent) 45%,transparent);background:color-mix(in srgb,var(--accent) 12%,var(--panel2))}.day b{display:block;font-size:13px}.day strong{display:block;font-size:22px;margin:4px 0}.dots{display:flex;justify-content:center;gap:3px}.dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}.board{display:grid;grid-template-columns:1fr 380px;gap:16px}.taskGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.task{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:22px;padding:14px;min-height:138px;box-shadow:0 12px 28px rgba(0,0,0,.08)}.task:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.45),transparent);pointer-events:none}.task.low{background:#dcfce7}.task.soon{background:#fef08a}.task.urgent{background:#fdba74}.task.missed{background:#ef4444;color:white}.task.done{background:#dbeafe}.task h3{margin:0 0 6px;font-size:18px;letter-spacing:-.03em}.meta{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.chip{font-size:12px;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.45);border:1px solid rgba(0,0,0,.08)}.taskActions{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}.mini{border:0;background:rgba(255,255,255,.6);border-radius:12px;padding:8px}.panelTitle{font-weight:1000;font-size:18px;margin:0 0 10px}.form{display:grid;gap:9px}.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);background:var(--panel2);border-radius:15px;padding:12px;outline:0}.form textarea{min-height:84px;resize:vertical}.events{display:grid;gap:8px}.event{display:grid;grid-template-columns:74px 1fr;gap:8px;border:1px solid var(--line);background:var(--panel2);border-radius:16px;padding:10px}.event time{font-weight:1000}.empty{padding:22px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px}.catbar{display:flex;gap:8px;overflow:auto;padding-bottom:6px;scrollbar-width:none}.catbar::-webkit-scrollbar{display:none}.cat{white-space:nowrap;border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:9px 12px;font-weight:800}.cat.active{background:var(--brand);color:var(--bg)}.bottom{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,740px);z-index:30;padding:10px 12px calc(10px + env(safe-area-inset-bottom));}.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;background:rgba(20,20,25,.88);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:8px;box-shadow:0 -8px 38px rgba(0,0,0,.25)}.nav button{border:0;background:transparent;color:white;border-radius:18px;padding:9px 4px;font-size:11px;display:grid;gap:3px;place-items:center}.nav button.active,.nav button:active{background:rgba(255,255,255,.16)}.fab{position:fixed;right:18px;bottom:calc(var(--nav) + 18px);z-index:31;width:58px;height:58px;border:0;border-radius:21px;background:var(--accent);color:white;font-size:30px;box-shadow:var(--shadow)}dialog{border:0;border-radius:28px;padding:0;width:min(94vw,520px);background:var(--panel);color:var(--ink);box-shadow:0 40px 120px rgba(0,0,0,.45)}dialog::backdrop{background:rgba(0,0,0,.42);backdrop-filter:blur(5px)}.dialogIn{padding:16px}.install{display:none;margin-top:12px;background:linear-gradient(135deg,#111827,#374151);color:white;border-radius:24px;padding:14px;align-items:center;gap:12px}.install.show{display:flex}.install .mark{background:white;color:#111827;box-shadow:none}.toast{position:fixed;left:50%;bottom:calc(var(--nav) + 12px);transform:translateX(-50%);background:var(--brand);color:var(--bg);padding:12px 14px;border-radius:99px;box-shadow:var(--shadow);z-index:60;opacity:0;pointer-events:none;transition:.25s}.toast.show{opacity:1;bottom:calc(var(--nav) + 28px)}@media(max-width:850px){.hero,.board{grid-template-columns:1fr}.taskGrid{grid-template-columns:1fr}.clock{font-size:38px}.week{gap:6px}.day{border-radius:15px;min-height:68px}.day strong{font-size:18px}.app{padding-left:12px;padding-right:12px}.top{margin-left:-12px;margin-right:-12px}}@media(max-width:430px){.brand span{display:none}.hero h1{font-size:42px}.week{grid-template-columns:repeat(7,minmax(42px,1fr));overflow:auto}.day{min-width:42px;padding:8px 3px}.pillbtn{display:none}.card{padding:14px}.task{min-height:132px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="toprow">
+        <div class="mark" aria-hidden="true">K</div><div class="brand"><b>Kayaos.space</b><span>Organize the chaos</span></div>
+        <div class="topActions"><button class="pillbtn" id="installBtn">Install</button><button class="iconbtn" id="themeBtn" aria-label="Toggle theme">◐</button></div>
+      </div>
+      <label class="search">⌕ <input id="searchInput" placeholder="Search tasks, places, reminders..." /></label>
+      <div class="install" id="installCard"><div class="mark">K</div><div><b>Install Kayaos</b><div class="sub" style="color:#d1d5db">Add the organizer to your home screen.</div></div><button class="primary" id="installCardBtn" style="margin-left:auto;background:white;color:#111827">Get</button></div>
+    </header>
+
+    <main>
+      <section class="hero" id="home">
+        <div class="card">
+          <h1><span class="scribble">Kayaos</span><br/>control the mess.</h1>
+          <p>Tasks, reminders, places, a one-week calendar, and a 12-hour urgency clock in one fast PWA.</p>
+          <div class="row"><button class="primary" id="quickAdd">Add Task</button><button class="ghost" id="seedBtn">Load Demo</button><button class="ghost" id="clearBtn">Clear Done</button></div>
+        </div>
+        <div class="card clockCard">
+          <div><div class="sub">12-hour focus clock</div><div class="clock" id="clock">--:-- --</div></div>
+          <div><div class="sub" id="focusLabel">Next 12 hours</div><div class="progress"><span id="dayProgress"></span></div></div>
+          <div class="row"><span class="chip">Light = later</span><span class="chip">Dark = urgent</span><span class="chip">Red = missed</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="calendar">
+        <div class="sectionHead"><h2>One-week calendar</h2><span class="sub" id="monthLabel"></span></div>
+        <div class="week" id="week"></div>
+      </section>
+
+      <section class="section">
+        <div class="sectionHead"><h2>Categories</h2><span class="sub">Pick or type custom</span></div>
+        <div class="catbar" id="catbar"></div>
+      </section>
+
+      <section class="section board" id="tasks">
+        <div>
+          <div class="sectionHead"><h2 id="taskTitle">Cards</h2><span class="sub" id="taskCount"></span></div>
+          <div class="taskGrid" id="taskGrid"></div>
+        </div>
+        <aside class="card" id="eventsPanel">
+          <h3 class="panelTitle">Selected day events</h3>
+          <div class="sub" id="selectedDayText"></div>
+          <div class="events" id="events"></div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <button class="fab" id="fab" aria-label="Add task">+</button>
+  <nav class="bottom"><div class="nav"><button class="active" data-go="home">⌂<span>Home</span></button><button data-go="calendar">▦<span>Week</span></button><button data-go="tasks">✓<span>Tasks</span></button><button id="locBtn">⌖<span>Place</span></button><button data-go="eventsPanel">◷<span>Day</span></button></div></nav>
+  <div class="toast" id="toast"></div>
+
+  <dialog id="taskDialog"><div class="dialogIn"><div class="sectionHead"><h2>Add card</h2><button class="iconbtn" id="closeDialog">×</button></div><form class="form" id="taskForm"><input name="title" required placeholder="Task or reminder title" /><select name="category" id="categorySelect"></select><input name="custom" placeholder="Custom category if not listed" /><input name="date" type="date" required /><input name="time" type="time" required /><input name="place" placeholder="Location / place reminder" /><textarea name="notes" placeholder="Notes"></textarea><button class="primary" type="submit">Save card</button></form></div></dialog>
+
+  <script>
+    const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+    const STORE='kayaos.v1.tasks'; const THEME='kayaos.theme';
+    const baseCats=['All','Work','Personal','Errands','Bills','Appointments','Travel','Family','Custom'];
+    let tasks=JSON.parse(localStorage.getItem(STORE)||'[]'); let selectedCat='All'; let selectedDate=new Date(); let deferredPrompt=null;
+    const save=()=>localStorage.setItem(STORE,JSON.stringify(tasks));
+    const pad=n=>String(n).padStart(2,'0');
+    const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    const parseDT=t=>new Date(`${t.date}T${t.time||'12:00'}`);
+    function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
+    function urgency(t){ if(t.done) return 'done'; const diff=(parseDT(t)-new Date())/36e5; if(diff<0) return 'missed'; if(diff<=2) return 'urgent'; if(diff<=24) return 'soon'; return 'low'; }
+    function fmtTime(t){const [h,m]=t.split(':').map(Number); const ap=h>=12?'PM':'AM'; const hh=((h+11)%12)+1; return `${hh}:${pad(m)} ${ap}`;}
+    function updateClock(){const n=new Date(); let h=n.getHours(); const ap=h>=12?'PM':'AM'; h=((h+11)%12)+1; $('#clock').textContent=`${h}:${pad(n.getMinutes())} ${ap}`; const pct=((n.getHours()%12)*60+n.getMinutes())/720*100; $('#dayProgress').style.width=pct+'%';}
+    function renderWeek(){const wrap=$('#week');wrap.innerHTML=''; const today=new Date(); const start=new Date(today); start.setDate(today.getDate()-today.getDay()); $('#monthLabel').textContent=today.toLocaleDateString(undefined,{month:'long',year:'numeric'}); for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=ymd(d); const count=tasks.filter(t=>t.date===key).length; const b=document.createElement('button'); b.className='day'+(ymd(selectedDate)===key?' active':''); b.innerHTML=`<b>${d.toLocaleDateString(undefined,{weekday:'short'})}</b><strong>${d.getDate()}</strong><div class="dots">${count?'<span class="dot"></span>'.repeat(Math.min(count,3)):''}</div>`; b.onclick=()=>{selectedDate=d;render()}; wrap.appendChild(b);}}
+    function renderCats(){const cats=[...new Set([...baseCats,...tasks.map(t=>t.category).filter(Boolean)])]; $('#catbar').innerHTML=cats.map(c=>`<button class="cat ${c===selectedCat?'active':''}" data-cat="${c}">${c}</button>`).join(''); $$('.cat').forEach(b=>b.onclick=()=>{selectedCat=b.dataset.cat;render()}); $('#categorySelect').innerHTML=baseCats.filter(c=>c!=='All').map(c=>`<option>${c}</option>`).join('');}
+    function renderTasks(){const q=$('#searchInput').value.toLowerCase(); let list=tasks.filter(t=>(selectedCat==='All'||t.category===selectedCat)&&[t.title,t.category,t.place,t.notes].join(' ').toLowerCase().includes(q)); list.sort((a,b)=>parseDT(a)-parseDT(b)); $('#taskCount').textContent=`${list.length} shown`; $('#taskTitle').textContent=selectedCat==='All'?'Cards':selectedCat+' cards'; const grid=$('#taskGrid'); if(!list.length){grid.innerHTML='<div class="empty">No cards yet. Tap + to add your first Kayaos card.</div>';return} grid.innerHTML=list.map(t=>`<article class="task ${urgency(t)}"><h3>${escapeHtml(t.title)}</h3><div class="sub">${t.date} • ${fmtTime(t.time)}</div><div class="meta"><span class="chip">${escapeHtml(t.category)}</span>${t.place?`<span class="chip">⌖ ${escapeHtml(t.place)}</span>`:''}<span class="chip">${urgency(t)}</span></div><p>${escapeHtml(t.notes||'')}</p><div class="taskActions"><button class="mini" data-done="${t.id}">${t.done?'↺':'✓'}</button><button class="mini" data-del="${t.id}">×</button></div></article>`).join(''); $$('[data-done]').forEach(b=>b.onclick=()=>{const t=tasks.find(x=>x.id===b.dataset.done); if(t)t.done=!t.done;save();render()}); $$('[data-del]').forEach(b=>b.onclick=()=>{tasks=tasks.filter(x=>x.id!==b.dataset.del);save();render()});}
+    function renderEvents(){const key=ymd(selectedDate); const month=selectedDate.getMonth(); const day=selectedDate.getDay(); const monthly=tasks.filter(t=>{const d=new Date(t.date+'T00:00'); return d.getMonth()===month && d.getDay()===day}).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time)); $('#selectedDayText').textContent=`All ${selectedDate.toLocaleDateString(undefined,{weekday:'long'})} events this month`; $('#events').innerHTML=monthly.length?monthly.map(t=>`<div class="event"><time>${fmtTime(t.time)}</time><div><b>${escapeHtml(t.title)}</b><div class="sub">${t.date}${t.place?' • '+escapeHtml(t.place):''}</div></div></div>`).join(''):'<div class="empty">No matching events for this weekday in the month.</div>';}
+    function escapeHtml(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+    function render(){renderWeek();renderCats();renderTasks();renderEvents();}
+    function openAdd(){ $('#taskForm').reset(); $('#taskForm').date.value=ymd(new Date()); $('#taskForm').time.value=`${pad(new Date().getHours())}:${pad(Math.ceil(new Date().getMinutes()/5)*5%60)}`; $('#taskDialog').showModal();}
+    $('#taskForm').onsubmit=e=>{e.preventDefault(); const f=new FormData(e.target); const cat=(f.get('custom')||f.get('category')).toString().trim(); tasks.push({id:crypto.randomUUID(),title:f.get('title').toString().trim(),category:cat,date:f.get('date'),time:f.get('time'),place:f.get('place').toString().trim(),notes:f.get('notes').toString().trim(),done:false}); save(); $('#taskDialog').close(); toast('Card saved'); render();};
+    $('#fab').onclick=openAdd; $('#quickAdd').onclick=openAdd; $('#closeDialog').onclick=()=>$('#taskDialog').close(); $('#searchInput').oninput=renderTasks;
+    $('#seedBtn').onclick=()=>{const n=new Date(); const make=(add,title,category,time,place)=>{const d=new Date(); d.setDate(n.getDate()+add); return {id:crypto.randomUUID(),title,category,date:ymd(d),time,place,notes:'',done:false}}; tasks=[make(0,'Pay insurance','Bills','09:00',''),make(0,'Pickup supplies','Errands','13:30','Downtown'),make(1,'Client follow-up','Work','10:15',''),make(2,'Family dinner','Family','18:00','Home'),make(-1,'Missed oil change','Appointments','08:30','Shop')]; save(); toast('Demo cards loaded'); render();};
+    $('#clearBtn').onclick=()=>{tasks=tasks.filter(t=>!t.done);save();render();toast('Done cards cleared')};
+    $$('[data-go]').forEach(b=>b.onclick=()=>{document.getElementById(b.dataset.go).scrollIntoView({behavior:'smooth',block:'start'}); $$('.nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active')});
+    $('#locBtn').onclick=()=>{ if(!navigator.geolocation){toast('Location not available');return} navigator.geolocation.getCurrentPosition(()=>toast('Location reminders ready'),()=>toast('Location permission needed'))};
+    $('#themeBtn').onclick=()=>{const dark=document.documentElement.dataset.theme==='dark'; document.documentElement.dataset.theme=dark?'':'dark'; localStorage.setItem(THEME,dark?'light':'dark')}; if(localStorage.getItem(THEME)==='dark')document.documentElement.dataset.theme='dark';
+    window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('#installCard').classList.add('show')}); async function install(){ if(deferredPrompt){deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; $('#installCard').classList.remove('show')} else toast('Use browser menu: Add to Home screen') } $('#installBtn').onclick=install; $('#installCardBtn').onclick=install;
+    if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
+    setInterval(updateClock,1000); updateClock(); render();
+  </script>
+</body>
+</html>

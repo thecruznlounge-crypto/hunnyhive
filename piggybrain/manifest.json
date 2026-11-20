@@ -1,0 +1,60 @@
+{
+  "name": "PiggyBrain Achievement Wallet",
+  "short_name": "PiggyBrain",
+  "description": "K-12 achievement wallet and micro-scholarships that grow with each student.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6fbff",
+  "theme_color": "#4db7ff",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "education"
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/piggybrain/1.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/piggybrain/2.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/piggybrain/3.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/piggybrain/4.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

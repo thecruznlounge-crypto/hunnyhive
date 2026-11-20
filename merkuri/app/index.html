@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Merkuri — The Element of Delivery</title>
+<meta name="description" content="Merkuri is the infrastructure framework for launching, scaling and managing local micro-delivery businesses. Compare real couriers, watch video profiles, compare rates and pay with SecurePay escrow.">
+<meta name="theme-color" content="#050b12">
+<meta name="color-scheme" content="dark">
+<meta name="application-name" content="Merkuri">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Merkuri">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:title" content="Merkuri — The Element of Delivery">
+<meta property="og:description" content="Choose your courier. Choose your rate. Proof before release.">
+<meta property="og:image" content="icons/feature-graphic-1024x500.png">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preload" href="img/logo-emblem.png" as="image">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 7.5 12 3 3 7.5v9L12 21l9-4.5z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9M7.5 5.2l9 4.6"/></symbol>
+ <symbol id="i-orders" viewBox="0 0 24 24"><rect x="4.5" y="4" width="15" height="17" rx="2"/><path d="M9 4V2.5h6V4M8.5 10h7M8.5 14h7M8.5 18h4"/></symbol>
+ <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/></symbol>
+ <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+ <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M16 13h2M3 10h18M6 6V4h11v2"/></symbol>
+ <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8.5 8.5 0 0 1-12.3 7.6L3.5 21l1.4-4.7A8.5 8.5 0 1 1 21 12z"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+ <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></symbol>
+ <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+ <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.3-2 4-2 6 2 0 4.7-.5 6-2"/><path d="M9 15l-3-3c1-5 6-9 14-9 0 8-4 13-9 14z"/><circle cx="15" cy="9" r="1.7"/></symbol>
+ <symbol id="i-userplus" viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 14 0M19 8v6M16 11h6"/></symbol>
+ <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+ <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H16"/></symbol>
+ <symbol id="i-atom" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></symbol>
+ <symbol id="i-nodes" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><path d="m6.5 6.5 3.7 3.7M17.5 6.5l-3.7 3.7M6.5 17.5l3.7-3.7M17.5 17.5l-3.7-3.7"/></symbol>
+ <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+ <symbol id="i-bars" viewBox="0 0 24 24"><rect x="3" y="13" width="4" height="8" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></symbol>
+ <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/></symbol>
+ <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></symbol>
+ <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17 9 9h6l3.5 8M9 9l3 8M15 9l-1-3h-2"/></symbol>
+ <symbol id="i-scooter" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 18h7M15.5 18 13 8h-3M13 8l2-4h3M3.5 15h7"/></symbol>
+ <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 17H3v-5l2.2-5h13.6L21 12v5h-2M3 12h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5"/></symbol>
+ <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+ <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4M12 15v2"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+ <symbol id="i-flip" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></symbol>
+ <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+ <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+ <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></symbol>
+ <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+ <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+ <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+ <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+ <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></symbol>
+ <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17 9 11l4 4 8-8M15 7h6v6"/></symbol>
+ <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/></symbol>
+ <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2 12h6l2-5 4 10 2-5h6"/></symbol>
+ <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/></symbol>
+ <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></symbol>
+ <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+ <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></symbol>
+ <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13"/></symbol>
+ <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M5 13v7h14v-7"/></symbol>
+ <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 12h8"/></symbol>
+ <symbol id="i-dmg" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></symbol>
+ <symbol id="i-handshake" viewBox="0 0 24 24"><path d="M3 12l4-4 4 2 3-2 7 6-4 4-3-2-3 2z"/><path d="M8 13l3 3"/></symbol>
+</svg>
+
+<header class="top">
+ <div class="wrap">
+  <a class="brand" href="#/home" aria-label="Merkuri home"><img src="img/logo-emblem.png" alt="" width="66" height="30"><span><b>MERKURI</b><small>THE ELEMENT OF DELIVERY</small></span></a>
+  <nav class="nav" aria-label="Primary">
+   <a href="#/home" data-scroll="how">Solutions</a>
+   <a href="#/couriers">For Couriers</a>
+   <a href="#/home" data-scroll="business">For Businesses</a>
+   <a href="#/home" data-scroll="developers">Developers</a>
+   <a href="#/home" data-scroll="pricing">Pricing</a>
+   <a href="#/home" data-scroll="about">About</a>
+  </nav>
+  <div class="top-actions">
+   <span class="net-badge" role="status"><i></i>Offline</span>
+   <button class="btn line sm hide-phone hide-tab" data-act="login">Log in</button>
+   <button class="btn sm hide-phone" data-act="start">Get Started</button>
+   <button class="iconbtn install-only" data-act="install" aria-label="Install app" title="Install app"><svg class="ic"><use href="#i-download"/></svg></button>
+   <button class="iconbtn" data-act="drawer" aria-label="Open menu"><svg class="ic"><use href="#i-menu"/></svg></button>
+  </div>
+ </div>
+</header>
+
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+ <div class="hero">
+  <div class="hero-art" aria-hidden="true"></div>
+  <div class="wrap">
+   <div class="hero-copy">
+    <h1>The Element<br>of <em>Delivery</em></h1>
+    <div class="pulse-rule"><svg class="ic"><use href="#i-pulse"/></svg></div>
+    <p>The infrastructure framework for launching, scaling, and managing local micro-delivery businesses. Compare real couriers, watch their videos, compare rates — and choose your own.</p>
+    <div class="cta">
+     <button class="btn lg" data-act="fleet"><svg class="ic"><use href="#i-rocket"/></svg>Launch a Fleet</button>
+     <button class="btn ghost lg" data-act="courier"><svg class="ic"><use href="#i-user"/></svg>Become a Courier</button>
+    </div>
+    <div class="metrics">
+     <div class="metric"><span class="ring-ic"><svg class="ic"><use href="#i-shield"/></svg></span><span><b>Fast Onboarding</b><small>Get started in minutes</small></span></div>
+     <div class="metric"><span class="ring-ic"><svg class="ic"><use href="#i-route"/></svg></span><span><b>Real-time Tracking</b><small>End-to-end visibility</small></span></div>
+     <div class="metric"><span class="ring-ic"><svg class="ic"><use href="#i-lock"/></svg></span><span><b>Secure &amp; Reliable</b><small>Proof before release</small></span></div>
+    </div>
+   </div>
+   <div class="hero-phone">
+    <div class="phone">
+     <div class="pbrand"><img src="img/logo-emblem.png" alt=""><b>MERKURI</b><small>THE ELEMENT OF DELIVERY</small></div>
+     <button class="btn" data-act="fleet">Launch a Fleet</button>
+     <button class="btn ghost" data-act="courier">Become a Courier</button>
+     <div style="display:flex;justify-content:space-between;margin-top:14px;font-size:10px;letter-spacing:.08em"><span class="muted">LIVE NETWORK</span><span class="live-dot" style="font-size:10px">Online</span></div>
+     <div class="p-stats"><div><b data-stat="couriers">1,248</b><small>Active Couriers</small></div><div><b data-stat="orders">340</b><small>Active Orders</small></div><div><b>98.7%</b><small>On-time Rate</small></div></div>
+     <div class="map" style="min-height:150px;height:150px" data-minimap></div>
+     <div class="p-tabs"><span><svg class="ic"><use href="#i-home"/></svg>Home</span><span><svg class="ic"><use href="#i-orders"/></svg>Orders</span><span><svg class="ic"><use href="#i-map"/></svg>Map</span><span><svg class="ic"><use href="#i-chat"/></svg>Messages</span><span><svg class="ic"><use href="#i-user"/></svg>Account</span></div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <div class="wrap">
+  <section class="section" id="how">
+   <div class="panel">
+    <h2 class="title-rule">How Merkuri Works</h2>
+    <div class="steps">
+     <div class="step"><svg class="ic"><use href="#i-atom"/></svg><h3>1. Build</h3><p>Create your delivery operation with zones, services and pricing in minutes.</p></div>
+     <div class="step"><svg class="ic"><use href="#i-nodes"/></svg><h3>2. Connect</h3><p>Add couriers, merchants, fleets and independent delivery partners.</p></div>
+     <div class="step"><svg class="ic"><use href="#i-bolt"/></svg><h3>3. Deliver</h3><p>Accept orders, route quickly, capture proof and update customers.</p></div>
+     <div class="step"><svg class="ic"><use href="#i-bars"/></svg><h3>4. Scale</h3><p>Use analytics and RateSync to grow profitable local networks.</p></div>
+    </div>
+   </div>
+  </section>
+
+  <section class="grid-2" id="business">
+   <div class="panel">
+    <div class="netbox">
+     <div class="city">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:13px;letter-spacing:.1em">LIVE NETWORK</b><span class="live-dot">Live</span></div>
+      <select aria-label="City" data-city><option>Miami, FL</option><option>Fort Lauderdale, FL</option><option>West Palm Beach, FL</option></select>
+      <div class="stat-row"><svg class="ic"><use href="#i-user"/></svg>Active Couriers<b data-stat="couriers">1,248</b></div>
+      <div class="stat-row"><svg class="ic"><use href="#i-box"/></svg>Active Orders<b data-stat="orders">340</b></div>
+      <div class="stat-row"><svg class="ic"><use href="#i-check"/></svg>Completed Today<b data-stat="done">2,156</b></div>
+      <div class="stat-row"><svg class="ic"><use href="#i-clock"/></svg>On-time Delivery<b>98.7%</b></div>
+      <button class="btn" style="margin-top:14px" data-go="network">View Analytics</button>
+     </div>
+     <div class="map" data-map="home"></div>
+    </div>
+   </div>
+   <div class="panel gold-edge">
+    <h2 class="kicker" style="margin-bottom:18px">The Merkuri Advantage</h2>
+    <div class="adv">
+     <div class="adv-item"><svg class="ic"><use href="#i-user"/></svg><div><b>Independent Freedom</b><span>Couriers and fleets set their own rates and run their business their way.</span></div></div>
+     <div class="adv-item"><svg class="ic"><use href="#i-play"/></svg><div><b>Video-first Profiles</b><span>Customers see exactly who they're choosing before they book.</span></div></div>
+     <div class="adv-item"><svg class="ic"><use href="#i-route"/></svg><div><b>Real-time Visibility</b><span>Track every delivery from pickup to doorstep.</span></div></div>
+     <div class="adv-item"><svg class="ic"><use href="#i-shield"/></svg><div><b>SecurePay Escrow</b><span>Funds release only after proof of delivery and approval.</span></div></div>
+     <div class="adv-item"><svg class="ic"><use href="#i-code"/></svg><div><b>Open &amp; Extensible</b><span>APIs and tools for developers and merchants.</span></div></div>
+    </div>
+   </div>
+  </section>
+
+  <section class="section grid-2e" style="align-items:start">
+   <div class="screens" aria-label="App screens preview">
+    <div class="mini">
+     <h4>Orders</h4>
+     <div class="seg" style="justify-content:center;margin-bottom:10px;font-size:11px"><button class="on" style="padding:4px 8px;font-size:10px">New</button><button style="padding:4px 8px;font-size:10px">Accepted</button><button style="padding:4px 8px;font-size:10px">Done</button></div>
+     <div class="ord"><div class="r"><b>#1357</b><span class="muted">2.4 mi</span></div><div class="muted" style="margin:6px 0">Wynwood → Midtown</div><div class="r"><b style="font-size:16px">$12.45</b><span class="chip">Accept</span></div></div>
+     <div class="ord"><div class="r"><b>#1356</b><span class="muted">4.8 mi</span></div><div class="muted" style="margin:6px 0">Brickell → Coral Gables</div><div class="r"><b style="font-size:16px">$15.80</b><span class="chip">Accept</span></div></div>
+    </div>
+    <div class="mini">
+     <h4>Trip in Progress</h4>
+     <div style="flex:1;border-radius:10px;background:#081626;position:relative;overflow:hidden">
+      <svg viewBox="0 0 120 160" style="width:100%;height:100%"><path d="M25 25 C 60 40, 30 80, 70 95 S 95 140, 95 140" stroke="#f2c76b" stroke-width="2.5" fill="none" stroke-dasharray="4 3"/><circle cx="25" cy="25" r="5" fill="#f2c76b"/><circle cx="95" cy="140" r="5" fill="#f2c76b"/></svg>
+     </div>
+     <div style="display:flex;justify-content:space-between;margin:10px 0"><span><small class="muted">Earnings</small><br><b style="font-size:16px">$12.45</b></span><span style="text-align:right"><small class="muted">Time</small><br><b style="font-size:16px">24 min</b></span></div>
+     <span class="btn sm" style="min-height:32px">Navigate</span>
+    </div>
+    <div class="mini">
+     <h4>Proof of Delivery</h4>
+     <div class="proof-ph"><div class="box"></div></div>
+     <div class="shut"><svg class="ic sm"><use href="#i-flip"/></svg><i></i><span class="ring-ic" style="width:30px;height:30px;background:var(--gold);color:#000"><svg class="ic sm"><use href="#i-check"/></svg></span></div>
+    </div>
+   </div>
+   <div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px">
+     <div><h2 class="kicker">Compare Couriers</h2><p class="muted" style="margin-top:6px">See rates, video profiles and availability.</p></div>
+     <button class="btn line sm" data-go="couriers">View All</button>
+    </div>
+    <div class="cards" data-cards="home"></div>
+   </div>
+  </section>
+
+  <section class="grid-3">
+   <div class="panel">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><svg class="ic lg" style="color:var(--violet)"><use href="#i-bars"/></svg><div><b class="kicker" style="font-size:17px">Merkuri RateSync™</b><br><small class="muted">Real-time pricing intelligence</small></div></div>
+    <div class="rs-rows">
+     <div class="stat-row">Avg. Delivery<b>$8.45 <small class="ok">▲ 6.2%</small></b></div>
+     <div class="stat-row">Demand<b class="bad">High</b></div>
+     <div class="stat-row">Earnings Projection<b>$210 – $260/day</b></div>
+    </div>
+    <div class="heat" aria-hidden="true"></div>
+    <button class="btn line sm block" style="margin-top:12px" data-go="wallet">Open RateSync</button>
+   </div>
+   <div class="panel">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px"><svg class="ic lg gold"><use href="#i-lock"/></svg><div><b class="kicker" style="font-size:17px">SecurePay Escrow</b><br><small class="muted">Safe payments. Verified deliveries.</small></div></div>
+    <div class="flow" data-flow="home">
+     <div class="st done"><span class="ring-ic"><svg class="ic"><use href="#i-shield"/></svg></span>Order Placed</div><span class="arr">→</span>
+     <div class="st done"><span class="ring-ic"><svg class="ic"><use href="#i-lock"/></svg></span>Payment Held in Escrow</div><span class="arr">→</span>
+     <div class="st"><span class="ring-ic"><svg class="ic"><use href="#i-truck"/></svg></span>Delivery Completed</div><span class="arr">→</span>
+     <div class="st"><span class="ring-ic"><svg class="ic"><use href="#i-camera"/></svg></span>Funds Released</div>
+    </div>
+   </div>
+   <div class="panel">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px"><svg class="ic lg" style="color:var(--violet)"><use href="#i-handshake"/></svg><div><b class="kicker" style="font-size:17px">Courier Marketplace</b><br><small class="muted">Independent pricing. More opportunities.</small></div></div>
+    <div class="mkt">
+     <div><small>Open Requests</small><b data-stat="requests">24</b></div>
+     <div><small>Active Bids</small><b>12</b></div>
+     <div><small>Fleet Offers</small><b>8</b></div>
+     <button class="btn sm" data-act="request">Post a Request</button>
+    </div>
+   </div>
+  </section>
+
+  <section class="section" id="pricing">
+   <h2 class="title-rule">Plans</h2>
+   <div class="plans">
+    <div class="panel plan"><h3>Courier</h3><p class="muted">For independent drivers and riders.</p><div class="price">Free to join</div><ul><li><svg class="ic"><use href="#i-check"/></svg>Set your own rates</li><li><svg class="ic"><use href="#i-check"/></svg>Video profile &amp; reviews</li><li><svg class="ic"><use href="#i-check"/></svg>Proof camera &amp; escrow payouts</li><li><svg class="ic"><use href="#i-check"/></svg>RateSync market insights</li></ul><button class="btn ghost block" data-act="courier">Become a Courier</button></div>
+    <div class="panel plan feat"><span class="chip" style="margin-bottom:10px">MOST POPULAR</span><h3>Fleet</h3><p class="muted">Run a local delivery business.</p><div class="price">Custom</div><ul><li><svg class="ic"><use href="#i-check"/></svg>Zones, services &amp; pricing</li><li><svg class="ic"><use href="#i-check"/></svg>Dispatch &amp; live tracking</li><li><svg class="ic"><use href="#i-check"/></svg>Team &amp; payout management</li><li><svg class="ic"><use href="#i-check"/></svg>Analytics dashboard</li></ul><button class="btn block" data-act="fleet">Launch a Fleet</button></div>
+    <div class="panel plan"><h3>Business</h3><p class="muted">For merchants that ship locally.</p><div class="price">Pay per delivery</div><ul><li><svg class="ic"><use href="#i-check"/></svg>Compare &amp; choose couriers</li><li><svg class="ic"><use href="#i-check"/></svg>Scheduled &amp; bulk runs</li><li><svg class="ic"><use href="#i-check"/></svg>Proof-before-release escrow</li><li><svg class="ic"><use href="#i-check"/></svg>API access</li></ul><button class="btn ghost block" data-act="request">Post a Request</button></div>
+   </div>
+  </section>
+
+  <section class="grid-2e" id="developers">
+   <div class="panel">
+    <div class="panel-title"><h3>Developers</h3><span class="chip dim">API · Preview</span></div>
+    <p class="muted" style="margin-bottom:14px">Plug Merkuri into your storefront, POS or dispatch tools. Create deliveries, receive status webhooks and pull proof images.</p>
+<code class="blk">POST /v1/deliveries
+{
+  "pickup":  "Wynwood, Miami FL",
+  "dropoff": "Midtown, Miami FL",
+  "courier": "choose",        // or courier_id
+  "escrow":  true
+}</code>
+   </div>
+   <div class="panel" id="about">
+    <div class="panel-title"><h3>About Merkuri</h3></div>
+    <p style="line-height:1.7;color:#cfd5dc">Merkuri is delivery infrastructure built in South Florida for the people who actually move things — independent couriers, small fleets and local merchants. Customers keep the power of choice: compare real couriers, watch their videos, compare rates and pick who delivers. Payments sit in escrow until proof is captured.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><a class="btn line sm" href="privacy.html">Privacy Policy</a><a class="btn line sm" href="terms.html">Terms &amp; Conditions</a><button class="btn sm install-only" data-act="install"><svg class="ic sm"><use href="#i-download"/></svg>Install App</button></div>
+   </div>
+  </section>
+ </div>
+</section>
+
+<!-- ================= COURIERS ================= -->
+<section class="view" data-view="couriers">
+ <div class="wrap">
+  <div class="page-head"><div><h1>Compare Couriers</h1><p class="muted">Video-first profiles, independent pricing, secure escrow — your choice.</p></div></div>
+  <div class="toolbar">
+   <label class="field"><svg class="ic sm muted"><use href="#i-search"/></svg><input type="search" placeholder="Search name or specialty" data-q aria-label="Search couriers"></label>
+   <div class="seg" data-vehicle><button class="on" data-v="all">All</button><button data-v="bike">Bike</button><button data-v="scooter">Scooter</button><button data-v="car">Car</button><button data-v="van">Van</button></div>
+   <select class="sel" data-sort aria-label="Sort"><option value="rating">Top rated</option><option value="price">Lowest price</option><option value="eta">Fastest ETA</option></select>
+  </div>
+  <div class="cards" data-cards="all"></div>
+ </div>
+</section>
+
+<!-- ================= ORDERS ================= -->
+<section class="view" data-view="orders">
+ <div class="wrap">
+  <div class="page-head"><div><h1>Orders</h1><p class="muted">Accept, deliver, capture proof, get paid.</p></div><button class="btn sm" data-act="request"><svg class="ic sm"><use href="#i-plus"/></svg>New Request</button></div>
+  <div class="seg" data-otab style="margin-bottom:16px"><button class="on" data-t="new">New</button><button data-t="accepted">Accepted</button><button data-t="active">In Progress</button><button data-t="done">Completed</button></div>
+  <div class="list" data-olist></div>
+ </div>
+</section>
+
+<!-- ================= TRIP ================= -->
+<section class="view" data-view="trip">
+ <div class="wrap">
+  <div class="page-head"><div style="display:flex;gap:12px;align-items:center"><button class="iconbtn" data-go="orders" aria-label="Back"><svg class="ic"><use href="#i-back"/></svg></button><h1>Trip in Progress</h1></div><span class="chip ok">In Progress</span></div>
+  <div class="grid-2e">
+   <div class="panel"><div class="trip-map" data-tripmap></div></div>
+   <div class="panel" data-tripinfo></div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PROOF ================= -->
+<section class="view" data-view="proof">
+ <div class="wrap">
+  <div class="page-head"><div><h1>Proof of Delivery</h1><p class="muted">Pickup verification, package proof, damage reports and completed drops. Stored on this device.</p></div><button class="btn" data-act="camera"><svg class="ic"><use href="#i-camera"/></svg>Open Camera</button></div>
+  <div class="gallery" data-gallery></div>
+ </div>
+</section>
+
+<!-- ================= NETWORK ================= -->
+<section class="view" data-view="network">
+ <div class="wrap">
+  <div class="page-head"><div><h1>Live Network</h1><p class="muted">Courier density, active orders and completed deliveries.</p></div><span class="live-dot">Live</span></div>
+  <div class="grid-2" style="grid-template-columns:1fr 300px">
+   <div class="map" data-map="full" style="min-height:min(62vh,560px)"></div>
+   <div class="panel">
+    <div class="stat-row"><svg class="ic"><use href="#i-user"/></svg>Active Couriers<b data-stat="couriers">1,248</b></div>
+    <div class="stat-row"><svg class="ic"><use href="#i-box"/></svg>Active Orders<b data-stat="orders">340</b></div>
+    <div class="stat-row"><svg class="ic"><use href="#i-check"/></svg>Completed Today<b data-stat="done">2,156</b></div>
+    <div class="stat-row"><svg class="ic"><use href="#i-clock"/></svg>On-time Delivery<b>98.7%</b></div>
+    <h3 style="font-size:13px;letter-spacing:.12em;margin:20px 0 8px">BUSIEST ZONES</h3>
+    <div data-zones></div>
+    <p class="muted" style="font-size:12px;margin-top:14px">Sample data shown until your fleet is connected.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= WALLET ================= -->
+<section class="view" data-view="wallet">
+ <div class="wrap">
+  <div class="page-head"><div><h1>Wallet</h1><p class="muted">SecurePay escrow and RateSync™ pricing intelligence.</p></div></div>
+  <div class="bal">
+   <div class="panel"><small class="muted">Available</small><b data-bal="avail">$0.00</b></div>
+   <div class="panel"><small class="muted">Held in escrow</small><b data-bal="escrow">$0.00</b></div>
+   <div class="panel"><small class="muted">Completed deliveries</small><b data-bal="count">0</b></div>
+  </div>
+  <div class="grid-2e section">
+   <div class="panel">
+    <div class="panel-title"><h3>RateSync™</h3><span class="chip">Market intel</span></div>
+    <label class="lbl" for="myRate">Your flat rate</label>
+    <input class="inp" id="myRate" type="number" min="1" step="0.25" inputmode="decimal" data-myrate>
+    <div class="stat-row" style="margin-top:8px">Local average<b>$8.45</b></div>
+    <div class="stat-row">Competitiveness<b data-comp>—</b></div>
+    <div class="bar"><span data-compbar></span></div>
+    <div class="stat-row" style="margin-top:6px">Best time today<b class="ok">4PM – 7PM</b></div>
+    <div class="stat-row">Projected daily earnings<b data-proj>—</b></div>
+    <p class="muted" style="font-size:12px;margin-top:10px" data-advice></p>
+   </div>
+   <div class="panel">
+    <div class="panel-title"><h3>Activity</h3></div>
+    <div data-tx></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= MESSAGES ================= -->
+<section class="view" data-view="messages">
+ <div class="wrap">
+  <div class="page-head"><div><h1>Messages</h1><p class="muted">Chat with couriers and customers. Messages queue while offline.</p></div></div>
+  <div class="threads" data-threads>
+   <div class="panel tlist" data-tlist style="padding:10px"></div>
+   <div class="panel chat">
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px"><button class="iconbtn" data-act="closechat" aria-label="Back to threads" style="width:38px;height:38px"><svg class="ic sm"><use href="#i-back"/></svg></button><b data-chatname>Select a conversation</b></div>
+    <div class="msgs" data-msgs></div>
+    <form class="composer" data-composer><input class="inp" placeholder="Type a message" aria-label="Message" data-msgin><button class="btn" aria-label="Send"><svg class="ic"><use href="#i-send"/></svg></button></form>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= ACCOUNT ================= -->
+<section class="view" data-view="account">
+ <div class="wrap">
+  <div class="page-head"><div><h1>Account</h1><p class="muted" data-acctsub>Not signed in</p></div><button class="btn sm" data-act="start">Edit Profile</button></div>
+  <div class="grid-2e">
+   <div class="panel">
+    <div class="panel-title"><h3>I use Merkuri as</h3></div>
+    <div class="seg" data-role><button data-r="customer">Customer</button><button data-r="courier">Courier</button><button data-r="fleet">Fleet</button></div>
+    <div class="toggle"><span><b>Go online</b><br><small class="muted">Show me on the live network</small></span><button class="switch" data-sw="online" aria-label="Go online"></button></div>
+    <div class="toggle"><span><b>Notifications</b><br><small class="muted">Order and payout alerts</small></span><button class="switch" data-sw="notify" aria-label="Notifications"></button></div>
+    <div class="toggle"><span><b>Geotag proof photos</b><br><small class="muted">Attach location to delivery proof</small></span><button class="switch" data-sw="geotag" aria-label="Geotag"></button></div>
+   </div>
+   <div class="panel">
+    <div class="panel-title"><h3>App &amp; Legal</h3></div>
+    <button class="linkrow install-only" data-act="install"><svg class="ic gold"><use href="#i-download"/></svg>Install Merkuri<svg class="ic"><use href="#i-chev"/></svg></button>
+    <button class="linkrow" data-act="share"><svg class="ic gold"><use href="#i-share"/></svg>Share Merkuri<svg class="ic"><use href="#i-chev"/></svg></button>
+    <a class="linkrow" href="privacy.html"><svg class="ic gold"><use href="#i-shield"/></svg>Privacy Policy<svg class="ic"><use href="#i-chev"/></svg></a>
+    <a class="linkrow" href="terms.html"><svg class="ic gold"><use href="#i-doc"/></svg>Terms &amp; Conditions<svg class="ic"><use href="#i-chev"/></svg></a>
+    <button class="linkrow" data-act="export"><svg class="ic gold"><use href="#i-download"/></svg>Export my data<svg class="ic"><use href="#i-chev"/></svg></button>
+    <button class="linkrow" data-act="wipe" style="color:var(--bad)"><svg class="ic"><use href="#i-trash"/></svg>Delete my data<svg class="ic"><use href="#i-chev"/></svg></button>
+    <p class="muted" style="font-size:12px;margin-top:14px">Merkuri v<span data-ver></span> · Works offline</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+</main>
+
+<footer>
+ <div class="wrap">
+  <div><a class="brand" href="#/home" style="padding:0;margin-bottom:12px"><img src="img/logo-emblem.png" alt="" width="66" height="30"><span><b>MERKURI</b><small>THE ELEMENT OF DELIVERY</small></span></a><p style="max-width:300px;line-height:1.6">Delivery infrastructure for independent couriers, fleets and local businesses.</p></div>
+  <div><h4>Product</h4><a href="#/couriers">Compare Couriers</a><a href="#/orders">Orders</a><a href="#/proof">Proof Camera</a><a href="#/wallet">RateSync™</a></div>
+  <div><h4>Company</h4><a href="#/home" data-scroll="about">About</a><a href="#/home" data-scroll="pricing">Plans</a><a href="#/home" data-scroll="developers">Developers</a><a href="mailto:support@merkuri.app">Contact</a></div>
+  <div><h4>Legal</h4><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms &amp; Conditions</a><a href="privacy.html#deletion">Data Deletion</a></div>
+  <div class="legal-bar"><span>© <span data-year>2026</span> Merkuri. All rights reserved.</span><span>Miami, Florida · merkuri.app</span></div>
+ </div>
+</footer>
+
+<nav class="bottom-nav" aria-label="App">
+ <div class="wrap">
+  <button data-go="home" class="on"><svg class="ic"><use href="#i-home"/></svg>Home</button>
+  <button data-go="couriers" class="tab-wide"><svg class="ic"><use href="#i-box"/></svg>Couriers</button>
+  <button data-go="orders"><svg class="ic"><use href="#i-orders"/></svg>Orders<span class="badge" data-badge hidden>0</span></button>
+  <button data-go="proof"><svg class="ic"><use href="#i-camera"/></svg>Proof</button>
+  <button data-go="network"><svg class="ic"><use href="#i-map"/></svg>Network</button>
+  <button data-go="wallet" class="tab-wide"><svg class="ic"><use href="#i-wallet"/></svg>Wallet</button>
+  <button data-go="messages" class="tab-wide"><svg class="ic"><use href="#i-chat"/></svg>Messages</button>
+  <button data-go="account"><svg class="ic"><use href="#i-user"/></svg>Account</button>
+  <button class="install-tab install-only tab-wide" data-act="install"><svg class="ic"><use href="#i-download"/></svg><span>Install App</span></button>
+ </div>
+</nav>
+
+<!-- Drawer -->
+<div class="drawer" data-drawer>
+ <div class="scrim" data-act="drawer"></div>
+ <nav aria-label="Menu">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><img src="img/logo-emblem.png" alt="Merkuri" style="width:80px"><button class="iconbtn" data-act="drawer" aria-label="Close menu"><svg class="ic"><use href="#i-x"/></svg></button></div>
+  <a href="#/home"><svg class="ic"><use href="#i-home"/></svg>Home</a>
+  <a href="#/couriers"><svg class="ic"><use href="#i-box"/></svg>Compare Couriers</a>
+  <a href="#/orders"><svg class="ic"><use href="#i-orders"/></svg>Orders</a>
+  <a href="#/proof"><svg class="ic"><use href="#i-camera"/></svg>Proof Camera</a>
+  <a href="#/network"><svg class="ic"><use href="#i-map"/></svg>Live Network</a>
+  <a href="#/wallet"><svg class="ic"><use href="#i-wallet"/></svg>Wallet &amp; RateSync</a>
+  <a href="#/messages"><svg class="ic"><use href="#i-chat"/></svg>Messages</a>
+  <a href="#/account"><svg class="ic"><use href="#i-user"/></svg>Account</a>
+  <hr style="border:0;border-top:1px solid var(--line2);width:100%;margin:8px 0">
+  <a href="privacy.html"><svg class="ic"><use href="#i-shield"/></svg>Privacy Policy</a>
+  <a href="terms.html"><svg class="ic"><use href="#i-doc"/></svg>Terms &amp; Conditions</a>
+  <button class="btn install-only" style="margin-top:auto" data-act="install"><svg class="ic"><use href="#i-download"/></svg>Install App</button>
+ </nav>
+</div>
+
+<!-- Modal -->
+<div class="modal" data-modal role="dialog" aria-modal="true">
+ <div class="modal-card">
+  <div class="mh"><h2 data-mtitle></h2><button class="iconbtn" data-act="close" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button></div>
+  <div data-mbody></div>
+ </div>
+</div>
+
+<!-- Camera -->
+<div class="camera" data-camera>
+ <video playsinline autoplay muted></video>
+ <img class="still" alt="Captured proof">
+ <canvas hidden></canvas>
+ <div class="flashfx"></div>
+ <div class="cam-err"><div><svg class="ic xl" style="margin:0 auto 12px"><use href="#i-camera"/></svg><p style="margin-bottom:16px">Camera access isn't available. You can still attach a photo.</p><label class="btn">Choose photo<input type="file" accept="image/*" capture="environment" hidden data-fileproof></label></div></div>
+ <div class="cam-top">
+  <button class="cam-btn" data-cam="close" aria-label="Close camera"><svg class="ic"><use href="#i-x"/></svg></button>
+  <button class="cam-btn" data-cam="torch" aria-label="Flash"><svg class="ic"><use href="#i-bolt"/></svg></button>
+  <button class="cam-btn" data-cam="geo" aria-label="Geotag"><svg class="ic"><use href="#i-pin"/></svg></button>
+ </div>
+ <div class="cam-mode" role="group" aria-label="Proof type">
+  <button class="on" data-kind="delivery" aria-label="Delivery proof"><svg class="ic sm"><use href="#i-box"/></svg></button>
+  <button data-kind="pickup" aria-label="Pickup verification"><svg class="ic sm"><use href="#i-scan"/></svg></button>
+  <button data-kind="damage" aria-label="Damage report"><svg class="ic sm"><use href="#i-dmg"/></svg></button>
+ </div>
+ <div class="cam-stamp" data-stamp></div>
+ <div class="cam-bottom">
+  <button class="cam-btn" data-cam="flip" aria-label="Switch camera"><svg class="ic"><use href="#i-flip"/></svg></button>
+  <button class="shutter" data-cam="shoot" aria-label="Capture photo"></button>
+  <button class="cam-btn" data-cam="save" aria-label="Use photo" disabled><svg class="ic"><use href="#i-check"/></svg></button>
+ </div>
+</div>
+
+<div class="toast" data-toast role="status" aria-live="polite"></div>
+
+<noscript><p style="padding:20px">Merkuri needs JavaScript to run.</p></noscript>
+<script src="app.js" defer></script>
+</body>
+</html>

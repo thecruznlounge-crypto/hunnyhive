@@ -1,0 +1,3063 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>InvoiceTally Go — Enterprise+</title>
+<meta name="theme-color" content="#0f172a"/>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png"/>
+<link rel="preconnect" href="https://fonts.gsoogleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<link rel="stylesheet" href="mobile-responsive.css">
+<style>
+:root{--bg:#0f172a;--panel:#1e293b;--line:#334155;--text:#f1f5f9;--muted:#94a3b8;--accent:#3b82f6}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--text)}
+.wrap{max-width:1200px;margin:24px auto;padding:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.3);margin-bottom:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>div{flex:1;min-width:200px}
+.inline{display:flex;gap:8px;flex-wrap:wrap}
+label{display:block;font-size:12px;color:var(--muted);margin:6px 0}
+input,button,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#0f172a;color:var(--text);font-family:inherit}
+button{cursor:pointer;font-weight:700}.btn{background:var(--accent);color:#fff;border:0}
+.btn-secondary{background:#64748b;color:#fff;border:0}.btn-danger{background:#ef4444;color:#fff;border:0}
+.btn-success{background:#22c55e;color:#fff;border:0}.btn-ghost{background:transparent;border:1px solid var(--line)}
+.muted,.small{color:var(--muted);font-size:14px}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#1e3a8a;border:1px solid var(--line);font-size:12px;font-weight:600}
+.timer{font-size:32px;font-weight:800;margin:8px 0;color:var(--accent)}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tab{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);cursor:pointer;color:var(--text)}
+.tab.active{background:var(--accent);color:#fff}
+.hidden{display:none!important}
+#map{height:340px;border-radius:12px;border:1px solid var(--line);margin-top:6px}
+#miniMap{height:150px;border-radius:8px;border:1px solid var(--line);margin-top:6px;cursor:pointer}
+#toast{position:fixed;right:16px;bottom:16px;z-index:9999;display:none;background:#111d;color:#fff;padding:10px 14px;border-radius:10px;backdrop-filter:blur(6px)}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;font-size:14px}
+th{color:var(--muted);font-weight:600;background:rgba(0,0,0,0.2)}
+.status-paid{color:#22c55e;font-weight:600}
+.status-unpaid{color:#f59e0b;font-weight:600}
+.status-partial{color:#3b82f6;font-weight:600}
+h1,h2{margin:0 0 8px;font-weight:700}
+h1{font-size:24px}h2{font-size:18px;margin-top:16px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.kpi .card{text-align:center;padding:16px}
+.kpi .value{font-size:28px;font-weight:800;color:var(--accent)}
+.eta{color:var(--accent);font-weight:600;margin-top:6px}
+.stop-list{margin:10px 0;max-height:120px;overflow-y:auto}
+.stop-item{background:rgba(59,130,246,0.1);border:1px solid var(--line);border-radius:8px;padding:8px;margin:4px 0;display:flex;justify-content:space-between;align-items:center}
+#fullOverlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:10000}
+#fullMap{width:100%;height:calc(100vh - 60px)}
+.fullControls{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px;background:rgba(0,0,0,0.8);padding:10px;border-radius:12px;backdrop-filter:blur(10px)}
+.wm{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.6);color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;backdrop-filter:blur(4px)}
+#mapWatermark,#mapWatermarkFull{display:block}
+.mt-6{margin-top:6px}.mt-10{margin-top:10px}
+.between{justify-content:space-between}
+.invoice-footer-brand{margin-top:16px;display:flex;align-items:center;gap:10px}
+.invoice-footer-brand img{height:32px}
+#ocrCanvas{max-width:100%;border:1px solid var(--line);margin:10px 0;display:none}
+@media(max-width:768px){
+.wrap{padding:8px;margin:12px auto}
+.row{flex-direction:column}
+.row>div{min-width:100%}
+.tabs{overflow-x:auto;flex-wrap:nowrap}
+.kpi{grid-template-columns:1fr 1fr}
+#map{height:250px}
+table{font-size:12px}
+th,td{padding:6px}
+#itemsTable{max-height:300px !important}
+#bookingsList{max-height:400px !important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" data-tab="job">Job</div>
+      <div class="tab" data-tab="customers">Customers</div>
+      <div class="tab" data-tab="items">Inventory</div>
+      <div class="tab" data-tab="integrations">Integrations</div>
+      <div class="tab" data-tab="payments">Payments</div>
+      <div class="tab" data-tab="receivables">Receivables</div>
+      <div class="tab" data-tab="history">History</div>
+      <div class="tab" data-tab="settings">Settings</div>
+      <div class="tab" data-tab="ocr">OCR</div>
+    <div class="tab" data-tab="bookings">Bookings</div>
+    <div class="tab" data-tab="calendar">Calendar</div>
+    </div>
+    <section id="tab-job">
+      <div class="quick-start">
+        <div>
+          <h1 class="h1"><span id="brandName">InvoiceTally Go</span></h1>
+          <p class="muted">Multi-stop routing • GPS tracking • KPI dashboard • PDF generation • Full invoice management</p>
+          <h2>Customer Details</h2>
+          <div class="row">
+            <div>
+              <label>Client (saved)</label>
+              <div class="inline">
+                <select id="clientSelect"></select>
+                <button id="saveClient" class="btn-secondary" type="button">Save Client</button>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div><label>Client Name</label><input id="clientName" placeholder="Client LLC"></div>
+            <div><label>Client Email</label><input id="clientEmail" placeholder="ap@client.com"></div>
+            <div><label>Client Phone</label><input id="clientPhone" placeholder="(555) 555-5555"></div>
+          </div>
+          <!-- Quick Invoice Generator -->
+<h2>Quick Invoice Generator <span class="badge">NEW</span></h2>
+<p class="muted">Create invoice without starting job</p>
+<div class="row">
+  <div><label>Client Name</label><input id="quickInvoiceClient" type="text" placeholder="Customer name"></div>
+  <div><label>Invoice Amount ($)</label><input id="prepaidAmount" type="number" step="0.01" placeholder="0.00"></div>
+</div>
+<div class="row">
+  <div><label>Service Description</label><input id="prepaidDesc" placeholder="e.g., 4-hour charter on 12/25"></div>
+  <div>
+    <label>Payment Type</label>
+    <select id="quickInvoicePaymentType">
+      <option value="postpaid">Post-Paid (Invoice after service)</option>
+      <option value="prepaid">Pre-Paid (Payment required)</option>
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div style="padding-top:24px;"><button id="createPrepaidBtn" class="btn-success">Create Invoice</button></div>
+</div>
+          <h2>Job Pricing</h2>
+          <div class="row">
+            <div><label>Base Rate ($/hr)</label><input id="rateHourly" type="number" value="100" min="0" step="0.01"></div>
+            <div><label>Scheduled Duration (hours)</label><input id="scheduledHours" type="number" value="2" min="0" step="0.25"></div>
+          </div>
+          <div class="row">
+  <div>
+    <label>Payment Type</label>
+    <select id="paymentType">
+      <option value="postpaid">Post-Paid (Invoice after service)</option>
+      <option value="prepaid">Pre-Paid (Payment before service)</option>
+      <option value="deposit">Deposit Required</option>
+    </select>
+  </div>
+  <div>
+    <label>Client Type</label>
+    <select id="clientType">
+      <option value="business">Business/Company</option>
+      <option value="individual">Individual/Personal</option>
+    </select>
+  </div>
+</div>
+          <div class="row">
+            <div><label>Deposit Type</label><select id="depositType"><option value="fixed">$ Fixed</option><option value="percent">% Percent</option></select></div>
+            <div><label>Deposit Amount</label><input id="deposit" type="number" value="0" min="0" step="0.01"></div>
+            <div><label>Discount Type</label><select id="discountType"><option value="fixed">$ Fixed</option><option value="percent">% Percent</option></select></div>
+            <div><label>Discount Amount</label><input id="discountValue" type="number" value="0" min="0" step="0.01"></div>
+          </div>
+          <div class="row">
+            <div><label>Tax Type</label><select id="taxType"><option value="percent">% Percent</option><option value="fixed">$ Fixed</option></select></div>
+            <div><label>Tax Amount</label><input id="taxValue" type="number" value="0" min="0" step="0.01"></div>
+            <div><label>Gratuity Type</label><select id="gratuityType"><option value="percent">% Percent</option><option value="fixed">$ Fixed</option></select></div>
+            <div><label>Gratuity Amount</label><input id="gratuityValue" type="number" value="0" min="0" step="0.01"></div>
+          </div>
+          <h2>Add Line Items</h2>
+          <div class="row">
+            <div>
+              <label>Select Item/Service</label>
+              <select id="itemSelector">
+                <option value="">-- Select Item --</option>
+              </select>
+            </div>
+            <div>
+              <label>Quantity</label>
+              <input id="itemQty" type="number" value="1" min="1">
+            </div>
+            <div style="padding-top:24px">
+              <button id="addItemToInvoice" class="btn">Add to Invoice</button>
+            </div>
+          </div>
+          <div id="invoiceItemsList" class="mt-10"></div>
+          <div class="row">
+            <div>
+              <label>Grace Period</label>
+              <select id="gracePeriod">
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="0">Waived (No grace)</option>
+              </select>
+            </div>
+            <div>
+              <label>Scheduled Pickup Time</label>
+              <input id="scheduledPickup" type="datetime-local">
+            </div>
+            <div>
+              <label>Company Logo (Optional)</label>
+              <input id="logoUpload" type="file" accept="image/*">
+            </div>
+          </div>
+          <div class="row">
+            <div><label>Notes / Memo</label><input id="jobMemo" placeholder="Job notes"></div>
+            <div><label>Terms & Conditions</label><input id="jobTerms" placeholder="Payment terms"></div>
+          </div>
+          
+          <h2>GPS & Route Management</h2>
+          <div class="row">
+            <div><label><input id="useGPS" type="checkbox"> Track GPS</label></div>
+            <div><button id="centerBtn" class="btn-secondary" type="button">Center on Me: ON</button></div>
+            <div>
+              <label>Geofence Radius (m)</label>
+              <input id="geoRadius" type="number" min="25" max="200" value="50">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>New stop (full address: 123 Main St, Miami, FL 33101)</label>
+              <div class="inline">
+                <input id="newStopAddr" placeholder="Full address or City, State">
+                <button id="addStopBtn" type="button" class="btn">Add Stop</button>
+                <button id="clearStopsBtn" type="button" class="btn-ghost">Clear Stops</button>
+                <button id="routeBtn" type="button" class="btn-secondary">Directions & ETA</button>
+                <button id="expandMapBtn" type="button" class="btn-ghost">🗖 Expand Map</button>
+              </div>
+              <div class="eta" id="etaLabel">ETA: —</div>
+            </div>
+          </div>
+          <div class="stop-list" id="stopList"></div>
+
+          <div id="mapWrap">
+            <div id="map"></div>
+            <div id="mapWatermark" class="wm"><span>InvoiceTally</span></div>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="timer" id="timer">00:00:00</div>
+            <div id="jobMeta" class="muted"></div>
+            <div class="inline">
+              <button id="startBtn" class="btn">Start Job</button>
+              <button id="pauseBtn" style="display:none" class="btn-secondary">Pause</button>
+              <button id="resumeBtn" style="display:none" class="btn">Resume</button>
+              <button id="endBtn" style="display:none;background:#ef4444;border:0;color:#fff">End Job</button>
+              <button id="resetBtn" style="display:none" class="btn-ghost">Reset</button>
+              <button id="sendInvoiceBtn" style="display:none" class="btn">Send Invoice</button>
+              <button id="downloadPdfBtn" style="display:none" class="btn-success">Download PDF</button>
+              <button id="saveInvoiceBtn" style="display:none" class="btn-secondary">Save Invoice</button>
+            </div>
+
+            <div id="invoicePreview" class="hidden">
+              <div class="inline between">
+                <strong>Invoice Preview</strong>
+                <div class="inline" style="gap:6px">
+                  <input id="invoiceIdOverride" placeholder="Set Invoice # (optional)" style="width:220px">
+                  <button id="applyInvoiceId" class="btn-secondary">Apply</button>
+                </div>
+              </div>
+              <div id="invoicePreviewBody" class="muted"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="card">
+            <div>Today Jobs</div>
+            <div class="value" id="todayJobs">0</div>
+          </div>
+          <div class="card">
+            <div>Unpaid</div>
+            <div class="value" id="unpaidCount">0</div>
+          </div>
+          <div class="card">
+            <div>Revenue (7d)</div>
+            <div class="value" id="revenue7d">$0</div>
+          </div>
+          <div class="card">
+            <div>Distance (7d)</div>
+            <div class="value" id="distance7d">0 mi</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-customers" class="hidden">
+      <div class="badge">Customer Archive</div>
+      <table id="customersTable">
+        <thead><tr><th>Name</th><th>Email</th><th>Total Invoiced</th><th>Outstanding</th><th>Actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+<section id="tab-items" class="hidden">
+  <iframe src="inventory-manager.html" style="width:100%;height:calc(100vh - 180px);border:none;border-radius:8px"></iframe>
+</section>
+
+<!-- Inventory Modal -->
+<div id="inv_itemModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;margin:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <h2 id="inv_modalTitle" style="font-size:22px;font-weight:700">Add Item</h2>
+      <button onclick="invCloseModal()" style="background:none;border:none;color:var(--muted);font-size:32px;cursor:pointer;padding:0;line-height:1">&times;</button>
+    </div>
+
+    <form id="inv_itemForm" onsubmit="invSaveItem(event)">
+      <input type="hidden" id="inv_itemId">
+
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px">Item Type *</label>
+        <select id="inv_itemType" required style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)">
+          <option value="">Select type...</option>
+          <option value="vehicle">Vehicle</option>
+          <option value="service">Service</option>
+          <option value="addon">Add-on</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px">Name *</label>
+        <input type="text" id="inv_itemName" placeholder="e.g., Party Bus Premium" required style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px">Description</label>
+        <textarea id="inv_itemDescription" placeholder="Detailed description..." style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);resize:vertical;min-height:100px"></textarea>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px">Hourly Rate ($)</label>
+        <input type="number" id="inv_itemHourlyRate" step="0.01" min="0" placeholder="150.00" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px">Transfer Rate ($)</label>
+        <input type="number" id="inv_itemTransferRate" step="0.01" min="0" placeholder="200.00" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px">Capacity (passengers)</label>
+        <input type="number" id="inv_itemCapacity" min="1" placeholder="20" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)">
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" id="inv_itemBookable" style="width:auto">
+          <span style="margin:0">Available for booking</span>
+        </label>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:8px">Media Gallery (Up to 10 photos/videos, 50MB total)</label>
+        <div style="background:rgba(59,130,246,0.1);border:1px solid var(--accent);border-radius:8px;padding:12px;margin:12px 0;font-size:13px;color:var(--muted)">
+          📸 Upload files or paste YouTube/image URLs
+        </div>
+        
+        <div style="margin-bottom:16px">
+          <input type="text" id="inv_mediaURL" placeholder="YouTube URL or https://..." style="width:calc(100% - 120px);padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text)">
+          <button type="button" onclick="invAddMediaURL()" style="padding:12px 20px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;margin-left:8px">+ Add URL</button>
+        </div>
+        
+        <div id="inv_mediaUpload" onclick="document.getElementById('inv_mediaInput').click()" style="border:2px dashed var(--line);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(15,23,42,0.3)">
+          <div style="font-size:48px;margin-bottom:12px;opacity:0.5">📁</div>
+          <div style="color:var(--muted);font-size:14px;margin-bottom:4px">Click or drag files here</div>
+          <div style="font-size:12px;color:var(--muted)"><span id="inv_mediaCount">0</span>/10 files | <span id="inv_totalSize">0</span> MB / 50 MB</div>
+        </div>
+        <input type="file" id="inv_mediaInput" accept="image/*,video/*" multiple style="display:none" onchange="invHandleMediaUpload(this.files)">
+        <div id="inv_mediaPreviews" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px;margin-top:16px"></div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:24px">
+        <button type="button" onclick="invCloseModal()" style="flex:1;padding:12px 20px;border-radius:8px;background:var(--panel);color:var(--text);border:1px solid var(--line);cursor:pointer">Cancel</button>
+        <button type="submit" style="flex:1;padding:12px 20px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer">Save Item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<section id="tab-integrations" class="hidden">
+      <div class="badge">Google Integrations</div>
+      <p class="small">Set <code>/config/integrations.json</code> before using.</p>
+      <div class="row">
+        <div><button id="googleSignIn" class="btn">Sign in with Google</button></div>
+        <div><button id="loadCalendar" class="btn-secondary">Load Next Events</button></div>
+        <div><button id="scanGmail" class="btn-secondary">Scan Reservation Emails</button></div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Upcoming Events</label>
+          <select id="calendarEvents"></select>
+          <button id="useEvent" class="btn">Use Selected Event</button>
+        </div>
+        <div>
+          <label>Parsed Email Snippet</label>
+          <textarea id="emailSnippet" placeholder="Email summary will appear here..."></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-payments" class="hidden">
+      <div class="badge">Stripe Payment</div>
+      <div class="row">
+        <div><label>Base Payment Link</label><input id="paymentLink" placeholder="https://buy.stripe.com/test_..."></div>
+        <div><label>Amount (USD)</label><input id="payAmount" type="number" value="0" min="0" step="0.01"></div>
+        <div><label>Description</label><input id="payDesc" placeholder="Deposit for Job #123"></div>
+      </div>
+      <div class="inline"><button id="payNow" class="btn">Open Payment</button></div>
+    </section>
+
+    <section id="tab-receivables" class="hidden">
+      <div class="badge">Outstanding Receivables</div>
+      <div class="row">
+        <div><label>Filter by Customer</label><select id="receivablesFilter" onchange="loadReceivables()"><option value="">All Customers</option></select></div>
+        <div><div class="badge" style="margin-top:20px">Total Outstanding: <strong id="totalOutstanding">$0.00</strong></div></div>
+      </div>
+      <table id="receivablesTable">
+        <thead><tr><th>Invoice #</th><th>Client</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="tab-history" class="hidden">
+      <h2>Invoice History</h2>
+      <div id="historyList"></div>
+    </section>
+
+    <section id="tab-settings" class="hidden">
+      <h2>Company Settings</h2>
+      <div class="row">
+        <div><label>Company Name</label><input id="settingCompanyName" placeholder="Your Company LLC"></div>
+        <div><label>Phone</label><input id="settingPhone" placeholder="(555) 123-4567"></div>
+      </div>
+      <div class="row">
+        <div><label>Address</label><input id="settingAddress" placeholder="123 Main St"></div>
+        <div><label>City, State ZIP</label><input id="settingCityState" placeholder="Miami, FL 33101"></div>
+      </div>
+      <div class="row">
+        <div><label>Your Brand Name</label><input id="settingBrand" placeholder="InvoiceTally Go"></div>
+        <div><label>Your Logo URL</label><input id="settingLogo" placeholder="https://..."></div>
+      </div>
+      <div class="row">
+        <div>
+          <label><input id="settingIncludeMap" type="checkbox"> Include Live Map in PDF</label>
+        </div>
+        <div>
+          <label>Or Upload Map Screenshot</label>
+          <input id="mapScreenshot" type="file" accept="image/*">
+        </div>
+      </div>
+      <button id="saveSettings" class="btn">Save Settings</button>
+    </section>
+
+    <section id="tab-ocr" class="hidden">
+      <h2>OCR Receipt Scanner</h2>
+      <p class="muted">Upload receipt images to extract text and auto-populate fields</p>
+      <div class="row">
+        <div>
+          <label>Upload Receipt Image</label>
+          <input id="ocrImageUpload" type="file" accept="image/*">
+        </div>
+      </div>
+      <button id="processOCR" class="btn">Process Image</button>
+      <canvas id="ocrCanvas"></canvas>
+      <div id="ocrResult" class="mt-10"></div>
+    </section>
+    <section id="tab-bookings" class="hidden">
+  <h2>Pending Bookings</h2>
+  <p class="muted">Customer booking inquiries from the booking form</p>
+  <div style="margin-bottom:12px">
+    <button id="refreshBookings" class="btn-secondary">🔄 Refresh Bookings</button>
+  </div>
+  <div id="bookingsList" style="max-height:600px;overflow-y:auto"></div>
+  
+  <!-- Edit Booking Modal -->
+  <div id="editBookingModal" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+    <div class="card" style="max-width:600px;width:100%;max-height:90vh;overflow-y:auto">
+      <h2>Edit Booking</h2>
+      <div class="row">
+        <div><label>Customer Name</label><input id="editBookingName"></div>
+        <div><label>Email</label><input id="editBookingEmail"></div>
+      </div>
+      <div class="row">
+        <div><label>Phone</label><input id="editBookingPhone"></div>
+        <div><label>Date</label><input id="editBookingDate" type="date"></div>
+      </div>
+      <div class="row">
+        <div><label>Pickup Time</label><input id="editBookingTime" type="time"></div>
+        <div><label>Hours</label><input id="editBookingHours" type="number" step="0.5"></div>
+      </div>
+      <div class="row">
+        <div><label>Quote Amount ($)</label><input id="editBookingQuote" type="number" step="0.01"></div>
+        <div><label>Vehicle</label><input id="editBookingVehicle" readonly style="background:rgba(59,130,246,0.1)"></div>
+      </div>
+      <div class="row">
+        <div><label>Status</label>
+          <select id="editBookingStatus">
+            <option value="pending">Pending</option>
+            <option value="quoted">Quoted</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- Full Itinerary Section -->
+      <div style="margin-top:20px;padding-top:20px;border-top:2px solid var(--line)">
+        <h3 style="margin-bottom:12px">Full Itinerary</h3>
+        <div id="editBookingItinerary" style="background:rgba(15,23,42,0.4);padding:12px;border-radius:8px;max-height:300px;overflow-y:auto">
+          <!-- Itinerary will be populated by JavaScript -->
+        </div>
+      </div>
+      
+      <div class="inline" style="margin-top:16px;gap:8px">
+        <button class="btn" onclick="saveBookingEdit()">Save Changes</button>
+        <button class="btn-secondary" onclick="sendQuoteEmail()">Send Quote Email</button>
+        <button class="btn-ghost" onclick="closeEditBooking()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Calendar Tab -->
+<section id="tab-calendar" class="hidden">
+  <h2>📅 Booking Calendar</h2>
+  <p class="muted">View all bookings in calendar format</p>
+  <div style="margin-top:20px">
+    <iframe src="booking-calendar.html" style="width:100%;height:800px;border:1px solid var(--line);border-radius:12px"></iframe>
+  </div>
+</section>
+  </div>
+</div>
+
+<div id="fullOverlay" class="hidden">
+  <div id="fullMap"></div>
+  <div id="mapWatermarkFull" class="wm"><span>InvoiceTally</span></div>
+  <div class="fullControls">
+    <button id="closeFullMap" class="btn">Close</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<audio id="beep" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBi+K0fPTgjMGHm7A7+OZTA0PVKjn8LJiHAU7k9nyyXksBSh+zPLZjjwJElyw6OumUxELRJzf8sNqIwYug8/z2IU1CBlnt+3lnkoODlKm5O+2Yh0FO5LZ88p5LAUpf8zy2Y49CRFbsOjrplMRC0Sc3/LDaiMGLoHP89eFNQgZZ7fs5p5KDw5SpuXvtmEeBDqS2fPKeS0EKYDL8tiOPAkRW6/o66dTEQtEnN/yw2sjBi6Bz/PXhTUIF2e37OaeSg8OUqbl77dnHwQ6ktnyy3ktBSh/y/PYjj0JEVuv6OunUxILQ5zf8sNrJAUugc/z14Y2Bhhmtuzmn0oOD1Gm5e+2Zh8EO5HZ88p5LgUof8vy2I49CRBcsOjrp1MSC0Oc3/PDaiQGL4HP89eGNgYYZ7bs5Z9KDQ9Qpubvtmg4BAo6j9ryx3osBSh/y/HYjz0JEVqv6OynVBELQ5vg88NrJAUugc/y14c2BhlmtuzmoBENCVCl5+61ZxwGPJHY8sp6LAQof8rx2JA9CRBbr+jsqFMSC0Ob4PPDayUGLoHP8deHNgYYZrXs5qASC0VO5u60ZyQEOpHX8st6LQUpgMvx2JA9CRBZr+jsqFQRC0Sa4PPDayYGL4Dv8teHNwYYZrXs5qEQCg5Npu7usGgdBDuQ1/PLey0FKn/K8diPPgkPWa/o7KhTEgtDm+Dzw2wohi6Az/LXhzcFFma17OagEAoOTabt7rBpHgM7j9fzy3suBSp/yvHYjz4JD1iv6Oyok0EcBTqR1/LLfC0FKn/K8Niv98kQDU2m7u6waBwEO4/X88t8LgUqgMrx2I4+CRZX0O/ppE8TC0Kb4fPCaiYGLoDO8deJNwYYZbPs559KDQhOpu/utGccBT2Q1fPKfSoGKn7K8diOPQkRV6/n7ahVEQpEm+Hzw2snBi+Azvf7jTYGF2W07OafSg0FS6ru7rBlHQQ9kdX0y30tBSp+yvDYjz4JEVev5+2oVBEKRJvg88NrJwYvgM7y2Ig2BhdltOzmn0oMBkmq7+6wZRwFPZHV9Mt9LgUqfsrw2I8+CRJXr+ftqFQRCkWb4PPDayYGLoHP89aHNgYZZbTs5qASDAVJp+/usmYdBTyR1fPLfS4FKn7K8NiQPwkRV6/n7ahUEQpEm+Dzw2smBi6Az/LXhzcGGGa07OagEgsHUKfu7LBlHAU8kNXzy30tBSl+yvDYjj0IEVev6O2pVBEKRJvg88NrJgYugM/y14c3BhdltO3mn0oDCE+m7u+wZhwFO5DV88t9LQUpfsrw2I8+CRFXr+jtqFQRCkSa4PPCayYGLoDO8teHNwYXZbTs5p9KAwdQpu7usGUcBjuQ1fTKfS0FKX7K8NiOPgkRV6/o7ahVEApEmN/yw2smBi+Azv7vH0oBB1Cl7u6wZh0FO5DV88t9LQUqfsrw2I4+CRFXr+jtqFQRCkSa4PPDayYGLoDP8teHNwYYZbTs5p9KAwdQpu7usGUcBjuP1fTLfC0FKH7K8NiOPgkRV6/o7alUEApEmODywmsmBi6Azv/fhzcGGGW07OafSgMHUKXu7rBmHQU7j9Xzy3wtBSl+yPDYjz4JEFew6O2pVBEKRJjg88NrJgYugM/y14Y3BhhltOzmoBAKB06l7u6wZhwFOo/V9Mt8LQUpfsjw2I89CRBXsOjtqVQRCkSY4PPDayYGLoDP8teGNwYYZbTs5qAQCgdOpe7usGYcBTqP1fTLfC0FKX7I8NiPPQkQV7Do7alUEQpEl+DzwmomBi6Az/LXhjcGGGW07OagEAoHTqXt77BnHAU6j9Xzy3suBSl9yPDYjz0IEFev6O2oVRIJRJfg88JrJQYugM/y14Y3BhhltOzmoBEKBk+k7e6xZx4EPY/V88t8LQUpfcjw2I49CBBWr+jtqVURCkSY4PO/XycGL4DPvtmOPwkSVa/n7qhTFApDl+Dzw2smBi+Az/LXhjcGF2a07OagEAoHTaXt7rBlHQU5j9X0y3stBil9x/DYjz4JEFev6O2oVRIKRJfg88NrJQYugM/y14Y3BhhltOzloBEKBk2k7u+wZRwFOY/V9Mt7LQUpfcjw2I49CBBXr+jtqFUSCkSY4PPDaiYGLoDP8teGNwYYZbTs5qARCgZNpO7vsGUcBTmP1fTLfC0FKH3H8NiPPwkQVq/o7ahVEwpEl+Dzw2smBi6Az/LWhTcGGGW07OafEQoGTqTu77BkGwU6kNXzy3wtBSh9x/DYjz4IEFav6O2oVBMKRJfg88NrJQYugM/y1oU3BhhltOzmn0oPBk6k7++wZRsFOpDV9Mt7LQUpfcfw2I89CBBWr+jtqFQTCkSX4PDDa" preload="auto"></audio>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    // Database
+const DB={
+    
+customers:JSON.parse(localStorage.getItem('tge_customers')||'[]'),
+items:JSON.parse(localStorage.getItem('tge_items')||'[]'),
+invoices:JSON.parse(localStorage.getItem('tge_invoices')||'[]'),
+settings:JSON.parse(localStorage.getItem('tge_settings')||'{}'),
+save(){
+localStorage.setItem('tge_customers',JSON.stringify(this.customers));
+localStorage.setItem('tge_items',JSON.stringify(this.items));
+localStorage.setItem('tge_invoices',JSON.stringify(this.invoices));
+localStorage.setItem('tge_settings',JSON.stringify(this.settings));
+},
+// Load items from inventory-manager and merge with local items
+loadInventoryItems(){
+  const inventoryItems = JSON.parse(localStorage.getItem('tge_inventory_items')||'[]');
+  // Add inventory items to DB.items if they don't already exist
+  inventoryItems.forEach(invItem => {
+    const exists = this.items.find(item => item.id === invItem.id);
+    if(!exists) {
+      // Convert inventory item format to DB item format
+      this.items.push({
+        id: invItem.id,
+        name: invItem.name,
+        desc: invItem.description || '',
+        price: parseFloat(invItem.hourlyRate) || 0,
+        hourlyRate: parseFloat(invItem.hourlyRate) || 0,
+        category: 'vehicle',
+        capacity: invItem.capacity,
+        createdFrom: 'inventory-manager'
+      });
+    }
+  });
+  this.save();
+}
+};
+
+let INTEGRATIONS={};
+fetch('config/integrations.json').then(r=>r.json()).then(cfg=>{INTEGRATIONS=cfg||{};}).catch(()=>{});
+// Request notification permission
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+
+function showBookingNotification(booking) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const notif = new Notification('New Booking Inquiry! 🎉', {
+      body: `${booking.fullName} - ${booking.serviceType === 'hourly' ? booking.hours + 'h' : 'One-way'}\nPickup: ${new Date(booking.tripDate).toLocaleDateString()} at ${booking.pickupTime}`,
+      icon: 'icons/icon-192.png',
+      badge: 'icons/icon-192.png',
+      tag: booking.id,
+      requireInteraction: true
+    });
+    
+    notif.onclick = function() {
+      window.focus();
+      document.querySelector('.tab[data-tab="bookings"]').click();
+      notif.close();
+    };
+  }
+}
+
+// Tab navigation
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+document.querySelectorAll('.tab').forEach(z=>z.classList.remove('active'));
+t.classList.add('active');
+document.querySelectorAll('section[id^="tab-"]').forEach(s=>s.classList.add('hidden'));
+document.getElementById('tab-'+t.dataset.tab).classList.remove('hidden');
+}));
+
+const $=s=>document.querySelector(s);
+const qsel=id=>document.getElementById(id);
+function fmt(ms){const s=Math.floor(ms/1000),h=String(Math.floor(s/3600)).padStart(2,'0'),m=String(Math.floor((s%3600)/60)).padStart(2,'0'),ss=String(s%60).padStart(2,'0');return`${h}:${m}:${ss}`;}
+function hours(ms){return ms/3600000}
+function showToast(msg,ms=2500){const t=$('#toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',ms);}
+function beep(){const a=$('#beep');if(!a)return;a.currentTime=0;a.play().catch(()=>{});}
+
+let map,miniMapObj,fullMapObj,poly,stops=[],pts=[],gpsWatch=null,autoCenter=true,firstFix=true;
+let liveMarker=null,accuracyCircle=null,stopMarkers=[];
+let startedAt=null,pausedAt=null,elapsedMs=0,tick=null,currentJob=null;
+let mapSnapshot=null;
+window.invoiceLineItems=[];
+
+// Wait for Leaflet library to load
+function waitForLeaflet(callback) {
+  if (typeof L !== 'undefined') {
+    callback();
+  } else {
+    setTimeout(() => waitForLeaflet(callback), 100);
+  }
+}
+
+function initMap(){
+map=L.map('map',{zoomControl:true}).setView([25.7617,-80.1918],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OSM'}).addTo(map);
+poly=L.polyline([],{color:'#3b82f6',weight:4}).addTo(map);
+map.on('click',e=>{
+const{lat,lng}=e.latlng;
+addStop(lat,lng,`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+});
+}
+
+qsel('addStopBtn').addEventListener('click',async()=>{
+const addr=qsel('newStopAddr').value.trim();
+if(!addr)return;
+try{
+showToast('Geocoding address...');
+const{lat,lon,display}=await geocodeToCoords(addr);
+addStop(lat,lon,display||addr);
+qsel('newStopAddr').value='';
+showToast('Stop added!');
+}catch(err){
+alert('Geocoding failed: ' + err.message + '\n\nTry:\n• Full: "123 Main St, Miami, FL 33101"\n• Partial: "Miami Beach, FL"\n• City: "Miami, FL"');
+}
+});
+
+qsel('clearStopsBtn').addEventListener('click',()=>{
+stops=[];
+stopMarkers.forEach(m=>map.removeLayer(m));
+stopMarkers=[];
+updateStopList();
+poly.setLatLngs([]);
+qsel('etaLabel').textContent='ETA: —';
+});
+
+qsel('routeBtn').addEventListener('click',async()=>{
+if(stops.length<2){alert('Add at least 2 stops');return;}
+try{
+showToast('Calculating route...');
+const coords=stops.map(s=>`${s.lon},${s.lat}`).join(';');
+const url=`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+const r=await fetch(url);
+const d=await r.json();
+if(!d.routes?.length){alert('No route found');return;}
+const route=d.routes[0];
+const geom=route.geometry.coordinates.map(c=>[c[1],c[0]]);
+poly.setLatLngs(geom);
+map.fitBounds(poly.getBounds());
+const dist=route.distance;
+const dur=route.duration;
+const mi=(dist/1609.34).toFixed(2);
+const km=(dist/1000).toFixed(2);
+const etaMins=Math.ceil(dur/60);
+qsel('etaLabel').textContent=`ETA: ${etaMins} min (${mi} mi / ${km} km)`;
+showToast('Route calculated!');
+}catch(err){alert('Routing failed: '+err.message);}
+});
+
+async function geocodeToCoords(q, retries = 3){
+try {
+  let searchQuery = q.trim();
+  
+  // Auto-format addresses: convert multiple spaces to comma-space
+  searchQuery = searchQuery.replace(/\s{2,}/g, ', ');
+  
+  const hasCountry = /\b(USA|US|United States)\b/i.test(searchQuery);
+  const hasState = /\b[A-Z]{2}\b/.test(searchQuery);
+  const hasZip = /\b\d{5}\b/.test(searchQuery);
+  if (!hasCountry && !hasState && !hasZip) {
+    searchQuery = searchQuery + ', USA';
+  }
+  const url=`https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&q=${encodeURIComponent(searchQuery)}`;
+  const r=await fetch(url,{headers:{'Accept':'application/json','User-Agent':'InvoiceTallyGo/3.0'}});
+  if(!r.ok) {
+    if (retries > 0) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return geocodeToCoords(q, retries - 1);
+    }
+    throw new Error('Geocoding server error');
+  }
+  const arr=await r.json();
+  if(!arr?.length) {
+    if (searchQuery.includes(', USA') && retries > 0) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return geocodeToCoords(q.replace(', USA', ''), retries - 1);
+    }
+    throw new Error('Address not found. Try full format: "123 Main St, Miami, FL 33101"');
+  }
+  return{lat:parseFloat(arr[0].lat),lon:parseFloat(arr[0].lon),display:arr[0].display_name};
+} catch(err) {
+  if (retries > 0) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return geocodeToCoords(q, retries - 1);
+  }
+  throw err;
+}
+}
+
+function haversine(a,b){
+const R=6371000,toRad=d=>d*Math.PI/180;
+const dLat=toRad(b[0]-a[0]),dLon=toRad(b[1]-a[1]);
+const lat1=toRad(a[0]),lat2=toRad(b[0]);
+const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+return 2*R*Math.asin(Math.sqrt(h));
+}
+
+function addStop(lat,lon,label){
+stops.push({lat,lon,label});
+const m=L.marker([lat,lon]).addTo(map).bindPopup(label);
+stopMarkers.push(m);
+updateStopList();
+map.setView([lat,lon],13);
+}
+
+function updateStopList(){
+const list=qsel('stopList');
+list.innerHTML='';
+stops.forEach((s,i)=>{
+const div=document.createElement('div');
+div.className='stop-item';
+div.innerHTML=`<span>${i+1}. ${s.label}</span><button class="btn-ghost" onclick="removeStop(${i})">✕</button>`;
+list.appendChild(div);
+});
+}
+
+function removeStop(i){
+stops.splice(i,1);
+map.removeLayer(stopMarkers[i]);
+stopMarkers.splice(i,1);
+updateStopList();
+}
+
+qsel('useGPS').addEventListener('change',e=>{
+if(e.target.checked)startGPS();else stopGPS();
+});
+
+qsel('centerBtn').addEventListener('click',()=>{
+autoCenter=!autoCenter;
+qsel('centerBtn').textContent=autoCenter?'Center on Me: ON':'Center on Me: OFF';
+});
+
+function startGPS(){
+if(gpsWatch)return;
+gpsWatch=navigator.geolocation.watchPosition(pos=>{
+const{latitude:lat,longitude:lon,accuracy}=pos.coords;
+pts.push({lat,lon,t:Date.now()});
+if(!liveMarker){
+liveMarker=L.circleMarker([lat,lon],{radius:8,color:'#22c55e',fillColor:'#22c55e',fillOpacity:1}).addTo(map);
+accuracyCircle=L.circle([lat,lon],{radius:accuracy,color:'#3b82f6',fillOpacity:0.1}).addTo(map);
+}else{
+liveMarker.setLatLng([lat,lon]);
+accuracyCircle.setLatLng([lat,lon]).setRadius(accuracy);
+}
+if(autoCenter)map.setView([lat,lon]);
+if(firstFix){map.setView([lat,lon],15);firstFix=false;}
+},{enableHighAccuracy:true,maximumAge:0});
+}
+
+function stopGPS(){
+if(gpsWatch){navigator.geolocation.clearWatch(gpsWatch);gpsWatch=null;}
+}
+
+qsel('expandMapBtn').addEventListener('click',()=>{
+qsel('fullOverlay').classList.remove('hidden');
+setTimeout(()=>{
+if(!fullMapObj){
+fullMapObj=L.map('fullMap').setView(map.getCenter(),map.getZoom());
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(fullMapObj);
+}
+const fullPoly=L.polyline(poly.getLatLngs(),{color:'#3b82f6',weight:4}).addTo(fullMapObj);
+stopMarkers.forEach((m,i)=>{
+const pos=m.getLatLng();
+L.marker([pos.lat,pos.lng]).addTo(fullMapObj).bindPopup(stops[i].label);
+});
+if(poly.getLatLngs().length>0){
+fullMapObj.fitBounds(fullPoly.getBounds());
+}
+fullMapObj.invalidateSize();
+},100);
+});
+
+qsel('closeFullMap').addEventListener('click',()=>{
+qsel('fullOverlay').classList.add('hidden');
+if(fullMapObj){
+fullMapObj.remove();
+fullMapObj=null;
+}
+});
+
+async function captureMapSnapshot(){
+if(stops.length<2||!DB.settings.includeMap)return null;
+try{
+const mapElement=qsel('map');
+const canvas=await html2canvas(mapElement,{useCORS:true,allowTaint:true,backgroundColor:'#0f172a'});
+return canvas.toDataURL('image/png');
+}catch(err){
+console.log('Map snapshot failed:',err);
+return null;
+}
+}
+
+qsel('startBtn').addEventListener('click',()=>{
+startedAt=Date.now();
+tick=setInterval(()=>{
+const total=elapsedMs+(Date.now()-startedAt);
+qsel('timer').textContent=fmt(total);
+},100);
+qsel('startBtn').style.display='none';
+qsel('pauseBtn').style.display='inline-block';
+qsel('endBtn').style.display='inline-block';
+beep();
+});
+
+qsel('pauseBtn').addEventListener('click',()=>{
+pausedAt=Date.now();
+elapsedMs+=(pausedAt-startedAt);
+clearInterval(tick);
+tick=null;
+qsel('pauseBtn').style.display='none';
+qsel('resumeBtn').style.display='inline-block';
+});
+
+qsel('resumeBtn').addEventListener('click',()=>{
+startedAt=Date.now();
+tick=setInterval(()=>{
+const total=elapsedMs+(Date.now()-startedAt);
+qsel('timer').textContent=fmt(total);
+},100);
+qsel('resumeBtn').style.display='none';
+qsel('pauseBtn').style.display='inline-block';
+});
+
+qsel('endBtn').addEventListener('click',async()=>{
+showToast('Ending job...');
+mapSnapshot = await captureMapSnapshot();
+endJob();
+});
+
+function endJob(auto=false){
+const total=elapsedMs+(startedAt?(Date.now()-startedAt):0);
+clearInterval(tick);
+tick=null;
+stopGPS();
+qsel('pauseBtn').style.display='none';
+qsel('resumeBtn').style.display='none';
+qsel('endBtn').style.display='none';
+qsel('startBtn').style.display='inline-block';
+qsel('sendInvoiceBtn').style.display='inline-block';
+qsel('resetBtn').style.display='inline-block';
+qsel('downloadPdfBtn').style.display='inline-block';
+qsel('saveInvoiceBtn').style.display='inline-block';
+
+const client={name:qsel('clientName').value,email:qsel('clientEmail').value,phone:qsel('clientPhone').value};
+const rate=+qsel('rateHourly').value||0;
+const sched=+qsel('scheduledHours').value||0;
+const durH=hours(total);
+const graceMins = parseInt(qsel("gracePeriod")?.value || 15); 
+const overGraceH=Math.max(0,durH-sched-(graceMins/60));
+const overtimeHours=overGraceH>0?Math.ceil(overGraceH):0;
+const baseCost=sched*rate;
+const otCost=overtimeHours*rate;
+
+// Add line items to subtotal
+let lineItemsTotal=0;
+if(window.invoiceLineItems && window.invoiceLineItems.length>0){
+lineItemsTotal=window.invoiceLineItems.reduce((sum,item)=>sum+(item.price*item.qty),0);
+}
+
+let subtotal=baseCost+otCost+lineItemsTotal;
+
+const discountType=qsel('discountType').value;
+const discountValue=parseFloat(qsel('discountValue').value)||0;
+let discount=0;
+if(discountType==='fixed')discount=discountValue;
+else if(discountType==='percent')discount=subtotal*(discountValue/100);
+
+const taxType=qsel('taxType').value;
+const taxValue=parseFloat(qsel('taxValue').value)||0;
+let tax=0;
+if(taxType==='fixed')tax=taxValue;
+else if(taxType==='percent')tax=subtotal*(taxValue/100);
+
+const gratuityType=qsel('gratuityType').value;
+const gratuityValue=parseFloat(qsel('gratuityValue').value)||0;
+let gratuity=0;
+if(gratuityType==='fixed')gratuity=gratuityValue;
+else if(gratuityType==='percent')gratuity=subtotal*(gratuityValue/100);
+
+const depositType=qsel('depositType').value;
+const depositValue=parseFloat(qsel('deposit').value)||0;
+let deposit=0;
+if(depositType==='fixed')deposit=depositValue;
+else if(depositType==='percent')deposit=subtotal*(depositValue/100);
+
+const total_amount=subtotal-discount+tax+gratuity;
+const paymentType = qsel('paymentType')?.value || 'postpaid';
+const balance = paymentType === 'prepaid' ? 0 : (total_amount - deposit);
+
+const totalDist=stops.reduce((sum,s,i)=>i===0?0:sum+haversine([stops[i-1].lat,stops[i-1].lon],[s.lat,s.lon]),0);
+const mi=(totalDist/1609.34).toFixed(2);
+const km=(totalDist/1000).toFixed(2);
+
+const now=new Date();
+const invoiceNumber=qsel('invoiceIdOverride').value||`INV-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(DB.invoices.length+1).padStart(3,'0')}`;
+
+currentJob={
+invoiceNumber,
+date:now.toISOString(),
+customer:client.name,
+customerEmail:client.email,
+customerPhone:client.phone,
+clientType: qsel('clientType')?.value || 'business',
+paymentType: paymentType,
+date:now.toISOString(),
+duration:durH,
+scheduledHours:sched,
+overtimeHours,
+rate,
+baseCost,
+overtimeCost:otCost,
+subtotal,
+discount,
+tax,
+gratuity,
+deposit,
+total:total_amount,
+balance,
+lineItems:window.invoiceLineItems||[],
+stops:stops.map(s=>({...s})),
+distance:totalDist,
+distanceKm:km,
+distanceMi:mi,
+notes:qsel('jobMemo').value||'',
+terms:qsel('jobTerms').value||'',
+status: paymentType === 'postpaid' ? 'pending' : 'unpaid',
+gracePeriod:graceMins,
+mapSnapshot:mapSnapshot
+};
+
+let lineItemsHTML='';
+if(window.invoiceLineItems&&window.invoiceLineItems.length>0){
+lineItemsHTML='<strong>Line Items:</strong><br>';
+window.invoiceLineItems.forEach(item=>{
+lineItemsHTML+=`${item.name} x${item.qty} @ $${item.price.toFixed(2)} = $${(item.price*item.qty).toFixed(2)}<br>`;
+});
+lineItemsHTML+='<br>';
+}
+
+const summary=`
+<strong>Invoice #:</strong> ${invoiceNumber}<br>
+<strong>Customer:</strong> ${client.name||'N/A'}<br>
+<strong>Email:</strong> ${client.email||'N/A'}<br>
+<strong>Duration:</strong> ${durH.toFixed(2)}h (scheduled ${sched}h)<br>
+<strong>Grace Period:</strong> ${graceMins} minutes<br>
+<strong>Overtime:</strong> ${overtimeHours}h @ $${rate}/hr<br>
+<strong>Distance:</strong> ${mi} mi (${km} km)<br>
+<strong>Stops:</strong> ${stops.length}<br>
+<hr>
+${lineItemsHTML}
+<strong>Base:</strong> $${baseCost.toFixed(2)}<br>
+<strong>Overtime:</strong> $${otCost.toFixed(2)}<br>
+<strong>Subtotal:</strong> $${subtotal.toFixed(2)}<br>
+<strong>Discount:</strong> -$${discount.toFixed(2)}<br>
+<strong>Tax:</strong> $${tax.toFixed(2)}<br>
+<strong>Gratuity:</strong> $${gratuity.toFixed(2)}<br>
+<strong>Total:</strong> $${total_amount.toFixed(2)}<br>
+<strong>Deposit:</strong> $${deposit.toFixed(2)}<br>
+<strong>Balance Due:</strong> $${balance.toFixed(2)}
+`;
+
+qsel('invoicePreviewBody').innerHTML=summary;
+qsel('invoicePreview').classList.remove('hidden');
+
+showToast('Job ended. Invoice ready!');
+beep();
+}
+
+qsel('saveInvoiceBtn').addEventListener('click',()=>{
+if(!currentJob){alert('No job to save');return;}
+
+// Save customer from job if not already in customers list
+if(currentJob.customer){
+  const existingCustomer = DB.customers.find(c => 
+    c.name && c.name.toLowerCase() === currentJob.customer.toLowerCase()
+  );
+  
+  if(!existingCustomer){
+    DB.customers.push({
+      id: 'CUS-' + Date.now(),
+      name: currentJob.customer,
+      email: currentJob.customerEmail || '',
+      phone: currentJob.customerPhone || '',
+      addedFrom: 'job',
+      created: new Date().toISOString()
+    });
+  }
+}
+
+if(window.editingInvoice){
+const idx = DB.invoices.findIndex(i=>i.invoiceNumber===window.editingInvoice.invoiceNumber);
+if(idx>=0){
+DB.invoices[idx] = currentJob;
+showToast('Invoice updated!');
+}
+window.editingInvoice = null;
+}else{
+DB.invoices.push(currentJob);
+showToast('Invoice saved!');
+}
+DB.save();
+loadHistory();
+updateKPIs();
+qsel('saveInvoiceBtn').style.display='none';
+});
+
+qsel('resetBtn').addEventListener('click',()=>{
+if(!confirm('Reset job?'))return;
+elapsedMs=0;
+startedAt=null;
+pausedAt=null;
+qsel('timer').textContent='00:00:00';
+qsel('resetBtn').style.display='none';
+qsel('sendInvoiceBtn').style.display='none';
+qsel('downloadPdfBtn').style.display='none';
+qsel('saveInvoiceBtn').style.display='none';
+qsel('invoicePreview').classList.add('hidden');
+currentJob=null;
+mapSnapshot=null;
+window.editingInvoice=null;
+window.invoiceLineItems=[];
+displayInvoiceItems();
+});
+
+qsel('sendInvoiceBtn').addEventListener('click',()=>{
+if(!currentJob){alert('No job to send');return;}
+const{customer,invoiceNumber,total}=currentJob;
+const subject=encodeURIComponent(`Invoice ${invoiceNumber}`);
+const body=encodeURIComponent(`Hi ${customer.name},\n\nPlease find attached invoice ${invoiceNumber} for $${total.toFixed(2)}.\n\nThank you!`);
+window.open(`mailto:${customer.email}?subject=${subject}&body=${body}`);
+});
+
+qsel('downloadPdfBtn').addEventListener('click',()=>{
+if(!currentJob){alert('No invoice to download');return;}
+generatePDF(currentJob);
+});
+
+qsel('applyInvoiceId').addEventListener('click',()=>{
+const newId=qsel('invoiceIdOverride').value;
+if(newId&&currentJob){
+currentJob.invoiceNumber=newId;
+showToast('Invoice number updated');
+}
+});
+function generatePDF(invoice){
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
+const logo = localStorage.getItem('companyLogo');
+const brandName = DB.settings.brand || 'InvoiceTally Go';
+const companyName = DB.settings.companyName || '';
+const companyPhone = DB.settings.phone || '';
+const companyAddress = DB.settings.address || '';
+const companyCityState = DB.settings.cityState || '';
+
+let yPos = 20;
+
+// Header
+doc.setFontSize(24);
+doc.setFont(undefined, 'bold');
+doc.text('INVOICE', 20, yPos);
+
+// Logo if available
+if(logo){
+try{
+doc.addImage(logo, 'PNG', 150, 10, 40, 20);
+}catch(e){console.log('Logo error:',e);}
+}
+
+yPos += 10;
+doc.setFontSize(10);
+doc.setFont(undefined, 'normal');
+
+// Company Info
+if(companyName){
+doc.setFont(undefined, 'bold');
+doc.text(companyName, 20, yPos);
+yPos += 5;
+doc.setFont(undefined, 'normal');
+}
+if(companyAddress){
+doc.text(companyAddress, 20, yPos);
+yPos += 5;
+}
+if(companyCityState){
+doc.text(companyCityState, 20, yPos);
+yPos += 5;
+}
+if(companyPhone){
+doc.text(companyPhone, 20, yPos);
+yPos += 5;
+}
+
+yPos += 5;
+doc.text(`Invoice #: ${invoice.invoiceNumber}`, 20, yPos);
+doc.text(`Date: ${new Date(invoice.date).toLocaleDateString()}`, 120, yPos);
+
+// Bill To
+yPos += 15;
+doc.setFont(undefined, 'bold');
+doc.text('Bill To:', 20, yPos);
+yPos += 7;
+doc.setFont(undefined, 'normal');
+doc.text(invoice.customer.name || 'N/A', 20, yPos);
+yPos += 5;
+doc.text(invoice.customer.email || '', 20, yPos);
+
+// Job Details
+yPos += 15;
+doc.setFont(undefined, 'bold');
+doc.text('Job Details', 20, yPos);
+yPos += 7;
+doc.setFont(undefined, 'normal');
+doc.text(`Duration: ${invoice.duration.toFixed(2)} hours (Scheduled: ${invoice.scheduledHours}h)`, 20, yPos);
+yPos += 5;
+doc.text(`Grace Period: ${invoice.gracePeriod} minutes`, 20, yPos);
+yPos += 5;
+doc.text(`Overtime: ${invoice.overtimeHours} hours @ $${invoice.rate}/hr`, 20, yPos);
+yPos += 5;
+doc.text(`Distance: ${invoice.distanceMi} mi (${invoice.distanceKm} km)`, 20, yPos);
+yPos += 5;
+doc.text(`Stops: ${invoice.stops.length}`, 20, yPos);
+
+// Map image - use uploaded screenshot if available, otherwise captured map
+const mapImage = DB.settings.mapScreenshot || invoice.mapSnapshot;
+if(mapImage){
+yPos += 10;
+if(yPos > 200){
+doc.addPage();
+yPos = 20;
+}
+try{
+doc.addImage(mapImage, 'PNG', 20, yPos, 170, 80);
+yPos += 85;
+}catch(e){
+console.log('Map image error:',e);
+showToast('Map image failed to add to PDF');
+}
+}else{
+console.log('No map image available. includeMap:',DB.settings.includeMap,'mapScreenshot:',!!DB.settings.mapScreenshot,'invoice.mapSnapshot:',!!invoice.mapSnapshot);
+}
+
+// Line items
+yPos += 15;
+doc.setFont(undefined, 'bold');
+doc.text('Description', 20, yPos);
+doc.text('Amount', 170, yPos);
+yPos += 2;
+doc.line(20, yPos, 190, yPos);
+yPos += 7;
+
+doc.setFont(undefined, 'normal');
+doc.text(`Base Rate (${invoice.scheduledHours}h @ $${invoice.rate}/hr)`, 20, yPos);
+doc.text(`$${invoice.baseCost.toFixed(2)}`, 170, yPos);
+yPos += 7;
+
+if(invoice.overtimeHours > 0){
+doc.text(`Overtime (${invoice.overtimeHours}h @ $${invoice.rate}/hr)`, 20, yPos);
+doc.text(`$${invoice.overtimeCost.toFixed(2)}`, 170, yPos);
+yPos += 7;
+}
+
+// Line items
+if(invoice.lineItems && invoice.lineItems.length>0){
+invoice.lineItems.forEach(item=>{
+doc.text(`${item.name} x${item.qty}`, 20, yPos);
+doc.text(`$${(item.price*item.qty).toFixed(2)}`, 170, yPos);
+yPos += 7;
+});
+}
+
+doc.text('Subtotal', 20, yPos);
+doc.text(`$${invoice.subtotal.toFixed(2)}`, 170, yPos);
+yPos += 7;
+
+if(invoice.tax > 0){
+doc.text('Tax', 20, yPos);
+doc.text(`$${invoice.tax.toFixed(2)}`, 170, yPos);
+yPos += 7;
+}
+
+if(invoice.gratuity > 0){
+doc.text('Gratuity', 20, yPos);
+doc.text(`$${invoice.gratuity.toFixed(2)}`, 170, yPos);
+yPos += 7;
+}
+
+if(invoice.discount > 0){
+doc.text('Discount', 20, yPos);
+doc.text(`-$${invoice.discount.toFixed(2)}`, 170, yPos);
+yPos += 7;
+}
+
+doc.setFont(undefined, 'bold');
+doc.text('Total', 20, yPos);
+doc.text(`$${invoice.total.toFixed(2)}`, 170, yPos);
+yPos += 7;
+
+doc.setFont(undefined, 'normal');
+if(invoice.deposit > 0){
+doc.text('Deposit', 20, yPos);
+doc.text(`$${invoice.deposit.toFixed(2)}`, 170, yPos);
+yPos += 7;
+}
+
+doc.setFont(undefined, 'bold');
+doc.setFontSize(12);
+if(invoice.isPrepaid){
+  doc.setTextColor(34, 197, 94); // Green
+  doc.text('PAID IN FULL (Prepaid)', 20, yPos);
+  doc.setTextColor(0, 0, 0); // Reset to black
+} else {
+  doc.text('Balance Due', 20, yPos);
+  doc.text(`$${invoice.balance.toFixed(2)}`, 170, yPos);
+}
+// Notes
+if(invoice.notes){
+yPos += 15;
+if(yPos > 250){
+doc.addPage();
+yPos = 20;
+}
+doc.setFontSize(10);
+doc.setFont(undefined, 'bold');
+doc.text('Notes:', 20, yPos);
+yPos += 5;
+doc.setFont(undefined, 'normal');
+const notesLines = doc.splitTextToSize(invoice.notes, 170);
+doc.text(notesLines, 20, yPos);
+}
+
+// Terms
+if(invoice.terms){
+yPos += 15;
+if(yPos > 250){
+doc.addPage();
+yPos = 20;
+}
+doc.setFont(undefined, 'bold');
+doc.text('Terms:', 20, yPos);
+yPos += 5;
+doc.setFont(undefined, 'normal');
+const termsLines = doc.splitTextToSize(invoice.terms, 170);
+doc.text(termsLines, 20, yPos);
+}
+
+// Footer
+doc.setFontSize(8);
+doc.text(`© ${brandName} - Powered by InvoiceTally Go`, 105, 285, {align: 'center'});
+
+doc.save(`${invoice.invoiceNumber}.pdf`);
+showToast('PDF downloaded!');
+}
+
+function loadHistory(){
+const list=qsel('historyList');
+list.innerHTML='';
+if(!DB.invoices.length){
+list.innerHTML='<p class="muted">No invoices yet</p>';
+return;
+}
+const table=document.createElement('table');
+table.innerHTML=`
+<thead>
+<tr>
+<th>Invoice #</th>
+<th>Date</th>
+<th>Customer</th>
+<th>Distance</th>
+<th>Total</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody></tbody>
+`;
+const tbody=table.querySelector('tbody');
+DB.invoices.slice().reverse().forEach(inv=>{
+const row=document.createElement('tr');
+const date=new Date(inv.date).toLocaleDateString();
+const statusClass=inv.status==='paid'?'status-paid':inv.status==='partial'?'status-partial':'status-unpaid';
+row.innerHTML=`
+<td>${inv.invoiceNumber}</td>
+<td>${date}</td>
+<td>${inv.customer?.name||'N/A'}</td>
+<td>${inv.distanceMi} mi</td>
+<td>$${inv.total.toFixed(2)}</td>
+<td class="${statusClass}">${inv.status}</td>
+<td>
+<button class="btn-ghost" onclick="viewInvoice('${inv.invoiceNumber}')">View</button>
+<button class="btn-secondary" onclick="editInvoice('${inv.invoiceNumber}')">Edit</button>
+<button class="btn-success" onclick="markInvoicePaid('${inv.invoiceNumber}')">Paid</button>
+<button class="btn-danger" onclick="deleteInvoice('${inv.invoiceNumber}')">Delete</button>
+</td>
+`;
+tbody.appendChild(row);
+});
+list.appendChild(table);
+}
+
+function markInvoicePaid(number){
+const inv=DB.invoices.find(i=>i.invoiceNumber===number);
+if(inv){
+inv.status='paid';
+DB.save();
+loadHistory();
+updateKPIs();
+showToast('Invoice marked as paid');
+}
+}
+
+function viewInvoice(number){
+const inv=DB.invoices.find(i=>i.invoiceNumber===number);
+if(!inv){alert('Invoice not found');return;}
+currentJob=inv;
+qsel('downloadPdfBtn').style.display='inline-block';
+generatePDF(inv);
+}
+
+function editInvoice(number){
+const inv=DB.invoices.find(i=>i.invoiceNumber===number);
+if(!inv){alert('Invoice not found');return;}
+
+// Switch to Job tab
+document.querySelector('.tab[data-tab="job"]').click();
+
+// Load invoice data into form
+qsel('clientName').value=inv.customer.name||'';
+qsel('clientEmail').value=inv.customer.email||'';
+qsel('rateHourly').value=inv.rate||0;
+qsel('scheduledHours').value=inv.scheduledHours||0;
+qsel('gracePeriod').value=inv.gracePeriod||15;
+qsel('discountValue').value=inv.discount||0;
+qsel('deposit').value=inv.deposit||0;
+qsel('jobMemo').value=inv.notes||'';
+qsel('jobTerms').value=inv.terms||'';
+qsel('invoiceIdOverride').value=inv.invoiceNumber;
+
+// Load stops
+stops = inv.stops||[];
+stopMarkers.forEach(m=>map.removeLayer(m));
+stopMarkers=[];
+stops.forEach(s=>{
+const m=L.marker([s.lat,s.lon]).addTo(map).bindPopup(s.label);
+stopMarkers.push(m);
+});
+updateStopList();
+
+// Mark as editing
+window.editingInvoice = inv;
+currentJob = inv;
+qsel('saveInvoiceBtn').style.display='inline-block';
+qsel('downloadPdfBtn').style.display='inline-block';
+showToast('Editing invoice: ' + inv.invoiceNumber);
+}
+
+function deleteInvoice(number){
+if(!confirm('Delete this invoice?'))return;
+const idx=DB.invoices.findIndex(i=>i.invoiceNumber===number);
+if(idx>=0){
+DB.invoices.splice(idx,1);
+DB.save();
+loadHistory();
+updateKPIs();
+showToast('Invoice deleted');
+}
+}
+
+function updateKPIs(){
+const today=new Date().toDateString();
+const todayInvoices=DB.invoices.filter(inv=>new Date(inv.date).toDateString()===today);
+qsel('todayJobs').textContent=todayInvoices.length;
+
+const unpaid=DB.invoices.filter(inv=>inv.status==='unpaid');
+qsel('unpaidCount').textContent=unpaid.length;
+
+const last7Days=Date.now()-7*24*60*60*1000;
+const recent=DB.invoices.filter(inv=>new Date(inv.date).getTime()>last7Days);
+const revenue7d=recent.reduce((sum,inv)=>sum+inv.total,0);
+qsel('revenue7d').textContent='$'+revenue7d.toFixed(0);
+
+const distance7d=recent.reduce((sum,inv)=>sum+parseFloat(inv.distanceMi||0),0);
+qsel('distance7d').textContent=distance7d.toFixed(1)+' mi';
+}
+
+// ORIGINAL Customers functions
+function loadCustomersTable(){
+const tbody=$('#customersTable tbody');
+if(!tbody)return;
+tbody.innerHTML='';
+const customerStats={};
+
+// First, add all customers from DB.customers
+DB.customers.forEach(cust => {
+  if(!customerStats[cust.name]){
+    customerStats[cust.name] = {
+      name: cust.name,
+      email: cust.email || '',
+      phone: cust.phone || '',
+      total: 0,
+      outstanding: 0
+    };
+  }
+});
+
+// Then add/update with invoice data
+DB.invoices.forEach(inv=>{
+const name=inv.customer?.name||inv.customer||'Unknown';
+if(!customerStats[name]){
+customerStats[name]={name,email:inv.customer?.email||inv.customerEmail||'',phone:inv.customer?.phone||inv.customerPhone||'',total:0,outstanding:0};
+}
+customerStats[name].total+=inv.total||0;
+if(inv.status!=='paid'){
+customerStats[name].outstanding+=inv.balance||0;
+}
+});
+
+Object.values(customerStats).forEach(c=>{
+const row=document.createElement('tr');
+row.innerHTML=`
+<td>${c.name}</td>
+<td>${c.email}</td>
+<td>$${c.total.toFixed(2)}</td>
+<td>$${c.outstanding.toFixed(2)}</td>
+<td><button class="btn-ghost" onclick="filterInvoicesByCustomer('${c.name}')">View Invoices</button></td>
+`;
+tbody.appendChild(row);
+});
+}
+
+function filterInvoicesByCustomer(name){
+document.querySelector('.tab[data-tab="history"]').click();
+showToast(`Showing invoices for ${name}`);
+}
+
+qsel('clientSelect').addEventListener('change',e=>{
+const idx=e.target.value;
+if(idx==='')return;
+const customerName=e.target.options[e.target.selectedIndex].text;
+const customer=DB.invoices.find(inv=>inv.customer?.name===customerName)?.customer;
+if(customer){
+qsel('clientName').value=customer.name||'';
+qsel('clientEmail').value=customer.email||'';
+}
+});
+
+qsel('saveClient').addEventListener('click',()=>{
+const name=qsel('clientName').value.trim();
+const email=qsel('clientEmail').value.trim();
+if(!name){alert('Name required');return;}
+showToast('Client info ready for invoice');
+});
+qsel('saveClient').addEventListener('click',()=>{
+  const name = qsel('clientName').value.trim();
+  const email = qsel('clientEmail').value.trim();
+  if(!name){ alert('Name required'); return; }
+  
+  // Check if customer exists
+  const existing = DB.customers.find(c => c.email === email);
+  if(existing) {
+    existing.name = name;
+    existing.lastUpdated = new Date().toISOString();
+  } else {
+    DB.customers.push({
+      id: 'CUST-' + Date.now(),
+      name,
+      email,
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
+    });
+  }
+  
+  DB.save();
+  loadClientList();
+  loadCustomersTable();
+  showToast('✅ Client saved!');
+});
+// ORIGINAL Items functions
+function saveItem(){
+  const name = qsel('newItemName').value.trim();
+  const desc = qsel('newItemDesc').value.trim();
+  const category = qsel('newItemCategory').value;
+  const capacity = parseInt(qsel('newItemCapacity').value) || 0;
+  const bookable = qsel('newItemBookable').checked;
+  const mediaUrl = qsel('newItemMedia').value.trim();
+  
+  if(!name){ alert('Item name required'); return; }
+  
+  // Build pricing object based on category
+  let pricing = {};
+  if(category === 'vehicle'){
+    pricing = {
+      hourlyRate: parseFloat(qsel('newItemHourlyRate').value) || 0,
+      transferRate: parseFloat(qsel('newItemTransferRate').value) || 0
+    };
+  } else {
+    pricing = { 
+      price: parseFloat(qsel('newItemPrice').value) || 0 
+    };
+  }
+  
+  // Determine if mediaUrl is YouTube, video file, or image
+  let imageUrl = '';
+  let videoUrl = '';
+  
+  if(mediaUrl){
+    if(mediaUrl.includes('youtube.com') || mediaUrl.includes('youtu.be')){
+      // Convert to embed URL if needed
+      if(mediaUrl.includes('watch?v=')){
+        const videoId = mediaUrl.split('watch?v=')[1].split('&')[0];
+        videoUrl = `https://www.youtube.com/embed/${videoId}`;
+      } else if(mediaUrl.includes('youtu.be/')){
+        const videoId = mediaUrl.split('youtu.be/')[1].split('?')[0];
+        videoUrl = `https://www.youtube.com/embed/${videoId}`;
+      } else {
+        videoUrl = mediaUrl;
+      }
+    } else if(mediaUrl.match(/\.(mp4|webm|mov|avi|mkv|flv|wmv|m4v)(\?|$)/i)){
+      // Direct video file URL
+      videoUrl = mediaUrl;
+    } else {
+      // Assume it's an image
+      imageUrl = mediaUrl;
+    }
+  }
+  
+  const item = {
+    id: 'ITEM-' + Date.now(),
+    name, 
+    desc, 
+    category, 
+    capacity, 
+    bookable, 
+    ...pricing, 
+    mediaUrl,
+    imageUrl,
+    videoUrl,
+    mediaFiles: []
+  };
+  
+  // Handle multiple files
+  const filesInput = qsel('newItemFiles');
+  if(window.selectedFiles && window.selectedFiles.length > 0){
+    let processed = 0;
+    window.selectedFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        item.mediaFiles.push({ 
+          data: e.target.result, 
+          type: file.type, 
+          name: file.name 
+        });
+        processed++;
+        if(processed === window.selectedFiles.length){
+          DB.items.push(item);
+          DB.save();
+          clearItemForm();
+          loadItemsTable();
+          loadItemSelector();
+          window.selectedFiles = [];
+          // Switch to Items tab to show the new item
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelector('.tab[data-tab="items"]').classList.add('active');
+          document.querySelectorAll('section[id^="tab-"]').forEach(s => s.classList.add('hidden'));
+          document.getElementById('tab-items').classList.remove('hidden');
+          showToast(`Item saved with ${item.mediaFiles.length} file(s)`);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  } else {
+    DB.items.push(item);
+    DB.save();
+    clearItemForm();
+    loadItemsTable();
+    loadItemSelector();
+    // Switch to Items tab to show the new item
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.tab[data-tab="items"]').classList.add('active');
+    document.querySelectorAll('section[id^="tab-"]').forEach(s => s.classList.add('hidden'));
+    document.getElementById('tab-items').classList.remove('hidden');
+    showToast('Item saved');
+  }
+// Handle file upload
+if(fileInput.files && fileInput.files[0]){
+  const file = fileInput.files[0];
+  if(file.size > 50000000){
+    alert('File too large. Please use under 50MB.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    item.mediaFile = e.target.result;
+    DB.items.push(item);
+    DB.save();
+    clearItemForm();
+    loadItemsTable();
+    loadItemSelector();
+    showToast('Item saved with media');
+  };
+  reader.readAsDataURL(file);
+} else {
+  DB.items.push(item);
+  DB.save();
+  clearItemForm();
+  loadItemsTable();
+  loadItemSelector();
+  showToast('Item saved');
+}
+}
+
+function clearItemForm(){
+  qsel('newItemName').value = '';
+  qsel('newItemDesc').value = '';
+  qsel('newItemPrice').value = '';
+  qsel('newItemHourlyRate').value = '';
+  qsel('newItemTransferRate').value = '';
+  qsel('newItemCapacity').value = '';
+  qsel('newItemMedia').value = '';
+  if(qsel('newItemFiles')) qsel('newItemFiles').value = '';
+  qsel('newItemBookable').checked = true;
+  qsel('newItemCategory').value = 'service';
+  
+  // Clear selected files
+  if(window.selectedFiles) window.selectedFiles = [];
+  const preview = document.getElementById('photoPreviewContainer');
+  if(preview) preview.innerHTML = '';
+  
+  // Reset section visibility
+  const vehicleSection = document.getElementById('vehiclePricingSection');
+  const regularSection = document.getElementById('regularPricingSection');
+  if(vehicleSection) vehicleSection.style.display = 'none';
+  if(regularSection) regularSection.style.display = 'block';
+
+const table=document.createElement('table');
+table.innerHTML=`
+<thead><tr>
+  <th>Item</th>
+  <th>Category</th>
+  <th>Price</th>
+  <th>Capacity</th>
+  <th>Bookable</th>
+  <th>Media</th>
+  <th>Actions</th>
+</tr></thead>
+<tbody></tbody>
+`;
+const tbody=table.querySelector('tbody');
+
+DB.items.forEach((item,i)=>{
+const bookableIcon = item.bookable ? '✅' : '❌';
+const photoCount = (item.mediaFiles?.length || 0) + (item.mediaUrl ? 1 : 0);
+
+// Build pricing display based on category
+let pricingText = '';
+if(item.category === 'vehicle'){
+  pricingText = `$${item.hourlyRate || 0}/hr<br>$${item.transferRate || 0} transfer`;
+} else {
+  pricingText = `$${item.price || 0}`;
+}
+
+row.innerHTML=`
+<td><strong>${item.name}</strong><br><span class="small">${item.desc||'—'}</span></td>
+<td><span class="badge">${item.category||'service'}</span></td>
+<td>${pricingText}</td>
+<td>${item.capacity || '—'}</td>
+<td>${bookableIcon}</td>
+<td>📷 ${photoCount}</td>
+<td>${item.capacity || '—'}</td>
+<td>${bookableIcon}</td>
+<td>${mediaIcon}</td>
+<td>
+  <button class="btn-secondary" onclick="editItem(${i})">Edit</button>
+  <button class="btn-danger mt-6" onclick="deleteItem(${i})">Delete</button>
+</td>
+`;
+tbody.appendChild(row);
+});
+
+container.appendChild(table);
+}
+
+function editItem(index){
+const item = DB.items[index];
+qsel('newItemName').value = item.name;
+qsel('newItemDesc').value = item.desc || '';
+qsel('newItemPrice').value = item.price;
+qsel('newItemCategory').value = item.category || 'service';
+qsel('newItemCapacity').value = item.capacity || '';
+qsel('newItemBookable').checked = item.bookable !== false;
+qsel('newItemMedia').value = item.mediaUrl || '';
+
+// Delete old item and let user save as new
+DB.items.splice(index, 1);
+DB.save();
+loadItemsTable();
+loadItemSelector();
+showToast('Item loaded for editing. Make changes and click Save.');
+}
+
+function deleteItem(i){
+if(!confirm('Delete item?'))return;
+DB.items.splice(i,1);
+DB.save();
+loadItemsTable();
+loadItemSelector();
+}
+
+function loadItemSelector(){
+  const sel=qsel('itemSelector');
+  if(!sel)return;
+  sel.innerHTML='<option value="">-- Select Item --</option>';
+  DB.items.forEach((item,i)=>{
+    const opt=document.createElement('option');
+    opt.value=i;
+    
+    // Display price based on category
+    let priceText = '';
+    if(item.category === 'vehicle') {
+      priceText = `$${item.hourlyRate || 0}/hr`;
+    } else {
+      priceText = `$${item.price || 0}`;
+    }
+    
+    opt.textContent=`${item.name} - ${priceText}`;
+    sel.appendChild(opt);
+  });
+}
+const addItemBtn = qsel('addItemToInvoice');
+if(addItemBtn){
+addItemBtn.addEventListener('click',()=>{
+const idx=qsel('itemSelector').value;
+if(idx===''){alert('Select an item');return;}
+const item=DB.items[idx];
+const qty=parseInt(qsel('itemQty').value)||1;
+window.invoiceLineItems.push({
+name:item.name,
+desc:item.desc,
+price:item.price,
+qty:qty
+});
+displayInvoiceItems();
+qsel('itemSelector').value='';
+qsel('itemQty').value='1';
+showToast('Item added to invoice');
+});
+}
+
+function displayInvoiceItems(){
+const list=qsel('invoiceItemsList');
+if(!list)return;
+if(window.invoiceLineItems.length===0){
+list.innerHTML='';
+return;
+}
+list.innerHTML='<strong>Items on Invoice:</strong>';
+const table=document.createElement('table');
+table.innerHTML='<thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th>Actions</th></tr></thead><tbody></tbody>';
+const tbody=table.querySelector('tbody');
+window.invoiceLineItems.forEach((item,i)=>{
+const row=document.createElement('tr');
+row.innerHTML=`
+<td>${item.name}</td>
+<td>${item.qty}</td>
+<td>$${item.price.toFixed(2)}</td>
+<td>$${(item.price*item.qty).toFixed(2)}</td>
+<td><button class="btn-danger" onclick="removeInvoiceItem(${i})">Remove</button></td>
+`;
+tbody.appendChild(row);
+});
+list.appendChild(table);
+}
+
+function removeInvoiceItem(i){
+window.invoiceLineItems.splice(i,1);
+displayInvoiceItems();
+}
+// Settings
+qsel('saveSettings').addEventListener('click',()=>{
+DB.settings.brand=qsel('settingBrand').value;
+DB.settings.logo=qsel('settingLogo').value;
+DB.settings.companyName=qsel('settingCompanyName').value;
+DB.settings.phone=qsel('settingPhone').value;
+DB.settings.address=qsel('settingAddress').value;
+DB.settings.cityState=qsel('settingCityState').value;
+DB.settings.includeMap=qsel('settingIncludeMap').checked;
+DB.save();
+showToast('Settings saved');
+if(DB.settings.brand){
+qsel('brandName').textContent=DB.settings.brand;
+}
+});
+
+function loadSettings(){
+if(DB.settings.brand){
+qsel('settingBrand').value=DB.settings.brand;
+qsel('brandName').textContent=DB.settings.brand;
+}
+if(DB.settings.logo){
+qsel('settingLogo').value=DB.settings.logo;
+}
+if(DB.settings.companyName){
+qsel('settingCompanyName').value=DB.settings.companyName;
+}
+if(DB.settings.phone){
+qsel('settingPhone').value=DB.settings.phone;
+}
+if(DB.settings.address){
+qsel('settingAddress').value=DB.settings.address;
+}
+if(DB.settings.cityState){
+qsel('settingCityState').value=DB.settings.cityState;
+}
+if(DB.settings.includeMap){
+qsel('settingIncludeMap').checked=true;
+}
+}
+
+// Map Screenshot Upload
+const mapScreenshotInput = document.getElementById('mapScreenshot');
+if(mapScreenshotInput){
+mapScreenshotInput.addEventListener('change', function(e) {
+const file = e.target.files[0];
+if (file) {
+if (file.size > 2000000) {
+alert('Map image too large. Please use under 2MB.');
+return;
+}
+const reader = new FileReader();
+reader.onload = function(event) {
+const img = new Image();
+img.onload = function(){
+const canvas = document.createElement('canvas');
+const maxWidth = 850;
+const maxHeight = 400;
+let width = img.width;
+let height = img.height;
+if(width>maxWidth){
+height*=maxWidth/width;
+width=maxWidth;
+}
+if(height>maxHeight){
+width*=maxHeight/height;
+height=maxHeight;
+}
+canvas.width=width;
+canvas.height=height;
+const ctx=canvas.getContext('2d');
+ctx.drawImage(img,0,0,width,height);
+DB.settings.mapScreenshot = canvas.toDataURL('image/jpeg',0.85);
+DB.save();
+showToast('Map screenshot uploaded and resized!');
+};
+img.src = event.target.result;
+};
+reader.readAsDataURL(file);
+}
+});
+}
+
+// OCR functionality
+qsel('processOCR').addEventListener('click',async()=>{
+const fileInput=qsel('ocrImageUpload');
+if(!fileInput.files||!fileInput.files[0]){
+alert('Please select an image first');
+return;
+}
+
+showToast('Processing image... this may take a moment');
+qsel('processOCR').disabled=true;
+qsel('processOCR').textContent='Processing...';
+
+const file=fileInput.files[0];
+const canvas=qsel('ocrCanvas');
+const ctx=canvas.getContext('2d');
+const img=new Image();
+
+img.onload=async()=>{
+canvas.width=img.width;
+canvas.height=img.height;
+ctx.drawImage(img,0,0);
+canvas.style.display='block';
+
+try{
+const result=await Tesseract.recognize(
+canvas,
+'eng',
+{
+logger:m=>{
+if(m.status==='recognizing text'){
+const percent=Math.round(m.progress*100);
+qsel('processOCR').textContent=`Processing ${percent}%`;
+}
+}
+}
+);
+
+const text=result.data.text;
+
+// Try to extract common fields
+const lines = text.split('\n').map(l=>l.trim()).filter(l=>l);
+let extractedData = {
+amount: null,
+tax: null,
+gratuity: null,
+total: null,
+date: null,
+vendor: null,
+items: []
+};
+
+lines.forEach((line,idx)=>{
+// Look for amounts
+const dollarMatches = line.match(/\$(\d+\.?\d{0,2})/g);
+if(dollarMatches){
+dollarMatches.forEach(match=>{
+const val=parseFloat(match.replace('$',''));
+if(!extractedData.amount||val>extractedData.amount){
+extractedData.amount=val;
+}
+});
+}
+// Look for tax
+if(/tax/i.test(line)){
+const taxMatch=line.match(/\$?(\d+\.?\d{0,2})/);
+if(taxMatch)extractedData.tax=taxMatch[1];
+}
+// Look for tip/gratuity
+if(/(tip|gratuity)/i.test(line)){
+const tipMatch=line.match(/\$?(\d+\.?\d{0,2})/);
+if(tipMatch)extractedData.gratuity=tipMatch[1];
+}
+// Look for total
+if(/total/i.test(line)){
+const totalMatch=line.match(/\$?(\d+\.?\d{0,2})/);
+if(totalMatch)extractedData.total=totalMatch[1];
+}
+// Look for dates
+const dateMatch = line.match(/(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4})/);
+if(dateMatch && !extractedData.date){
+extractedData.date = dateMatch[1];
+}
+// Look for vendor name (usually first or second line)
+if(idx<3 && line.length>3 && line.length<50 && !extractedData.vendor){
+if(!/\d/.test(line)&&!/(tax|total|subtotal|tip)/i.test(line)){
+extractedData.vendor=line;
+}
+}
+});
+
+window.lastExtractedData = extractedData;
+
+let autoFillBtn = '';
+if(extractedData.amount || extractedData.tax || extractedData.gratuity || extractedData.vendor){
+autoFillBtn = `<button class="btn-secondary mt-6" id="autoFillOCR">Auto-Fill Fields</button>`;
+}
+
+qsel('ocrResult').innerHTML=`
+<div class="card">
+<h3>Extracted Text:</h3>
+<pre style="white-space:pre-wrap;background:#0f172a;padding:10px;border-radius:8px;max-height:300px;overflow-y:auto">${text}</pre>
+<div class="mt-6">
+<strong>Detected:</strong><br>
+${extractedData.vendor?`Vendor: ${extractedData.vendor}<br>`:''}
+${extractedData.amount?`Amount: $${extractedData.amount}<br>`:''}
+${extractedData.tax?`Tax: $${extractedData.tax}<br>`:''}
+${extractedData.gratuity?`Tip: $${extractedData.gratuity}<br>`:''}
+${extractedData.total?`Total: $${extractedData.total}<br>`:''}
+</div>
+<button class="btn mt-6" onclick="copyOCRText()">Copy Text</button>
+${autoFillBtn}
+</div>
+`;
+
+const autoFillButton = document.getElementById('autoFillOCR');
+if(autoFillButton){
+autoFillButton.addEventListener('click',()=>{
+populateOCRData(window.lastExtractedData);
+});
+}
+
+window.lastOCRText=text;
+showToast('OCR complete!');
+}catch(err){
+alert('OCR failed: '+err.message);
+}finally{
+qsel('processOCR').disabled=false;
+qsel('processOCR').textContent='Process Image';
+}
+};
+
+img.src=URL.createObjectURL(file);
+});
+
+function copyOCRText(){
+if(window.lastOCRText){
+navigator.clipboard.writeText(window.lastOCRText).then(()=>{
+showToast('Text copied to clipboard!');
+}).catch(()=>{
+alert('Failed to copy text');
+});
+}
+}
+
+function populateOCRData(data){
+if(!data){
+alert('No data to populate');
+return;
+}
+console.log('Populating OCR data:',data);
+document.querySelector('.tab[data-tab="job"]').click();
+setTimeout(()=>{
+if(data.amount){
+const amtField = qsel('rateHourly');
+if(amtField){
+amtField.value = parseFloat(data.amount);
+console.log('Set amount:',data.amount);
+}
+}
+if(data.tax){
+const taxField = qsel('taxValue');
+const taxTypeField = qsel('taxType');
+if(taxField && taxTypeField){
+taxField.value = parseFloat(data.tax);
+taxTypeField.value='fixed';
+console.log('Set tax:',data.tax);
+}
+}
+if(data.gratuity){
+const tipField = qsel('gratuityValue');
+const tipTypeField = qsel('gratuityType');
+if(tipField && tipTypeField){
+tipField.value = parseFloat(data.gratuity);
+tipTypeField.value='fixed';
+console.log('Set gratuity:',data.gratuity);
+}
+}
+if(data.vendor){
+const nameField = qsel('clientName');
+if(nameField){
+nameField.value = data.vendor;
+console.log('Set vendor:',data.vendor);
+}
+}
+showToast('OCR data populated! Review fields and adjust as needed.');
+},100);
+}
+
+// Logo Upload Handling
+let companyLogo = localStorage.getItem('companyLogo');
+const logoUpload = document.getElementById('logoUpload');
+
+if (logoUpload) {
+if (companyLogo) {
+const status = document.createElement('small');
+status.style.color = '#22c55e';
+status.textContent = ' ✓ Logo uploaded';
+logoUpload.parentElement.appendChild(status);
+}
+logoUpload.addEventListener('change', function(e) {
+const file = e.target.files[0];
+if (file) {
+if (file.size > 1500000) {
+alert('Logo file too large. Please use an image under 1MB.');
+return;
+}
+const reader = new FileReader();
+reader.onload = function(event) {
+companyLogo = event.target.result;
+localStorage.setItem('companyLogo', companyLogo);
+showToast('Logo uploaded successfully!');
+const existing = logoUpload.parentElement.querySelector('small');
+if(!existing){
+const status = document.createElement('small');
+status.style.color = '#22c55e';
+status.textContent = ' ✓ Logo uploaded';
+logoUpload.parentElement.appendChild(status);
+}
+};
+reader.readAsDataURL(file);
+}
+});
+}
+
+// Load client list for dropdown
+function loadClientList(){
+const sel=qsel('clientSelect');
+sel.innerHTML='<option value="">-- Select Client --</option>';
+const uniqueCustomers=new Set();
+DB.invoices.forEach(inv=>{
+if(inv.customer?.name){
+uniqueCustomers.add(inv.customer.name);
+}
+});
+uniqueCustomers.forEach(name=>{
+const opt=document.createElement('option');
+opt.value=name;
+opt.textContent=name;
+sel.appendChild(opt);
+});
+}
+
+
+// Init
+waitForLeaflet(initMap);
+DB.loadInventoryItems(); // Load items from inventory-manager
+loadCustomersTable();
+loadItemsTable();
+loadItemSelector();
+loadClientList();
+loadHistory();
+loadSettings();
+updateKPIs();
+loadReceivables();
+loadBookingsList();
+checkNewBookings();
+// Receivables functions
+function loadReceivables(){
+const tbody=$('#receivablesTable tbody');
+const filter=qsel('receivablesFilter').value;
+if(!tbody)return;
+tbody.innerHTML='';
+let totalOut=0;
+const unpaidInvoices=DB.invoices.filter(inv=>inv.status!=='paid');
+unpaidInvoices.forEach(inv=>{
+if(filter && inv.customer?.name!==filter)return;
+const paid=inv.total-inv.balance;
+totalOut+=inv.balance;
+const row=document.createElement('tr');
+row.innerHTML=`
+<td>${inv.invoiceNumber}</td>
+<td>${inv.customer?.name||'N/A'}</td>
+<td>$${inv.total.toFixed(2)}</td>
+<td>$${paid.toFixed(2)}</td>
+<td>$${inv.balance.toFixed(2)}</td>
+<td class="status-unpaid">${inv.status}</td>
+<td>
+<button class="btn-secondary" onclick="markInvoicePaid('${inv.invoiceNumber}')">Mark Paid</button>
+<button class="btn-ghost" onclick="viewInvoice('${inv.invoiceNumber}')">View</button>
+</td>
+`;
+tbody.appendChild(row);
+});
+qsel('totalOutstanding').textContent='$'+totalOut.toFixed(2);
+
+// Populate filter dropdown
+const filterSel=qsel('receivablesFilter');
+if(filterSel){
+const currentVal=filterSel.value;
+filterSel.innerHTML='<option value="">All Customers</option>';
+const customers=new Set();
+unpaidInvoices.forEach(inv=>{
+if(inv.customer?.name)customers.add(inv.customer.name);
+});
+customers.forEach(name=>{
+const opt=document.createElement('option');
+opt.value=name;
+opt.textContent=name;
+if(name===currentVal)opt.selected=true;
+filterSel.appendChild(opt);
+});
+}
+}
+
+// Payment functions
+const payNowBtn=qsel('payNow');
+if(payNowBtn){
+payNowBtn.addEventListener('click',()=>{
+const link=qsel('paymentLink').value;
+const amount=qsel('payAmount').value;
+const desc=qsel('payDesc').value;
+if(!link){
+alert('Please enter payment link');
+return;
+}
+const url=`${link}?prefilled_amount=${Math.round(amount*100)}`;
+window.open(url,'_blank');
+});
+}
+
+// Integration placeholder functions
+const googleSignInBtn=qsel('googleSignIn');
+if(googleSignInBtn){
+googleSignInBtn.addEventListener('click',()=>{
+showToast('Google integration requires /config/integrations.json setup');
+});
+}
+const loadCalendarBtn=qsel('loadCalendar');
+if(loadCalendarBtn){
+loadCalendarBtn.addEventListener('click',()=>{
+showToast('Calendar integration requires setup');
+});
+}
+const scanGmailBtn=qsel('scanGmail');
+if(scanGmailBtn){
+scanGmailBtn.addEventListener('click',()=>{
+showToast('Gmail integration requires setup');
+});
+}
+// ===== BOOKING INQUIRY INTEGRATION =====
+
+// Check for incoming booking data on page load
+function checkForBookingData() {
+  // Check URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const action = urlParams.get('action');
+  
+  if (action === 'newBooking') {
+    const bookingData = {
+      name: urlParams.get('name'),
+      email: urlParams.get('email'),
+      date: urlParams.get('date'),
+      time: urlParams.get('time'),
+      pickup: urlParams.get('pickup'),
+      dropoff: urlParams.get('dropoff'),
+      type: urlParams.get('type'),
+      hours: urlParams.get('hours'),
+      passengers: urlParams.get('passengers'),
+      notes: urlParams.get('notes')
+    };
+    
+    populateFromBooking(bookingData);
+    
+    // Clear URL parameters
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  
+  // Also check localStorage for pending booking
+  const pendingBooking = localStorage.getItem('pendingBooking');
+  if (pendingBooking) {
+    const bookingData = JSON.parse(pendingBooking);
+    populateFromBooking(bookingData);
+    localStorage.removeItem('pendingBooking');
+  }
+}
+
+function populateFromBooking(data) {
+  // Switch to Job tab
+  document.querySelector('.tab[data-tab="job"]').click();
+  
+  // Populate customer details
+  if (data.name) qsel('clientName').value = data.name;
+  if (data.email) qsel('clientEmail').value = data.email;
+  
+  // Populate job details
+  if (data.type === 'hourly' && data.hours) {
+    qsel('scheduledHours').value = parseFloat(data.hours);
+  } else if (data.type === 'oneway') {
+    qsel('scheduledHours').value = 1; // Default for one-way
+  }
+  
+  // Set scheduled pickup time
+  if (data.date && data.time) {
+    const dateTimeString = `${data.date}T${data.time}`;
+    qsel('scheduledPickup').value = dateTimeString;
+  }
+  
+  // Populate notes
+  let noteText = '';
+  if (data.passengers) {
+    noteText += `Passengers: ${data.passengers}\n`;
+  }
+  if (data.type) {
+    noteText += `Service Type: ${data.type === 'hourly' ? 'Hourly Rate' : 'One-Way Transfer'}\n`;
+  }
+  if (data.notes) {
+    noteText += `Special Requests: ${data.notes}\n`;
+  }
+  qsel('jobMemo').value = noteText.trim();
+  
+  // Add stops
+  if (data.pickup) {
+    qsel('newStopAddr').value = data.pickup;
+    qsel('addStopBtn').click();
+  }
+  
+  setTimeout(() => {
+    if (data.dropoff) {
+      qsel('newStopAddr').value = data.dropoff;
+      qsel('addStopBtn').click();
+    }
+  }, 500);
+  
+  showToast('✅ Booking inquiry loaded! Review and adjust details as needed.');
+}
+
+// Run on page load
+checkForBookingData();
+// ===== BOOKING MANAGEMENT SYSTEM =====
+
+function loadBookingsList() {
+  const bookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+  const list = qsel('bookingsList');
+  
+  if (!list) return;
+  
+  if (bookings.length === 0) {
+    list.innerHTML = '<p class="muted">No pending bookings</p>';
+    return;
+  }
+  
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Booking ID</th>
+        <th>Customer</th>
+        <th>Date & Time</th>
+        <th>Service</th>
+        <th>Passengers</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+  
+  const tbody = table.querySelector('tbody');
+  
+  bookings.reverse().forEach((booking, index) => {
+    const row = document.createElement('tr');
+    const actualIndex = bookings.length - 1 - index;
+    const serviceText = booking.serviceType === 'hourly' 
+      ? `Hourly (${booking.hours}h)` 
+      : 'One-Way';
+    
+    row.innerHTML = `
+      <td><span class="badge">${booking.id}</span></td>
+      <td>
+        <strong>${booking.fullName}</strong><br>
+        <span class="small">${booking.email}</span><br>
+        <span class="small">${booking.phone}</span>
+      </td>
+      <td>
+        ${new Date(booking.tripDate).toLocaleDateString()}<br>
+        <span class="small">${booking.pickupTime}</span>
+      </td>
+      <td>${serviceText}</td>
+      <td>${booking.passengers}</td>
+   <td>
+  <button class="btn" onclick="loadBookingToJob(${actualIndex})">Load to Job</button>
+  <button class="btn-secondary mt-6" onclick="openEditBooking(${actualIndex})">Edit</button>
+  <button class="btn-danger mt-6" onclick="deleteBooking(${actualIndex})">Delete</button>
+</td>
+    `;
+    tbody.appendChild(row);
+  });
+  
+  list.innerHTML = '';
+  list.appendChild(table);
+}
+
+function loadBookingToJob(index) {
+  const bookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+  const booking = bookings[index];
+  
+  if (!booking) {
+    alert('Booking not found');
+    return;
+  }
+  
+  // Switch to Job tab
+  document.querySelector('.tab[data-tab="job"]').click();
+  
+  // Populate customer details
+  qsel('clientName').value = booking.fullName;
+  qsel('clientEmail').value = booking.email;
+  
+  // Populate job details
+  if (booking.serviceType === 'hourly' && booking.hours) {
+    qsel('scheduledHours').value = parseFloat(booking.hours);
+  } else {
+    qsel('scheduledHours').value = 1;
+  }
+  
+  // Set scheduled pickup time
+  if (booking.tripDate && booking.pickupTime) {
+    const dateTimeString = `${booking.tripDate}T${booking.pickupTime}`;
+    qsel('scheduledPickup').value = dateTimeString;
+  }
+  
+  // Populate notes
+  let noteText = `Booking ID: ${booking.id}\n`;
+  noteText += `Passengers: ${booking.passengers}\n`;
+  noteText += `Phone: ${booking.phone}\n`;
+  if (booking.company) noteText += `Company: ${booking.company}\n`;
+  noteText += `Service: ${booking.serviceType === 'hourly' ? 'Hourly Rate' : 'One-Way Transfer'}\n`;
+  if (booking.notes) noteText += `Special Requests: ${booking.notes}`;
+  qsel('jobMemo').value = noteText.trim();
+  
+  // Clear existing stops first
+  stops = [];
+  stopMarkers.forEach(m => map.removeLayer(m));
+  stopMarkers = [];
+  updateStopList();
+  poly.setLatLngs([]);
+  
+  // Add pickup location
+  setTimeout(() => {
+    if (booking.pickupLocation) {
+      qsel('newStopAddr').value = booking.pickupLocation;
+      geocodeToCoords(booking.pickupLocation)
+        .then(result => {
+          addStop(result.lat, result.lon, result.display || booking.pickupLocation);
+          qsel('newStopAddr').value = '';
+        })
+        .catch(err => {
+          console.error('Geocoding failed for pickup:', err);
+          showToast('Could not geocode pickup location');
+        });
+    }
+  }, 100);
+  
+  // Add dropoff location
+  setTimeout(() => {
+    if (booking.dropoffLocation) {
+      qsel('newStopAddr').value = booking.dropoffLocation;
+      geocodeToCoords(booking.dropoffLocation)
+        .then(result => {
+          addStop(result.lat, result.lon, result.display || booking.dropoffLocation);
+          qsel('newStopAddr').value = '';
+          // Auto-calculate route if 2 stops
+          if (stops.length === 2) {
+            qsel('routeBtn').click();
+          }
+        })
+        .catch(err => {
+          console.error('Geocoding failed for dropoff:', err);
+          showToast('Could not geocode dropoff location');
+        });
+    }
+  }, 1000);
+  
+  showToast(`✅ Booking ${booking.id} loaded! Review and start job when ready.`);
+}
+
+function deleteBooking(index) {
+  if (!confirm('Delete this booking?')) return;
+  
+  const bookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+  bookings.splice(index, 1);
+  localStorage.setItem('pendingBookings', JSON.stringify(bookings));
+  loadBookingsList();
+  showToast('Booking deleted');
+}
+
+// Refresh button
+const refreshBtn = qsel('refreshBookings');
+if (refreshBtn) {
+  refreshBtn.addEventListener('click', () => {
+    loadBookingsList();
+    showToast('Bookings refreshed');
+  });
+}
+
+// Auto-load bookings when switching to bookings tab
+document.querySelectorAll('.tab').forEach(tab => {
+  if (tab.dataset.tab === 'bookings') {
+    tab.addEventListener('click', () => {
+      loadBookingsList();
+    });
+  }
+});
+
+// ===== BOOKING EDIT FUNCTIONS =====
+
+let currentEditingBookingIndex = null;
+
+function openEditBooking(index){
+const bookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+const booking = bookings[index];
+if(!booking)return;
+
+currentEditingBookingIndex = index;
+
+qsel('editBookingName').value = booking.fullName;
+qsel('editBookingEmail').value = booking.email;
+qsel('editBookingPhone').value = booking.phone;
+qsel('editBookingDate').value = booking.tripDate;
+qsel('editBookingTime').value = booking.pickupTime;
+qsel('editBookingHours').value = booking.hours || '';
+qsel('editBookingQuote').value = booking.total || booking.quoteAmount || '';
+qsel('editBookingVehicle').value = booking.vehicle ? booking.vehicle.name : 'N/A';
+qsel('editBookingStatus').value = booking.status || 'pending';
+
+// Populate itinerary
+let itineraryHTML = '<div style="font-size:14px;line-height:1.8">';
+itineraryHTML += `<div><strong>Pickup:</strong> ${booking.pickupLocation || 'Not specified'}</div>`;
+if(booking.pickupTime) itineraryHTML += `<div><strong>Time:</strong> ${booking.pickupTime}</div>`;
+itineraryHTML += `<div><strong>Drop-off:</strong> ${booking.dropoffLocation || 'Not specified'}</div>`;
+if(booking.returnLocation) itineraryHTML += `<div><strong>Return:</strong> ${booking.returnLocation}</div>`;
+if(booking.serviceType) itineraryHTML += `<div><strong>Service:</strong> ${booking.serviceType}</div>`;
+if(booking.hours) itineraryHTML += `<div><strong>Duration:</strong> ${booking.hours} hours</div>`;
+if(booking.passengers) itineraryHTML += `<div><strong>Passengers:</strong> ${booking.passengers}</div>`;
+
+// Display stops if available
+if(booking.stops && booking.stops.length > 0){
+  itineraryHTML += '<div style="margin-top:12px"><strong>Stops:</strong></div>';
+  itineraryHTML += '<ol style="margin:4px 0 0 20px;padding:0">';
+  booking.stops.forEach(stop => {
+    itineraryHTML += `<li>${stop.name || stop.address || 'Stop'} ${stop.duration ? `(${stop.duration} min)` : ''}</li>`;
+  });
+  itineraryHTML += '</ol>';
+}
+
+// Display pricing breakdown
+itineraryHTML += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><strong>Pricing:</strong></div>';
+if(booking.baseRate) itineraryHTML += `<div>Base Rate: $${booking.baseRate.toFixed(2)}</div>`;
+if(booking.discount) itineraryHTML += `<div style="color:var(--success)">Discount: -$${booking.discount.toFixed(2)}</div>`;
+if(booking.tax) itineraryHTML += `<div>Tax: $${booking.tax.toFixed(2)}</div>`;
+if(booking.gratuity) itineraryHTML += `<div>Gratuity: $${booking.gratuity.toFixed(2)}</div>`;
+itineraryHTML += `<div style="font-weight:700;margin-top:4px">Total: $${(booking.total || booking.quoteAmount || 0).toFixed(2)}</div>`;
+if(booking.depositPaid || booking.deposit) itineraryHTML += `<div style="color:var(--success)">Deposit: $${(booking.depositPaid || booking.deposit || 0).toFixed(2)}</div>`;
+
+itineraryHTML += '</div>';
+qsel('editBookingItinerary').innerHTML = itineraryHTML;
+
+qsel('editBookingModal').classList.remove('hidden');
+}
+
+function closeEditBooking(){
+qsel('editBookingModal').classList.add('hidden');
+currentEditingBookingIndex = null;
+}
+
+function saveBookingEdit(){
+if(currentEditingBookingIndex === null)return;
+
+const bookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+const booking = bookings[currentEditingBookingIndex];
+
+booking.fullName = qsel('editBookingName').value;
+booking.email = qsel('editBookingEmail').value;
+booking.phone = qsel('editBookingPhone').value;
+booking.tripDate = qsel('editBookingDate').value;
+booking.pickupTime = qsel('editBookingTime').value;
+booking.hours = qsel('editBookingHours').value;
+booking.quoteAmount = parseFloat(qsel('editBookingQuote').value) || 0;
+booking.status = qsel('editBookingStatus').value;
+
+localStorage.setItem('pendingBookings', JSON.stringify(bookings));
+closeEditBooking();
+loadBookingsList();
+showToast('Booking updated!');
+}
+
+function sendQuoteEmail(){
+if(currentEditingBookingIndex === null)return;
+
+const bookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+const booking = bookings[currentEditingBookingIndex];
+const quote = parseFloat(qsel('editBookingQuote').value) || 0;
+
+const subject = encodeURIComponent(`Quote for your booking - ${booking.id}`);
+const body = encodeURIComponent(`Hi ${booking.fullName},
+
+Thank you for your booking inquiry!
+
+BOOKING DETAILS:
+Date: ${new Date(booking.tripDate).toLocaleDateString()}
+Time: ${booking.pickupTime}
+Pickup: ${booking.pickupLocation}
+Drop-off: ${booking.dropoffLocation}
+Service: ${booking.serviceType === 'hourly' ? booking.hours + ' hours' : 'One-way transfer'}
+Passengers: ${booking.passengers}
+Vehicle: ${booking.vehicle?.name || 'TBD'}
+
+QUOTE: $${quote.toFixed(2)}
+
+PAYMENT OPTIONS:
+[Add your payment links here]
+
+Please reply to confirm your booking.
+
+Best regards,
+Your Company Name
+`);
+
+window.open(`mailto:${booking.email}?subject=${subject}&body=${body}`);
+showToast('Email client opened with quote');
+}
+
+// Enhanced booking detection with polling
+let lastBookingCheck = Date.now();
+
+function checkNewBookings() {
+  const bookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+  const lastCheck = localStorage.getItem('lastBookingCheck') || '0';
+  const hasNew = bookings.some(b => new Date(b.timestamp).getTime() > parseInt(lastCheck));
+  
+  if(hasNew) {
+    loadBookingsList();
+    localStorage.setItem('lastBookingCheck', Date.now().toString());
+  }
+}
+
+// Poll every 5 seconds when on bookings tab
+setInterval(() => {
+  const activeTab = document.querySelector('.tab.active');
+  if(activeTab && activeTab.dataset.tab === 'bookings') {
+    checkNewBookings();
+  }
+}, 5000);
+
+// Also listen for storage events
+window.addEventListener('storage', function(e) {
+  if (e.key === 'pendingBookings') {
+    loadBookingsList();
+  }
+  if (e.key === 'newBookingAlert') {
+    const alert = JSON.parse(e.newValue);
+    if (alert && alert.timestamp > (Date.now() - 5000)) {
+      const bookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const booking = bookings.find(b => b.id === alert.id);
+      if (booking) {
+        showBookingNotification(booking);
+        beep();
+        loadBookingsList();
+      }
+      localStorage.removeItem('newBookingAlert');
+    }
+  }
+});
+
+// Initial check on page load
+checkNewBookings();
+
+
+// Multiple Photos Support
+window.selectedFiles = [];
+
+const categorySelect = qsel('newItemCategory');
+if(categorySelect){
+  categorySelect.addEventListener('change', function(){
+    const isVehicle = this.value === 'vehicle';
+    const vehicleSection = document.getElementById('vehiclePricingSection');
+    const regularSection = document.getElementById('regularPricingSection');
+    
+    if(vehicleSection && regularSection){
+      if(isVehicle) {
+        vehicleSection.style.display = 'block';
+        regularSection.style.display = 'none';
+        // Clear regular pricing
+        qsel('newItemPrice').value = '';
+      } else {
+        vehicleSection.style.display = 'none';
+        regularSection.style.display = 'block';
+        // Clear vehicle pricing
+        qsel('newItemHourlyRate').value = '';
+        qsel('newItemTransferRate').value = '';
+      }
+    }
+  });
+}
+const filesInput = qsel('newItemFiles');
+if(filesInput){
+  filesInput.addEventListener('change', function(e){
+    const files = Array.from(e.target.files);
+    if(window.selectedFiles.length + files.length > 10){
+      alert('Max 10 photos!');
+      return;
+    }
+    files.forEach(file => {
+      if(file.size > 50000000){ alert(file.name + ' too large (max 50MB)'); return; }
+      window.selectedFiles.push(file);
+    });
+    displayPhotoPreview();
+  });
+}
+
+function displayPhotoPreview(){
+  const container = document.getElementById('photoPreviewContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  
+  window.selectedFiles.forEach((file, index) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'position:relative;width:80px;height:80px;border:1px solid var(--line);border-radius:8px;overflow:hidden;';
+    const reader = new FileReader();
+    reader.onload = e => {
+      // Check if it's a video
+      if(file.type.startsWith('video')) {
+        div.innerHTML = `
+          <video src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" muted></video>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:20px;text-shadow:0 2px 4px rgba(0,0,0,0.8);">▶</div>
+          <button onclick="removePhoto(${index})" style="position:absolute;top:2px;right:2px;background:rgba(239,68,68,0.9);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;">×</button>
+        `;
+      } else {
+        // Image
+        div.innerHTML = `
+          <img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">
+          <button onclick="removePhoto(${index})" style="position:absolute;top:2px;right:2px;background:rgba(239,68,68,0.9);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;">×</button>
+        `;
+      }
+    };
+    reader.readAsDataURL(file);
+    container.appendChild(div);
+  });
+  
+  if(window.selectedFiles.length > 0){
+    const badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = `${window.selectedFiles.length}/10 files`;
+    container.appendChild(badge);
+  }
+}
+
+// ============================================
+// VERIFICATION SCRIPT
+// ============================================
+console.log('✅ Vehicle pricing patches loaded');
+console.log('Test checklist:');
+console.log('1. Add service item → price field shows');
+console.log('2. Add vehicle item → hourly + transfer fields show');
+console.log('3. Switch category → fields update correctly');
+console.log('4. Save vehicle → both rates saved');
+console.log('5. Items table → shows $/hr and transfer price');
+console.log('6. Upload photo + video → both preview correctly');
+console.log('7. Gallery → videos play in modal');
+function displayPhotoPreview(){
+  const container = document.getElementById('photoPreviewContainer');
+  if(!container) return;
+  container.innerHTML = '';
+  
+  window.selectedFiles.forEach((file, index) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'position:relative;width:80px;height:80px;border:1px solid var(--line);border-radius:8px;overflow:hidden;';
+    const reader = new FileReader();
+    reader.onload = e => {
+      // Check if it's a video
+      if(file.type.startsWith('video')) {
+        div.innerHTML = `
+          <video src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;" muted></video>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:20px;text-shadow:0 2px 4px rgba(0,0,0,0.8);">▶</div>
+          <button onclick="removePhoto(${index})" style="position:absolute;top:2px;right:2px;background:rgba(239,68,68,0.9);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;">×</button>
+        `;
+      } else {
+        // Image
+        div.innerHTML = `
+          <img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">
+          <button onclick="removePhoto(${index})" style="position:absolute;top:2px;right:2px;background:rgba(239,68,68,0.9);color:#fff;border:none;border-radius:4px;padding:2px 6px;cursor:pointer;">×</button>
+        `;
+      }
+    };
+    reader.readAsDataURL(file);
+    container.appendChild(div);
+  });
+  
+  if(window.selectedFiles.length > 0){
+    const badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = `${window.selectedFiles.length}/10 files`;
+    container.appendChild(badge);
+  }
+}
+
+// ============================================
+// VERIFICATION SCRIPT
+// ============================================
+console.log('✅ Vehicle pricing patches loaded');
+console.log('Test checklist:');
+console.log('1. Add service item → price field shows');
+console.log('2. Add vehicle item → hourly + transfer fields show');
+console.log('3. Switch category → fields update correctly');
+console.log('4. Save vehicle → both rates saved');
+console.log('5. Items table → shows $/hr and transfer price');
+console.log('6. Upload photo + video → both preview correctly');
+console.log('7. Gallery → videos play in modal');
+
+
+
+// Prepaid Invoice Creation - FIXED VERSION
+const prepaidBtn = qsel('createPrepaidBtn');
+if(prepaidBtn){
+  prepaidBtn.addEventListener('click', () => {
+    const clientName = qsel('quickInvoiceClient').value.trim();
+    const amount = parseFloat(qsel('prepaidAmount').value) || 0;
+    const desc = qsel('prepaidDesc').value.trim();
+    const paymentType = qsel('quickInvoicePaymentType')?.value || 'postpaid';
+    
+    if(!clientName){ 
+      alert('Please enter client name'); 
+      return; 
+    }
+    if(amount <= 0){ 
+      alert('Please enter invoice amount'); 
+      return; 
+    }
+    if(!desc){
+      alert('Please enter service description');
+      return;
+    }
+    
+    const now = new Date();
+    const prefix = paymentType === 'prepaid' ? 'PREPAID' : 'POSTPAID';
+    const invoiceNumber = `INV-${prefix}-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(DB.invoices.length+1).padStart(3,'0')}`;
+    
+    const quickInvoice = {
+      invoiceNumber,
+      date: now.toISOString(),
+      customer: clientName,
+      customerEmail: '',
+      customerPhone: '',
+      clientType: 'individual',
+      paymentType: paymentType,
+      duration: 0,
+      scheduledHours: 0,
+      overtimeHours: 0,
+      rate: 0,
+      baseCost: 0,
+      overtimeCost: 0,
+      subtotal: amount,
+      discount: 0,
+      tax: 0,
+      gratuity: 0,
+      deposit: paymentType === 'prepaid' ? amount : 0,
+      total: amount,
+      balance: paymentType === 'prepaid' ? 0 : amount,
+      lineItems: [{
+        name: desc,
+        desc: paymentType === 'prepaid' ? 'Paid in advance' : 'Service completed',
+        price: amount,
+        qty: 1
+      }],
+      stops: [],
+      distance: 0,
+      distanceKm: '0',
+      distanceMi: '0',
+      notes: `${paymentType === 'prepaid' ? 'Prepaid' : 'Post-paid'} invoice created on ${now.toLocaleString()}`,
+      terms: paymentType === 'prepaid' ? 'PAID IN FULL - Thank you!' : 'Payment due upon receipt',
+      status: paymentType === 'prepaid' ? 'paid' : 'unpaid',
+      gracePeriod: 0
+    };
+    
+    DB.invoices.push(quickInvoice);
+    DB.save();
+    loadHistory();
+    updateKPIs();
+    loadReceivables();
+    
+    // Clear form
+    qsel('quickInvoiceClient').value = '';
+    qsel('prepaidAmount').value = '';
+    qsel('prepaidDesc').value = '';
+    
+    showToast(`✅ ${paymentType === 'prepaid' ? 'Pre-paid' : 'Post-paid'} invoice created: ${invoiceNumber}`);
+    
+    // Generate PDF immediately
+    setTimeout(() => {
+      generatePDF(prepaidInvoice);
+      showToast('✅ Prepaid invoice created and downloaded!');
+    }, 100);
+  });
+}
+
+// Update loadItemsTable to show new info
+function loadItemsTable(){
+  const container = qsel('itemsTable');
+  if(!container) return;
+  container.innerHTML = '';
+  if(DB.items.length === 0){ container.innerHTML = '<p class="muted">No items yet</p>'; return; }
+  
+  const table = document.createElement('table');
+  table.innerHTML = '<thead><tr><th>Item</th><th>Category</th><th>Pricing</th><th>Capacity</th><th>Photos</th><th>Bookable</th><th>Actions</th></tr></thead><tbody></tbody>';
+  const tbody = table.querySelector('tbody');
+  
+  DB.items.forEach((item, i) => {
+    const row = document.createElement('tr');
+    let pricingText = item.category === 'vehicle' ? `$${item.hourlyRate || 0}/hr<br>$${item.transferRate || 0} transfer` : `$${item.price || 0}`;
+    const photoCount = (item.mediaFiles?.length || 0) + (item.mediaUrl ? 1 : 0);
+    
+    row.innerHTML = `
+      <td><strong>${item.name}</strong><br><span class="small">${item.desc || '—'}</span></td>
+      <td><span class="badge">${item.category || 'service'}</span></td>
+      <td>${pricingText}</td>
+      <td>${item.capacity || '—'}</td>
+      <td>📷 ${photoCount}</td>
+      <td>${item.bookable ? '✅' : '❌'}</td>
+      <td>
+        <button class="btn-secondary" onclick="viewItemPhotos(${i})">View</button>
+        <button class="btn-secondary" onclick="editItem(${i})">Edit</button>
+        <button class="btn-danger mt-6" onclick="deleteItem(${i})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+  
+  container.appendChild(table);
+}
+
+function viewItemPhotos(index){
+  const item = DB.items[index];
+  let html = `<div class="card"><h3>${item.name} - Photos</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px;">`;
+  
+  // Handle videoUrl (YouTube iframe or direct video)
+  if(item.videoUrl){
+    if(item.videoUrl.includes('youtube.com/embed')){
+      html += `<iframe src="${item.videoUrl}" style="width:100%;height:150px;border-radius:8px;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>`;
+    } else {
+      html += `<video src="${item.videoUrl}" controls style="width:100%;height:150px;object-fit:cover;border-radius:8px;"></video>`;
+    }
+  }
+  // Handle imageUrl
+  if(item.imageUrl) html += `<img src="${item.imageUrl}" style="width:100%;height:150px;object-fit:cover;border-radius:8px;">`;
+  // Legacy mediaUrl handling
+  if(item.mediaUrl && !item.videoUrl && !item.imageUrl) html += `<img src="${item.mediaUrl}" style="width:100%;height:150px;object-fit:cover;border-radius:8px;">`;
+  // Handle uploaded files
+  if(item.mediaFiles) item.mediaFiles.forEach(f => {
+    html += f.type.startsWith('image') ? `<img src="${f.data}" style="width:100%;height:150px;object-fit:cover;border-radius:8px;">` : `<video src="${f.data}" controls style="width:100%;height:150px;object-fit:cover;border-radius:8px;"></video>`;
+  });
+  
+  html += `</div><button class="btn-ghost mt-10" onclick="this.parentElement.remove()">Close</button></div>`;
+  
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;';
+  modal.innerHTML = html;
+  modal.onclick = e => { if(e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+}
+
+
+// Auto-load on page load
+window.addEventListener('load', function() {
+  // Load saved customer info
+  const savedCustomer = localStorage.getItem('tge_last_customer');
+  if (savedCustomer) {
+    try {
+      const customer = JSON.parse(savedCustomer);
+      if (customer.name) document.getElementById('custName').value = customer.name;
+      if (customer.phone) document.getElementById('custPhone').value = customer.phone;
+      if (customer.email) document.getElementById('custEmail').value = customer.email;
+    } catch(e) {}
+  }
+  
+  // Load and display saved items
+  displayItems();
+});
+
+// Save customer info on input
+['custName', 'custPhone', 'custEmail'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('change', function() {
+      const customer = {
+        name: document.getElementById('custName').value,
+        phone: document.getElementById('custPhone').value,
+        email: document.getElementById('custEmail').value
+      };
+      localStorage.setItem('tge_last_customer', JSON.stringify(customer));
+    });
+  }
+});
+
+// ===== INVENTORY MANAGER =====
+const INV_STORAGE_KEY = 'tge_inventory_items';
+let inv_editingItem = null;
+let inv_mediaFiles = [];
+
+function invLoadInventory() {
+  const items = invGetItems();
+  const grid = document.getElementById('inv_inventoryGrid');
+  const emptyState = document.getElementById('inv_emptyState');
+  if(!grid) return;
+  if(items.length === 0) {
+    grid.style.display = 'none';
+    emptyState.style.display = 'block';
+    invUpdateStats();
+    return;
+  }
+  grid.style.display = 'grid';
+  emptyState.style.display = 'none';
+  invRenderItems(items);
+  invUpdateStats();
+}
+
+function invRenderItems(items) {
+  const grid = document.getElementById('inv_inventoryGrid');
+  if(!grid) return;
+  grid.innerHTML = items.map(item => invCreateItemCard(item)).join('');
+}
+
+function invCreateItemCard(item) {
+  const typeColors = {vehicle:'#a78bfa',service:'#22c55e',addon:'#f59e0b'};
+  const hasMedia = item.media && item.media.length > 0;
+  let firstMediaHTML = '';
+  if(hasMedia) {
+    const firstMedia = item.media[0];
+    const isObj = typeof firstMedia === 'object';
+    const type = isObj ? firstMedia.type : 'image';
+    const src = isObj ? firstMedia.src : firstMedia;
+    if(type === 'youtube') {
+      const ytId = src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/)?.[1];
+      firstMediaHTML = ytId ? `<iframe src="https://www.youtube.com/embed/${ytId}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>` : `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#000;color:#fff">YouTube</div>`;
+    } else if(type === 'video' || (typeof src === 'string' && src.startsWith('data:video'))) {
+      firstMediaHTML = `<video src="${src}" style="width:100%;height:100%;object-fit:cover" controls></video>`;
+    } else {
+      firstMediaHTML = `<img src="${src}" style="width:100%;height:100%;object-fit:cover" alt="${item.name}">`;
+    }
+  }
+  return `<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;transition:all 0.2s" data-inv-id="${item.id}"><div style="position:relative;margin-bottom:12px;border-radius:8px;overflow:hidden;background:rgba(0,0,0,0.4);height:200px">${hasMedia ? firstMediaHTML : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:48px;opacity:0.3">📦</div>'}${hasMedia && item.media.length > 1 ? `<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;padding:4px 10px;border-radius:12px;font-size:11px">${item.media.length} items</div>` : ''}</div><div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px"><div style="font-size:18px;font-weight:700;flex:1">${item.name}</div><span style="padding:4px 12px;border-radius:999px;font-size:11px;font-weight:600;text-transform:uppercase;background:rgba(${typeColors[item.type] === '#a78bfa' ? '139,92,246' : typeColors[item.type] === '#22c55e' ? '34,197,94' : '245,158,11'},0.2);color:${typeColors[item.type]}">${item.type}</span></div>${item.description ? `<div style="color:var(--muted);font-size:13px;margin-bottom:12px">${item.description}</div>` : ''}<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;font-size:13px">${item.hourlyRate ? `<div style="display:flex;justify-content:space-between;padding:6px;background:rgba(15,23,42,0.5);border-radius:6px"><span style="color:var(--muted)">Hourly:</span><span style="font-weight:600">$${item.hourlyRate}</span></div>` : ''}${item.transferRate ? `<div style="display:flex;justify-content:space-between;padding:6px;background:rgba(15,23,42,0.5);border-radius:6px"><span style="color:var(--muted)">Transfer:</span><span style="font-weight:600">$${item.transferRate}</span></div>` : ''}${item.capacity ? `<div style="display:flex;justify-content:space-between;padding:6px;background:rgba(15,23,42,0.5);border-radius:6px"><span style="color:var(--muted)">Capacity:</span><span style="font-weight:600">${item.capacity}</span></div>` : ''}<div style="display:flex;justify-content:space-between;padding:6px;background:rgba(15,23,42,0.5);border-radius:6px"><span style="color:var(--muted)">Status:</span><span style="font-weight:600;color:${item.bookable ? 'var(--success)' : 'var(--muted)'}">${item.bookable ? '✓ Bookable' : '✗ Inactive'}</span></div></div><div style="display:flex;gap:8px"><button onclick="invEditItem('${item.id}')" style="flex:1;padding:8px;font-size:13px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer">Edit</button><button onclick="invDeleteItem('${item.id}')" style="flex:1;padding:8px;font-size:13px;border-radius:8px;border:none;background:var(--danger);color:#fff;cursor:pointer">Delete</button></div></div>`;
+}
+function invGetItems() { return JSON.parse(localStorage.getItem(INV_STORAGE_KEY) || '[]'); }
+function invSaveItems(items) { localStorage.setItem(INV_STORAGE_KEY, JSON.stringify(items)); }
+function invOpenAddModal() { inv_editingItem = null; inv_mediaFiles = []; const form = document.getElementById('inv_itemForm'); if(form) form.reset(); document.getElementById('inv_itemId').value = ''; document.getElementById('inv_modalTitle').textContent = 'Add Item'; document.getElementById('inv_mediaPreviews').innerHTML = ''; invUpdateMediaCount(); document.getElementById('inv_itemModal').style.display = 'flex'; }
+function invEditItem(id) { const items = invGetItems(); inv_editingItem = items.find(i => i.id === id); if(!inv_editingItem) return; document.getElementById('inv_itemId').value = inv_editingItem.id; document.getElementById('inv_itemType').value = inv_editingItem.type; document.getElementById('inv_itemName').value = inv_editingItem.name; document.getElementById('inv_itemDescription').value = inv_editingItem.description || ''; document.getElementById('inv_itemHourlyRate').value = inv_editingItem.hourlyRate || ''; document.getElementById('inv_itemTransferRate').value = inv_editingItem.transferRate || ''; document.getElementById('inv_itemCapacity').value = inv_editingItem.capacity || ''; document.getElementById('inv_itemBookable').checked = inv_editingItem.bookable || false; inv_mediaFiles = inv_editingItem.media || []; invRenderMediaPreviews(); document.getElementById('inv_modalTitle').textContent = 'Edit Item'; document.getElementById('inv_itemModal').style.display = 'flex'; }
+function invCloseModal() { document.getElementById('inv_itemModal').style.display = 'none'; inv_editingItem = null; inv_mediaFiles = []; }
+function invHandleMediaUpload(files) { const maxFiles = 10; const newFiles = Array.from(files); if(inv_mediaFiles.length + newFiles.length > maxFiles) { alert(`Maximum ${maxFiles} files allowed`); return; } let processedCount = 0; newFiles.forEach(file => { if(!file.type.match(/^(image|video)\//)) { alert(`${file.name} is not a valid image or video`); return; } const reader = new FileReader(); reader.onload = (e) => { inv_mediaFiles.push({type: file.type.startsWith('video') ? 'video' : 'image', src: e.target.result, name: file.name }); processedCount++; if(processedCount === newFiles.length) { invRenderMediaPreviews(); } }; reader.readAsDataURL(file); }); }
+function invAddMediaURL() { const url = document.getElementById('inv_mediaURL').value.trim(); if(!url) return; if(inv_mediaFiles.length >= 10) { alert('Maximum 10 files allowed'); return; } let type = 'url'; if(url.includes('youtube.com') || url.includes('youtu.be')) { type = 'youtube'; } else if(url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) { type = 'image'; } else if(url.match(/\.(mp4|mov|webm)$/i)) { type = 'video'; } inv_mediaFiles.push({type: type, src: url, name: url}); document.getElementById('inv_mediaURL').value = ''; invRenderMediaPreviews(); }
+function invRenderMediaPreviews() { const container = document.getElementById('inv_mediaPreviews'); container.innerHTML = inv_mediaFiles.map((media, i) => { const isObj = typeof media === 'object'; const type = isObj ? media.type : 'image'; const src = isObj ? media.src : media; let preview = ''; if(type === 'youtube') { const ytId = src.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/)?.[1]; preview = ytId ? `<img src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover">` : `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#000;color:#fff;font-size:10px">YT</div>`; } else if(type === 'video' || (typeof src === 'string' && src.startsWith('data:video'))) { preview = `<video src="${src}" style="width:100%;height:100%;object-fit:cover"></video>`; } else { preview = `<img src="${src}" style="width:100%;height:100%;object-fit:cover">`; } return `<div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:rgba(0,0,0,0.4)">${preview}<button type="button" onclick="invRemoveMedia(${i})" style="position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:14px">×</button></div>`; }).join(''); invUpdateMediaCount(); }
+function invRemoveMedia(index) { inv_mediaFiles.splice(index, 1); invRenderMediaPreviews(); }
+function invUpdateMediaCount() { const countEl = document.getElementById('inv_mediaCount'); const sizeEl = document.getElementById('inv_totalSize'); if(countEl) countEl.textContent = inv_mediaFiles.length; if(sizeEl) { let totalBytes = 0; inv_mediaFiles.forEach(media => { const src = typeof media === 'object' ? media.src : media; if(src.startsWith('data:')) { const base64Length = src.split(',')[1]?.length || 0; totalBytes += base64Length * 0.75; } }); sizeEl.textContent = (totalBytes / (1024 * 1024)).toFixed(2); } }
+function invSaveItem(e) { e.preventDefault(); const id = document.getElementById('inv_itemId').value || 'ITEM-' + Date.now(); const item = { id: id, type: document.getElementById('inv_itemType').value, name: document.getElementById('inv_itemName').value, description: document.getElementById('inv_itemDescription').value, hourlyRate: parseFloat(document.getElementById('inv_itemHourlyRate').value) || null, transferRate: parseFloat(document.getElementById('inv_itemTransferRate').value) || null, capacity: parseInt(document.getElementById('inv_itemCapacity').value) || null, bookable: document.getElementById('inv_itemBookable').checked, media: inv_mediaFiles, createdAt: inv_editingItem?.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString() }; const items = invGetItems(); const existingIndex = items.findIndex(i => i.id === id); if(existingIndex >= 0) { items[existingIndex] = item; } else { items.push(item); } invSaveItems(items); invCloseModal(); invLoadInventory(); showToast(existingIndex >= 0 ? '✓ Item updated!' : '✓ Item added!'); }
+function invDeleteItem(id) { if(!confirm('Delete this item? This cannot be undone.')) return; const items = invGetItems().filter(i => i.id !== id); invSaveItems(items); invLoadInventory(); showToast('✓ Item deleted'); }
+function invUpdateStats() { const items = invGetItems(); const totalEl = document.getElementById('inv_totalItems'); const vehiclesEl = document.getElementById('inv_totalVehicles'); const servicesEl = document.getElementById('inv_totalServices'); const addonsEl = document.getElementById('inv_totalAddons'); if(totalEl) totalEl.textContent = items.length; if(vehiclesEl) vehiclesEl.textContent = items.filter(i => i.type === 'vehicle').length; if(servicesEl) servicesEl.textContent = items.filter(i => i.type === 'service').length; if(addonsEl) addonsEl.textContent = items.filter(i => i.type === 'addon').length; }
+function invFilterItems() { const search = document.getElementById('inv_searchInput')?.value.toLowerCase() || ''; const type = document.getElementById('inv_filterType')?.value || 'all'; let items = invGetItems(); if(type !== 'all') { items = items.filter(i => i.type === type); } if(search) { items = items.filter(i => i.name.toLowerCase().includes(search) || (i.description && i.description.toLowerCase().includes(search)) ); } invRenderItems(items); const grid = document.getElementById('inv_inventoryGrid'); const emptyState = document.getElementById('inv_emptyState'); if(items.length === 0) { grid.style.display = 'none'; const emptyText = emptyState.querySelector('div:nth-child(2)'); if(emptyText) emptyText.textContent = search || type !== 'all' ? 'No items match your filters' : 'No items in inventory'; emptyState.style.display = 'block'; } else { grid.style.display = 'grid'; emptyState.style.display = 'none'; } }
+function invExportInventory() { const items = invGetItems(); const dataStr = JSON.stringify(items, null, 2); const blob = new Blob([dataStr], {type: 'application/json'}); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = `inventory-${Date.now()}.json`; link.click(); URL.revokeObjectURL(url); showToast('✓ Inventory exported!'); }
+const tabItems = document.querySelector('[data-tab="items"]');
+if(tabItems) { tabItems.addEventListener('click', () => { setTimeout(invLoadInventory, 100); }); }
+const invUploadArea = document.getElementById('inv_mediaUpload');
+if(invUploadArea) { invUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); invUploadArea.style.borderColor = 'var(--accent)'; }); invUploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); e.stopPropagation(); invUploadArea.style.borderColor = 'var(--line)'; }); invUploadArea.addEventListener('drop', (e) => { e.preventDefault(); e.stopPropagation(); invUploadArea.style.borderColor = 'var(--line)'; invHandleMediaUpload(e.dataTransfer.files); }); }
+
+</script>
+</body>
+</html>

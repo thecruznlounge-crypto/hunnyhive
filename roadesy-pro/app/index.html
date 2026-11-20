@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Roadesy Pro</title>
+<meta name="description" content="Roadesy Pro: get roadside jobs from drivers near you. Set your prices, share your truck live, accept or quote in one tap.">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Roadesy Pro">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--bg:#0f1115;--card:#181b22;--card2:#20242d;--line:#2b303b;--text:#f2f3f5;--muted:#9aa1ad;--amber:#ffb81c;--amber-ink:#1a1300;
+  --red:#e5383b;--green:#2ec27e;--blue:#4c9aff;--pro:#9d7bff;--pro-ink:#140a33;--pro-bg:#211a3a;--r:16px;--tabH:64px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding-top:env(safe-area-inset-top);min-height:100vh}
+a{color:var(--pro);text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+[hidden]{display:none!important}
+.wrap{max-width:620px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid #ffffff08}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;padding-bottom:10px;max-width:1100px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:20px;letter-spacing:-.3px}
+.brand img{width:32px;height:32px}
+.brand b{color:var(--amber)}
+.brand .p{background:var(--pro);color:var(--pro-ink);font-size:11px;font-weight:900;padding:3px 7px;border-radius:7px;letter-spacing:.4px}
+.hb{display:flex;gap:6px;align-items:center}
+.chip{background:var(--card);border:1px solid var(--line);padding:8px 13px;border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;gap:6px;align-items:center}
+.chip.inst{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.chip svg{width:16px;height:16px}
+.off{background:#3a1a1c;color:#ffb4b4;text-align:center;font-size:13px;padding:6px}
+main{padding-bottom:calc(var(--tabH) + 24px + env(safe-area-inset-bottom))}
+main.noTabs{padding-bottom:30px}
+h1{font-size:26px;margin:18px 0 4px;letter-spacing:-.4px}
+h2{font-size:19px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13.5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 4px;font-size:16px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sep{height:1px;background:var(--line);margin:12px 0}
+label.f{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 5px}
+input.f,select.f,textarea.f{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px}
+textarea.f{min-height:70px;resize:vertical}
+input.f:focus,select.f:focus,textarea.f:focus{outline:2px solid var(--pro);border-color:transparent}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.btn{display:block;width:100%;text-align:center;padding:14px;border-radius:14px;font-weight:800;background:var(--card2);margin-top:12px}
+.btn.pro{background:var(--pro);color:var(--pro-ink)}
+.btn.go{background:var(--green);color:#03140b}
+.btn.amb{background:var(--amber);color:var(--amber-ink)}
+.btn.ghost{background:none;border:1px solid var(--line)}
+.btn:disabled{opacity:.5}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btns .btn{flex:1;min-width:110px;margin:0}
+.err{background:#3a1a1c;color:#ffb4b4;border-radius:12px;padding:10px 12px;margin-top:12px;font-size:14px}
+.ok{background:#16301f;color:#9be7bf;border-radius:12px;padding:10px 12px;margin-top:12px;font-size:14px}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;margin:16px 0 4px}
+.seg button{flex:1;padding:10px;border-radius:10px;font-weight:800;color:var(--muted)}
+.seg button.on{background:var(--card2);color:var(--text)}
+.steps{display:flex;gap:6px;margin:14px 0 4px}.steps i{flex:1;height:5px;border-radius:3px;background:var(--line)}.steps i.on{background:var(--pro)}
+.svcT{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;margin-top:8px;cursor:pointer}
+.svcT input{width:20px;height:20px;accent-color:var(--pro)}
+.svcT b{flex:1}
+.rate{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.rate:last-child{border:0}
+.rate input[type=checkbox]{width:20px;height:20px;accent-color:var(--pro)}
+.rate span{flex:1;font-size:14px}
+.rate small{color:var(--muted)}
+.rate .money{display:flex;align-items:center;gap:4px;color:var(--muted)}
+.rate .money input{width:84px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:right;font-weight:800;font-size:16px}
+.sw{position:relative;width:52px;height:30px;flex:none;display:inline-block}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw i{position:absolute;inset:0;background:var(--line);border-radius:999px;transition:.2s}
+.sw i::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked+i{background:var(--green)}
+.sw.pro input:checked+i{background:var(--pro)}
+.sw input:checked+i::after{transform:translateX(22px)}
+.sw input:disabled+i{opacity:.4}
+.status{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:8px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
+.dot.on{background:var(--green);box-shadow:0 0 0 4px #2ec27e33}
+.dot.live{background:var(--pro);box-shadow:0 0 0 4px #9d7bff33;animation:pl 1.6s infinite}
+@keyframes pl{50%{box-shadow:0 0 0 8px #9d7bff11}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+.stat b{display:block;font-size:22px}.stat span{font-size:11.5px;color:var(--muted)}
+.sec-t{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:18px 2px 8px;display:flex;justify-content:space-between}
+.req{background:var(--card);border:1px solid #5b47a8;border-radius:var(--r);padding:14px;margin-bottom:10px;animation:pop .3s}
+.req.book{border-color:var(--amber)}.req.now{border-color:var(--green)}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+.req .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.kind{font-size:11px;font-weight:900;letter-spacing:.5px;padding:3px 8px;border-radius:7px;background:var(--pro);color:var(--pro-ink)}
+.req.book .kind{background:var(--amber);color:var(--amber-ink)}.req.now .kind{background:var(--green);color:#03140b}
+.req h4{margin:8px 0 2px;font-size:17px}
+.req .meta{font-size:13px;color:var(--muted)}
+.note{font-size:13.5px;margin-top:8px;background:var(--card2);border-radius:10px;padding:8px 10px}
+.timer{font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap}
+.qin{display:flex;gap:8px;margin-top:10px}.qin label{flex:1;font-size:12px;color:var(--muted)}
+.qin input{width:100%;margin-top:4px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:16px;font-weight:800}
+.empty{color:var(--muted);text-align:center;font-size:14px;padding:22px 10px;background:var(--card);border:1px dashed var(--line);border-radius:var(--r)}
+.job{border-color:var(--green)}
+.map{height:220px;border-radius:12px;margin-top:10px;background:var(--card2);isolation:isolate;overflow:hidden}
+.map .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.9) saturate(.5)}
+.jsteps{display:flex;gap:4px;margin:12px 0 4px}.jsteps i{flex:1;height:5px;border-radius:3px;background:var(--line)}.jsteps i.on{background:var(--green)}
+.stl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.mk{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;border:3px solid #fff;box-shadow:0 2px 8px #0009;font-size:14px}
+.mk.me{background:var(--pro)}.mk.cu{background:var(--amber)}
+.pending{text-align:center;padding:28px 18px}
+.pending .ic{width:64px;height:64px;border-radius:50%;background:var(--pro-bg);border:1px solid #5b47a8;display:grid;place-items:center;margin:0 auto 12px;font-size:28px}
+.list-k{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}.list-k span{color:var(--muted)}
+.welcome{text-align:center;padding:26px 0 6px}
+.welcome img{width:84px;height:84px}
+.welcome h1{font-size:28px}
+.perks{display:grid;gap:8px;margin:14px 0}
+.perk{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:14px;text-align:left}
+.perk i{font-style:normal;font-size:18px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#0b0d10f0;backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs .in{display:flex;width:100%;max-width:620px}
+nav.tabs button{flex:1;height:var(--tabH);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--muted);font-weight:700;position:relative}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--pro)}
+nav.tabs .badge{position:absolute;top:8px;left:calc(50% + 6px);background:var(--red);color:#fff;font-size:10px;font-weight:900;border-radius:999px;padding:1px 5px}
+#toast{position:fixed;left:50%;bottom:calc(var(--tabH) + 18px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#fff;color:#111;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;opacity:0;transition:.2s;z-index:999;max-width:90%;text-align:center;pointer-events:none}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s 1s linear infinite;vertical-align:-3px}
+@keyframes s{to{transform:rotate(360deg)}}
+.small{font-size:12px;color:var(--muted);line-height:1.45}
+.agree{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;margin-top:14px}
+.agree input{width:20px;height:20px;accent-color:var(--pro);flex:none;margin-top:1px}
+#areaMap{height:240px}
+/* tablets: two columns on the Jobs screen, wider forms */
+@media (min-width:900px){
+  .wrap{max-width:1100px}
+  .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+  .narrow{max-width:640px;margin:0 auto}
+  nav.tabs .in{max-width:640px}
+  .map{height:280px}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="brand"><img src="logo.svg" alt=""><span>Road<b>esy</b></span><span class="p">PRO</span></div>
+  <div class="hb"><button class="chip inst" id="installBtn" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg>Install</button></div>
+</div></header>
+<div class="off" id="offline" hidden>You're offline. Requests and on-duty status need a connection.</div>
+
+<main id="main">
+  <!-- ============ signed out ============ -->
+  <section id="vAuth" class="wrap narrow" hidden>
+    <div class="welcome"><img src="icon.svg" alt=""><h1>Roadside jobs, near you</h1><div class="sub">Drivers on Roadesy see your truck, your prices and your arrival time, and book you in one tap.</div></div>
+    <div class="perks">
+      <div class="perk"><i>📍</i><div><b>Jobs come to you.</b> Get-help-now requests go to the nearest available provider first.</div></div>
+      <div class="perk"><i>💵</i><div><b>Your prices, your money.</b> Set your own rates. Customers pay you directly.</div></div>
+      <div class="perk"><i>🛻</i><div><b>Drivers see you coming.</b> Share your truck live so customers know when you'll arrive.</div></div>
+    </div>
+    <div class="seg"><button data-auth="in" class="on">Sign in</button><button data-auth="up">Create account</button></div>
+    <form id="fIn" class="card" autocomplete="on">
+      <label class="f" for="inEmail">Email</label><input class="f" id="inEmail" type="email" autocomplete="username" required>
+      <label class="f" for="inPw">Password</label><input class="f" id="inPw" type="password" autocomplete="current-password" required>
+      <button class="btn pro" type="submit">Sign in</button>
+      <button class="btn ghost" type="button" id="forgotBtn">Forgot password?</button>
+      <div class="err" id="inErr" hidden></div>
+    </form>
+    <div class="small" style="text-align:center;margin:6px 0 20px">By creating an account you agree to the <a href="privacy.html">privacy policy</a>.</div>
+    <form id="fReset" class="card" hidden>
+      <h3>Reset your password</h3><div class="sub" id="resetSub">We'll email you a 6-digit code.</div>
+      <label class="f" for="rsEmail">Email</label><input class="f" id="rsEmail" type="email" required>
+      <div id="rsStep2" hidden>
+        <label class="f" for="rsCode">Code from the email</label><input class="f" id="rsCode" inputmode="numeric" maxlength="6">
+        <label class="f" for="rsPw">New password (8+ characters)</label><input class="f" id="rsPw" type="password" autocomplete="new-password">
+      </div>
+      <button class="btn pro" type="submit" id="rsBtn">Email me a code</button>
+      <button class="btn ghost" type="button" id="rsBack">Back to sign in</button>
+      <div class="err" id="rsErr" hidden></div>
+    </form>
+  </section>
+
+  <!-- ============ sign-up wizard (also used to edit the profile) ============ -->
+  <section id="vSignup" class="wrap narrow" hidden>
+    <h1 id="suTitle">Create your Pro account</h1><div class="sub" id="suSub">3 quick steps. We check your license and insurance before you go live.</div>
+    <div class="steps" id="suSteps"><i class="on"></i><i></i><i></i></div>
+    <form id="fUp" autocomplete="on" novalidate>
+      <div data-step="1">
+        <div class="card">
+          <h3>Your business</h3>
+          <label class="f" for="uBiz">Business name *</label><input class="f" id="uBiz" autocomplete="organization" maxlength="80">
+          <div class="two"><div><label class="f" for="uContact">Your name</label><input class="f" id="uContact" autocomplete="name" maxlength="60"></div>
+            <div><label class="f" for="uPhone">Phone for customers *</label><input class="f" id="uPhone" type="tel" autocomplete="tel" maxlength="30"></div></div>
+          <label class="f" for="uHours">Hours</label><input class="f" id="uHours" placeholder="e.g. 24/7, or Mon–Sat 7am–9pm" maxlength="80">
+          <label class="f" for="uAbout">About you (optional)</label><textarea class="f" id="uAbout" maxlength="300" placeholder="e.g. Family-owned, flatbeds for low cars and motorcycles"></textarea>
+        </div>
+        <div class="card" id="acctBox">
+          <h3>Sign-in details</h3>
+          <label class="f" for="uEmail">Email *</label><input class="f" id="uEmail" type="email" autocomplete="username" maxlength="120">
+          <label class="f" for="uPw">Password * (8+ characters)</label><input class="f" id="uPw" type="password" autocomplete="new-password">
+        </div>
+      </div>
+      <div data-step="2" hidden>
+        <div class="card"><h3>What do you do? *</h3><div class="sub">Pick everything you offer. You'll show up in each of these on the driver app.</div><div id="uTypes"></div></div>
+        <div id="uRates"></div>
+      </div>
+      <div data-step="3" hidden>
+        <div class="card">
+          <h3>Where you work *</h3><div class="sub">Your base (shop or where your truck waits) and how far you'll drive for a job.</div>
+          <button class="btn" type="button" id="useLoc">📍 Use my current location</button>
+          <div class="map" id="areaMap"></div>
+          <div class="small" style="margin-top:6px">Tap the map to move your base.</div>
+          <label class="f" for="uBase">Base address or area</label><input class="f" id="uBase" placeholder="e.g. NW 27th Ave, Miami Gardens" maxlength="120">
+          <label class="f" for="uRadius">I'll drive up to <b id="uRadLbl">15 mi</b></label><input id="uRadius" type="range" min="3" max="60" step="1" value="15" style="width:100%;accent-color:var(--pro)">
+        </div>
+        <div class="card">
+          <h3>Your truck or van</h3><div class="sub">Drivers see this so they know what to look for.</div>
+          <div class="two"><div><label class="f" for="uVeh">Vehicle</label><input class="f" id="uVeh" placeholder="White Ford F-550 rollback" maxlength="80"></div>
+            <div><label class="f" for="uPlate">Plate</label><input class="f" id="uPlate" placeholder="FL ABC1234" maxlength="20"></div></div>
+        </div>
+        <div class="card">
+          <h3>License & insurance</h3><div class="sub">Only Roadesy sees these. We check them before you go live.</div>
+          <label class="f" for="uLic">License / permit number</label><input class="f" id="uLic" placeholder="e.g. Miami-Dade towing license #" maxlength="80">
+          <label class="f" for="uIns">Insurance company & policy number</label><input class="f" id="uIns" placeholder="e.g. Progressive · 123456789" maxlength="120">
+          <label class="agree" id="agreeRow"><input type="checkbox" id="uAgree"><span>I'm licensed and insured for this work, my prices are what I'll charge, and customers pay me directly.</span></label>
+        </div>
+      </div>
+      <div class="err" id="upErr" hidden></div>
+      <div class="btns"><button class="btn ghost" type="button" id="suBack">Back</button><button class="btn pro" type="submit" id="suNext">Next</button></div>
+    </form>
+  </section>
+
+  <!-- ============ waiting for approval ============ -->
+  <section id="vPending" class="wrap narrow" hidden>
+    <div class="card pending"><div class="ic">⏳</div><h2 id="pdTitle">Thanks, we're reviewing your account</h2>
+      <div class="sub" id="pdSub">We check your license and insurance, usually within a day. You'll get an email when you're approved, and this screen updates on its own.</div>
+      <button class="btn pro" id="pdEdit">Review or edit my details</button><button class="btn ghost" id="pdOut">Sign out</button></div>
+  </section>
+
+  <!-- ============ approved: Jobs / Prices / Profile ============ -->
+  <section id="vJobs" class="wrap" hidden>
+    <div class="grid2">
+      <div>
+        <div class="card" style="margin-top:14px">
+          <div class="row"><div><h3 id="jBiz"></h3><div class="sub" id="jSub"></div></div></div>
+          <div class="sep"></div>
+          <div class="row"><div><b>On duty</b><div class="sub">Get requests from drivers near you</div></div><label class="sw"><input type="checkbox" id="duty"><i></i></label></div>
+          <div class="sep"></div>
+          <div class="row"><div><b>Share live location</b><div class="sub">Drivers see your truck move on their map</div></div><label class="sw pro"><input type="checkbox" id="live"><i></i></label></div>
+          <div class="status" id="locStatus"></div>
+          <div class="small" style="margin-top:8px">While waiting: sent every 5 min, and drivers see your pin about ¼ mile off. On a job: every 15 sec, exact, only to that customer. Keep this app open while on duty. Sharing stops when you go off duty.</div>
+        </div>
+        <div class="stats"><div class="stat"><b id="stJobs">0</b><span>Jobs today</span></div><div class="stat"><b id="stEarn">$0</b><span>Earned today</span></div><div class="stat"><b id="stRate">–</b><span>Rating</span></div></div>
+        <div class="sec-t"><span>Active job</span></div>
+        <div id="job"><div class="empty">No active job.</div></div>
+      </div>
+      <div>
+        <div class="sec-t" style="margin-top:14px"><span>Requests near you</span><span id="reqCount"></span></div>
+        <div id="reqs"></div>
+        <div id="myQuotes"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vPrices" class="wrap narrow" hidden>
+    <h1>Your prices</h1><div class="sub">Drivers see these before they book. "Book now" and "Get help now" lock in the price for that service.</div>
+    <div id="pRates" style="margin-top:14px"></div>
+    <button class="btn pro" id="pSave">Save prices</button>
+    <div class="err" id="pErr" hidden></div>
+  </section>
+
+  <section id="vProfile" class="wrap narrow" hidden>
+    <h1>Profile</h1>
+    <div class="card"><div class="list-k" id="profK"></div><button class="btn pro" id="profEdit">Edit business, area & vehicle</button></div>
+    <div class="card"><h3>Change password</h3>
+      <label class="f" for="cpOld">Current password</label><input class="f" id="cpOld" type="password" autocomplete="current-password">
+      <label class="f" for="cpNew">New password (8+ characters)</label><input class="f" id="cpNew" type="password" autocomplete="new-password">
+      <button class="btn" id="cpBtn">Change password</button><div id="cpMsg"></div></div>
+    <button class="btn ghost" id="outBtn">Sign out</button>
+    <div class="small" style="text-align:center;margin:16px 0">Roadesy Pro · <span id="ver"></span> · <a href="privacy.html">Privacy</a></div>
+  </section>
+</main>
+
+<nav class="tabs" id="tabs" hidden><div class="in">
+  <button data-tab="Jobs" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18v13H3zM8 7V4h8v3"/></svg>Jobs<span class="badge" id="tabBadge" hidden></span></button>
+  <button data-tab="Prices"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>Prices</button>
+  <button data-tab="Profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Profile</button>
+</div></nav>
+<div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="app.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+/* Shared styles for standalone pages (privacy, terms, delete account, offline) */
+@font-face{font-family:"Inter Display";src:url("../assets/fonts/InterDisplay-ExtraBold.woff") format("woff");font-weight:800;font-display:swap}
+:root{--ink:#090a16;--deck:#12142a;--line:rgba(255,255,255,.09);--text:#eef0ff;--muted:#a3a6c4;--signal:#00d4ff;--signal-text:#4fe1ff;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--ink:#f3f4fa;--deck:#fff;--line:rgba(16,18,42,.1);--text:#12142a;--muted:#555a7c;--signal-text:#007a9e;color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--text);font:400 16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top)) 20px calc(48px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.top img{width:40px;height:40px;border-radius:12px}
+.top a.back{margin-left:auto;color:var(--signal-text);font-weight:650;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+h1{font:800 clamp(2rem,6vw,2.6rem)/1.05 "Inter Display",system-ui,sans-serif;letter-spacing:-.03em;margin:0 0 8px}
+h2{font:800 1.2rem/1.25 "Inter Display",system-ui,sans-serif;margin:32px 0 8px}
+p,li{color:var(--muted);max-width:68ch}
+strong{color:var(--text)}
+a{color:var(--signal-text)}
+ul{padding-left:20px}
+.meta{font-size:.88rem}
+.card{background:var(--deck);border:1px solid var(--line);border-radius:18px;padding:18px;margin:20px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border-radius:14px;background:var(--signal);color:#04131b;font-weight:700;text-decoration:none;border:0;font-size:1rem;cursor:pointer}
+.center{min-height:100dvh;display:grid;place-items:center;text-align:center}
+.center .wrap{display:grid;gap:14px;justify-items:center}

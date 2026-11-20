@@ -1,0 +1,60 @@
+{
+  "name": "ONEDRFUL",
+  "short_name": "ONEDRFUL",
+  "theme_color": "#090a16",
+  "background_color": "#090a16",
+  "description": "Referral payouts: businesses post offers, you share a tracked link or QR code, and get paid directly.",
+  "display": "standalone",
+  "start_url": "/onedrful/app/?mode=pwa",
+  "scope": "/onedrful/",
+  "id": "/onedrful/",
+  "icons": [
+    {
+      "src": "/onedrful/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/onedrful/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/onedrful/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "business"
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/onedrful/1.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/onedrful/2.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/onedrful/3.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/onedrful/4.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BlockMogul Cast View</title>
+<style>
+html,body{margin:0;height:100%;background:#07111f;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
+#screen{height:100%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 50% 35%,#1e40af,#07111f 70%)}
+.logo{font-size:42px;font-weight:900;color:#fbbf24}.sub{color:#cbd5e1;margin-top:8px}
+</style>
+<script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+</head>
+<body>
+<div id="screen"><div><div class="logo">🏙️ BlockMogul</div><div class="sub">Cast city view ready</div></div></div>
+<script>
+try{
+ const ctx=cast.framework.CastReceiverContext.getInstance();
+ ctx.addCustomMessageListener('urn:x-cast:blockmogul.city',e=>console.log('BlockMogul cast state',e.data));
+ ctx.start();
+}catch(e){console.log(e)}
+</script>
+</body>
+</html>

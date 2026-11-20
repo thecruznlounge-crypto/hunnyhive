@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Art at War</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1330">
+<meta name="description" content="Draw your own fighter and weapon, then duel, rumble or melee across sketchbook stages.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Art at War">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@700;800&display=swap">
+<script src="install.js"></script>
+<script src="/sdk/install.js"></script>
+<link rel="stylesheet" href="base.css"><link rel="stylesheet" href="art.css">
+</head>
+<body>
+<canvas id="game" aria-label="Art at War arena"></canvas>
+<div id="hud" class="hud"><div class="hud-top"><span></span><div class="sqs">
+  <button class="sq" id="btnPause" type="button" aria-label="Pause"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+  <button class="sq" id="btnMute" type="button" aria-label="Sound on or off"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="muteWave" d="M16.5 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+</div></div></div>
+<div id="banner" class="banner" aria-live="polite"></div><div id="toast" class="toast"></div>
+<div class="ctl l show-ctl"><button class="cb" id="cL" type="button" aria-label="Left">◀</button><button class="cb" id="cR" type="button" aria-label="Right">▶</button></div>
+<div class="ctl r"><button class="cb s" id="cS" type="button">Ink</button><button class="cb" id="cJ" type="button">Jump</button><button class="cb a" id="cA" type="button">Hit</button></div>
+<div id="rot" class="rot">Turn your device sideways to fight.<br>(Keyboard: arrows/WASD, J = hit, K = ink)</div>
+
+<section id="title" class="screen show">
+  <h1 class="logo"><small>DRAW YOUR FIGHTER</small>Art at War</h1>
+  <p class="tag">Sketch a fighter and a weapon, or pick a design. Your ink decides your stats. Duel, rumble or melee.</p>
+  <canvas id="heroArt" style="width:min(340px,92vw);height:auto"></canvas>
+  <div class="btn-row">
+    <button class="btn primary" id="btnPlay" type="button">Play</button>
+    <button class="btn ghost" id="btnHow" type="button">How to play</button>
+    <button class="btn ghost install install-btn" type="button">Install app</button>
+  </div>
+</section>
+
+<section id="studio" class="studio">
+  <h2 class="display">Fighter studio</h2>
+  <div class="tabs"><button class="tab on" data-t="char" type="button">Fighter</button><button class="tab" data-t="wpn" type="button">Weapon</button></div>
+  <div class="padbox paper" id="boxChar"><canvas class="pad" id="padChar" aria-label="Draw your fighter"></canvas></div>
+  <div class="padbox paper" id="boxWpn"><canvas class="pad" id="padWpn" aria-label="Draw your weapon"></canvas></div>
+  <div class="chips" id="chipsChar"></div><div class="chips" id="chipsWpn"></div>
+  <div class="row" id="swatches"></div>
+  <div class="row"><button class="mini" id="btnErase" type="button">Eraser</button><button class="mini" id="btnSize" type="button">Brush 1</button><button class="mini" id="btnUndo" type="button">Undo</button><button class="mini" id="btnClear" type="button">Clear</button></div>
+  <div class="statrow" id="stats"></div>
+  <p class="tag" id="tip" style="font-size:14px"></p>
+  <div class="row"><button class="btn ghost" id="btnStudioBack" type="button" style="min-height:46px">Back</button><button class="btn primary" id="btnToModes" type="button" style="min-height:46px">Choose a fight</button></div>
+</section>
+
+<section id="modes" class="screen">
+  <h2 class="display" style="font-size:30px">Pick your fight</h2>
+  <div class="modes">
+    <button class="btn primary" data-mode="duel" type="button">Duel · best of 3</button>
+    <button class="btn ghost" data-mode="rumble" type="button">Rumble · survive the waves</button>
+    <button class="btn ghost" data-mode="melee" type="button">Melee · 4-way brawl</button>
+  </div>
+  <div class="row" id="stageRow"></div><div class="row" id="diffRow"></div>
+  <div class="btn-row"><button class="btn primary" id="btnGo" type="button">Fight!</button><button class="btn ghost" id="btnModesBack" type="button" style="min-height:44px">Back to studio</button></div>
+</section>
+
+<section id="pause" class="screen dim"><h2 class="sel-title">Paused</h2><div class="btn-row"><button class="btn primary" id="btnResume" type="button">Resume</button><button class="btn ghost" id="btnRestart" type="button">Restart</button><button class="btn ghost" id="btnQuit" type="button">Quit to menu</button></div></section>
+<section id="over" class="screen dim"><h2 class="sel-title" id="resTitle">Game over</h2><div class="res-stats" id="resStats"></div><div class="btn-row"><button class="btn primary" id="btnAgain" type="button">Play again</button><button class="btn ghost" id="btnMenu" type="button">Menu</button><button class="btn ghost install install-btn" type="button">Install app</button></div></section>
+
+<div id="how" class="modal"><div class="modal-card" role="dialog" aria-modal="true"><h2>How to play</h2><div class="modal-body"><ul>
+<li><b>Draw</b> a fighter and a weapon, or tap a ready-made design. More ink means more health but less speed. Long weapons reach far; thick ones hit hard.</li>
+<li><b>Duel</b> a rival (best of 3), <b>Rumble</b> through waves, or <b>Melee</b> against three rivals.</li>
+<li>Buttons: move, <b>Jump</b> (twice in the air), <b>Hit</b> swings your weapon, <b>Ink</b> fires a ranged blob.</li>
+<li>Get knocked off the stage and you are out.</li></ul></div><button class="btn primary" id="howClose" type="button">Got it</button></div></div>
+<script src="artkit.js"></script><script src="kit.js"></script><script src="presets.js"></script><script src="game.js"></script>
+</body></html>

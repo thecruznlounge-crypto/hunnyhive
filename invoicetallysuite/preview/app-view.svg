@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1000" viewBox="0 0 720 1000">
+<rect width="720" height="1000" rx="60" fill="#0f172a"/>
+<circle cx="590" cy="120" r="54" fill="#2563eb"/>
+<text x="64" y="130" font-family="Arial" font-size="42" font-weight="700" fill="#ffffff">InvoiceTally Suite</text>
+<rect x="64" y="220" width="592" height="220" rx="42" fill="#1e293b"/>
+<rect x="64" y="490" width="592" height="120" rx="34" fill="#2563eb"/>
+<text x="110" y="565" font-family="Arial" font-size="34" font-weight="700" fill="#ffffff">Launch</text>
+<rect x="64" y="680" width="270" height="220" rx="42" fill="#334155"/>
+<rect x="386" y="680" width="270" height="220" rx="42" fill="#334155"/>
+<text x="110" y="805" font-family="Arial" font-size="28" fill="#cbd5e1">App View</text>
+<text x="430" y="805" font-family="Arial" font-size="28" fill="#cbd5e1">Preview</text>
+</svg>

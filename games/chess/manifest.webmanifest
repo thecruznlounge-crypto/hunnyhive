@@ -1,0 +1,51 @@
+{
+  "name": "Chess",
+  "short_name": "Chess",
+  "description": "Full-rules chess with Easy, Medium and Hard CPU levels, hints, undo and two-player mode.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#050807",
+  "theme_color": "#1a1208",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/chess/1.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/chess/2.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/chess/3.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ]
+}

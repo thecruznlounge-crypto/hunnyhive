@@ -1,0 +1,20 @@
+{
+  "name": "Kayaos.space",
+  "short_name": "Kayaos",
+  "description": "A visual organizer for tasks, reminders, locations, a one-week calendar, and a 12-hour focus clock.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7f2e8",
+  "theme_color": "#111827",
+  "categories": ["productivity", "utilities", "lifestyle"],
+  "icons": [
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Add Card","short_name":"Add","url":"./index.html#tasks","icons":[{"src":"icons/icon-192.png","sizes":"192x192"}]},
+    {"name":"Week Calendar","short_name":"Week","url":"./index.html#calendar","icons":[{"src":"icons/icon-192.png","sizes":"192x192"}]}
+  ]
+}

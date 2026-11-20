@@ -1,0 +1,72 @@
+{
+  "name": "Bloop",
+  "short_name": "Bloop",
+  "theme_color": "#0b0f1e",
+  "background_color": "#0b0f1e",
+  "description": "Find the closest public restroom: clean, accessible, open now, with turn-by-turn directions. Works offline.",
+  "display": "standalone",
+  "start_url": "/bloop/app/?mode=pwa",
+  "scope": "/bloop/",
+  "id": "/bloop/",
+  "icons": [
+    {
+      "src": "/bloop/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/bloop/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/bloop/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "travel"
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/bloop/1.jpg",
+      "sizes": "360x640",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/bloop/2.jpg",
+      "sizes": "360x640",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/bloop/3.jpg",
+      "sizes": "360x640",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/bloop/4.jpg",
+      "sizes": "360x640",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/bloop/5.jpg",
+      "sizes": "360x640",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/bloop/6.jpg",
+      "sizes": "360x640",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

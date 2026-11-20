@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Developers – Hunnyhive</title>
+<meta name="description" content="List your PWA on Hunnyhive. Add one script tag for quick install, then submit your URL. That is all.">
+<meta name="theme-color" content="#F2A900"><link rel="manifest" href="/manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/sdk/install.js"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/store.css">
+</head><body>
+<header class="top"><div class="wrap"><div class="row"><a class="brand" href="/"><img src="/icons/icon-192.png" alt="" width="38" height="38">Hunnyhive</a><span class="grow"></span><button class="iconbtn" id="themeBtn" aria-label="Toggle theme">🌙</button></div></div></header>
+<main class="wrap doc">
+  <h1>List your PWA in 3 steps</h1>
+  <p>No account, no zip files, no forms about things we can read from your app. Add one line, paste your URL, done. You keep hosting your app on your own domain, or we can host it for you under a slug or subdomain.</p>
+
+  <h2>1. Add Quick Install (required)</h2>
+  <p>Every app in the store should install in <b>one tap</b>. Apps without it are still listed, but marked <b>Preview</b> until they add it. When someone taps <b>Install</b> in the store, we open your app with <code>?install=1</code>. The SDK catches that and shows a single full-screen Install button that fires the browser’s native install dialog. It also gives iPhone users a two-step “Add to Home Screen” guide.</p>
+  <p>Paste this as high as you can in your <code>&lt;head&gt;</code>, before your other scripts:</p>
+  <pre><button class="copy" data-copy="#sdk">Copy</button><code id="sdk">&lt;script src="https://hunnyhive.app/sdk/install.js"&gt;&lt;/script&gt;</code></pre>
+  <p>Optional: give any button <code>data-hunnyhive-install</code> and it becomes a one-tap install button inside your own UI. (Already using <code>data-mypwa-install</code> from mypwa.store? It still works.)</p>
+  <pre><button class="copy" data-copy="#btn">Copy</button><code id="btn">&lt;button data-hunnyhive-install&gt;Install app&lt;/button&gt;</code></pre>
+  <p>Already built your own install flow? That works too, as long as your app handles <code>?install=1</code> by offering a one-tap install. We check for it.</p>
+
+  <h2>2. Make sure the basics are in place</h2>
+  <ul>
+    <li>Served over <b>HTTPS</b>.</li>
+    <li>A <b>web app manifest</b> with <code>name</code>, <code>start_url</code> and <code>"display": "standalone"</code>.</li>
+    <li><b>PNG icons</b> at 192×192 and 512×512, plus a 512×512 <code>maskable</code> icon (recommended).</li>
+    <li>A <b>service worker</b> so it opens offline (recommended).</li>
+    <li>A <code>description</code> and a few <code>screenshots</code> in the manifest (recommended: the store shows them on your preview page).</li>
+  </ul>
+  <pre><button class="copy" data-copy="#mf">Copy</button><code id="mf">{
+  "name": "My App",
+  "short_name": "My App",
+  "description": "One sentence about what it does.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#5b4bf0",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/icons/192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}</code></pre>
+
+  <h2>3. Check it, then submit it</h2>
+  <p>Paste your address to see exactly what passes and what needs a fix. It reads your live site, nothing is stored.</p>
+  <form class="f" id="chk"><label for="u">Your app address</label><input id="u" type="url" inputmode="url" placeholder="https://yourapp.com" required autocomplete="url"><div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="go">Check my app</button><a class="btn ghost" href="/submit/">Skip to submit</a></div></form>
+  <div class="panel" id="res" hidden></div>
+
+  <h2>What we do with your submission</h2>
+  <ul>
+    <li>We read your manifest to fill in the name, description, icon and screenshots. You only provide the URL and an email.</li>
+    <li>Your icon is resized to our standard (512×512, full-bleed). Provide a square icon with no transparent margin for the best result.</li>
+    <li>A person looks at it, picks the category, and lists it. You’ll get a preview page at <code>hunnyhive.app/apps/your-app</code>.</li>
+    <li>Your icon, name and description always come from your own manifest, so updates on your side show up after a refresh by us.</li>
+  </ul>
+
+  <h2>Hosting options</h2>
+  <ul>
+    <li><b>Your domain</b> (most common): we list it and send people straight to you.</li>
+    <li><b>hunnyhive.app/your-slug</b> or <b>your-slug.hunnyhive.app</b>: we host the files. Ask us in the submit form note.</li>
+    <li><b>Redirect wrapper</b>: a tiny installable shell on Hunnyhive that opens your site.</li>
+  </ul>
+  <p><a class="btn" href="/submit/">Submit your PWA</a></p>
+</main>
+<div class="wrap"><script src="/assets/store.js"></script><script>document.write(Store.footer())</script></div>
+<script>
+Store.theme(); Store.nav('dev');
+document.addEventListener('click',function(e){var b=e.target.closest('.copy');if(!b)return;var t=document.querySelector(b.dataset.copy).textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1400)}).catch(function(){var r=document.createRange();r.selectNodeContents(document.querySelector(b.dataset.copy));var s=getSelection();s.removeAllRanges();s.addRange(r)})});
+var f=document.getElementById('chk'),res=document.getElementById('res');
+f.addEventListener('submit',function(e){e.preventDefault();var go=document.getElementById('go');go.disabled=true;go.textContent='Checking…';res.hidden=true;
+  fetch('/api/check.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:document.getElementById('u').value})}).then(function(r){return r.json()}).then(function(j){
+    go.disabled=false;go.textContent='Check my app';res.hidden=false;
+    if(!j.ok){res.innerHTML='<p style="color:#dc2626;font-weight:700">'+Store.esc(j.error||'Something went wrong')+'</p>';return}
+    res.innerHTML='<h2>'+(j.pass?'✅ Ready to submit':'Almost there')+'</h2>'+j.checks.map(function(c){var ic=c.level==='pass'?'<span class="ic ok">✓</span>':c.level==='warn'?'<span class="ic warn">!</span>':'<span class="ic bad">✕</span>';return '<div class="check">'+ic+'<div><b>'+Store.esc(c.label)+(c.required?'':' <small style="color:var(--mut);font-weight:600">(recommended)</small>')+'</b>'+(c.msg?'<span>'+Store.esc(c.msg)+'</span>':'')+'</div></div>'}).join('')+(j.pass?'<p style="margin-top:14px"><a class="btn" href="/submit/?url='+encodeURIComponent(document.getElementById('u').value)+'">Continue to submit</a></p>':'');
+  }).catch(function(){go.disabled=false;go.textContent='Check my app';res.hidden=false;res.innerHTML='<p style="color:#dc2626;font-weight:700">The checker is unavailable right now. Try again in a minute.</p>'});
+});
+</script>
+</body></html>

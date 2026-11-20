@@ -1,0 +1,63 @@
+{
+  "name": "Blackjack",
+  "short_name": "Blackjack",
+  "description": "Beat the dealer to 21. Hit, stand, double and split with a 3:2 payout.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#050807",
+  "theme_color": "#0a3a22",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/blackjack/1.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/blackjack/2.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/blackjack/3.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/blackjack/4.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/blackjack/5.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ]
+}

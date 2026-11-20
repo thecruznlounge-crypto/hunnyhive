@@ -1,0 +1,57 @@
+{
+  "name": "Escape Sketch",
+  "short_name": "Escape Sketch",
+  "description": "Sketch ladders, ropes, holes and vehicles to help your prisoner break out.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#1a1330",
+  "theme_color": "#1a1330",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/escape-sketch/1.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/escape-sketch/2.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/escape-sketch/3.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/escape-sketch/4.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ]
+}

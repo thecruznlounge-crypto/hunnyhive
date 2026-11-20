@@ -1,0 +1,60 @@
+{
+  "name": "Showcial",
+  "short_name": "Showcial",
+  "theme_color": "#06051a",
+  "background_color": "#06051a",
+  "description": "Create AI artists, enter them in a live talent show, vote for favorites and watch the eliminations. Works offline.",
+  "display": "standalone",
+  "start_url": "/showcial/app/?mode=pwa",
+  "scope": "/showcial/",
+  "id": "/showcial/",
+  "icons": [
+    {
+      "src": "/showcial/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/showcial/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/showcial/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "entertainment"
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/showcial/1.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/showcial/2.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/showcial/3.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/showcial/4.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

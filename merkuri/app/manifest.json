@@ -1,0 +1,35 @@
+{
+  "id": "/",
+  "name": "Merkuri — The Element of Delivery",
+  "short_name": "Merkuri",
+  "description": "Launch, scale and manage local micro-delivery. Compare real couriers, watch video profiles, compare rates, capture proof of delivery and pay with SecurePay escrow.",
+  "lang": "en-US",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#050b12",
+  "theme_color": "#050b12",
+  "categories": ["business", "productivity", "navigation", "shopping"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshots/phone-home.png", "sizes": "1080x2340", "type": "image/png", "form_factor": "narrow", "label": "Merkuri home" },
+    { "src": "screenshots/phone-couriers.png", "sizes": "1080x2340", "type": "image/png", "form_factor": "narrow", "label": "Compare couriers" },
+    { "src": "screenshots/phone-orders.png", "sizes": "1080x2340", "type": "image/png", "form_factor": "narrow", "label": "Orders" },
+    { "src": "screenshots/tablet-home.png", "sizes": "2560x1600", "type": "image/png", "form_factor": "wide", "label": "Merkuri on tablet" },
+    { "src": "screenshots/tablet-network.png", "sizes": "2560x1600", "type": "image/png", "form_factor": "wide", "label": "Live network" }
+  ],
+  "shortcuts": [
+    { "name": "Find a Courier", "short_name": "Couriers", "url": "./?view=couriers", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "My Orders", "short_name": "Orders", "url": "./?view=orders", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Proof Camera", "short_name": "Proof", "url": "./?view=proof", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

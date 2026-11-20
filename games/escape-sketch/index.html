@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Escape Sketch</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1330">
+<meta name="description" content="Sketch ladders, ropes, planks, tunnels, cutters and vehicles to help the prisoner escape.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Escape Sketch"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@700;800&display=swap">
+<script src="install.js"></script>
+<script src="/sdk/install.js"></script>
+<link rel="stylesheet" href="base.css"><link rel="stylesheet" href="art.css">
+<style>
+#bar{position:fixed;left:0;right:0;bottom:0;display:none;flex-direction:column;gap:8px;align-items:center;padding:8px 10px calc(var(--safe-b) + 10px);background:rgba(26,19,48,.92);z-index:6;border-top:2px solid rgba(255,255,255,.12)}
+#bar.show{display:flex}
+.tools{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.tool{font-family:Fredoka,sans-serif;font-size:13px;min-width:64px;height:50px;border-radius:12px;border:2px solid rgba(255,255,255,.28);background:rgba(60,40,110,.7);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.tool span{font-size:20px}.tool.on{background:var(--orange);border-color:#ffc0d4}
+.inkrow{display:flex;gap:8px;align-items:center;width:min(560px,100%)}
+.ink{flex:1;height:14px;border-radius:8px;background:rgba(255,255,255,.18);overflow:hidden}.ink i{display:block;height:100%;background:linear-gradient(90deg,#7be0c3,#3a86ff);width:100%}
+#inkTxt{font-family:Fredoka,sans-serif;font-size:14px;min-width:70px;text-align:right}
+.top{position:fixed;top:calc(var(--safe-t) + 8px);left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;z-index:6;pointer-events:none}
+#lvl{font-family:Fredoka,sans-serif;font-size:17px;background:rgba(26,19,48,.8);padding:6px 12px;border-radius:999px}
+@media (min-aspect-ratio:23/20){#bar{top:0;right:0;left:auto;bottom:0;width:168px;justify-content:center;border-top:none;border-left:2px solid rgba(255,255,255,.12);padding:56px 8px calc(var(--safe-b) + 8px)}.tools{flex-direction:row}.tool{min-width:68px;height:46px}.inkrow{width:100%;flex-direction:column;align-items:stretch}.ink{flex:none;height:14px;width:100%}#inkTxt{text-align:center}#bar .row{width:100%}#btnGo{width:100%;min-width:0!important;padding:0 8px!important;font-size:17px}.top{right:176px}.top .sqs{position:fixed;right:10px;top:calc(var(--safe-t) + 8px)}#msg{right:168px}}
+#msg{position:fixed;top:calc(var(--safe-t) + 46px);left:0;right:0;text-align:center;font-size:14px;padding:0 14px;z-index:5;pointer-events:none;color:#fff4e8;text-shadow:0 2px 6px #000}
+.lvgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;width:min(420px,92vw)}.lv{border-radius:14px;border:2px solid rgba(255,255,255,.25);background:rgba(60,40,110,.7);color:#fff;padding:8px;font-family:Fredoka,sans-serif;display:flex;flex-direction:column;align-items:center}.lv b{font-size:26px}.lv small{font-size:13px}.lv i{color:#ffd23f;font-style:normal;letter-spacing:2px}
+.stars{font-size:38px;color:#ffd23f;letter-spacing:5px}
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Escape Sketch level"></canvas>
+<div id="hud" class="hud"><div class="top"><span id="lvl"></span><div class="sqs" style="pointer-events:auto"><button class="sq" id="btnMenuQ" type="button" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button class="sq" id="btnMute" type="button" aria-label="Sound on or off"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="muteWave" d="M16.5 8.5a5 5 0 0 1 0 7M18.8 6a8.5 8.5 0 0 1 0 12"/></svg></button></div></div></div>
+<div id="msg"></div><div id="toast" class="toast"></div>
+<div id="bar"><div class="tools" id="tools"></div><div class="inkrow"><div class="ink"><i id="inkFill"></i></div><span id="inkTxt"></span></div>
+  <div class="row"><button class="mini" id="btnUndo" type="button">Undo</button><button class="mini" id="btnClear" type="button">Clear</button></div><div class="row"><button class="btn primary" id="btnGo" type="button" style="min-height:44px;font-size:18px;padding:0 22px">▶ Go</button></div></div>
+<section id="title" class="screen show"><h1 class="logo"><small>SKETCH YOUR WAY OUT</small>Escape Sketch</h1><p class="tag">Draw ladders, ropes, planks, tunnels and vehicles. The prisoner walks on his own. Help him reach the exit.</p>
+  <svg viewBox="0 0 300 120" width="300" style="max-width:88vw"><rect x="0" y="100" width="300" height="20" fill="#554d73"/><rect x="120" y="20" width="26" height="80" fill="#554d73"/><g stroke="#b87333" stroke-width="4" fill="none"><path d="M100 100V10M118 100V10M100 30h18M100 50h18M100 70h18M100 90h18"/></g><circle cx="40" cy="78" r="9" fill="#ffd9c0" stroke="#1b1b2f" stroke-width="3"/><rect x="32" y="87" width="16" height="14" rx="4" fill="#ff9f1c" stroke="#1b1b2f" stroke-width="3"/><rect x="250" y="62" width="30" height="38" rx="6" fill="#2ec4b6" stroke="#1b1b2f" stroke-width="3"/></svg>
+  <div class="btn-row"><button class="btn primary" id="btnPlay" type="button">Play</button><button class="btn ghost" id="btnLevels" type="button">Levels</button><button class="btn ghost" id="btnHow" type="button">How to play</button><button class="btn ghost install install-btn" type="button">Install app</button></div></section>
+<section id="levels" class="screen"><h2 class="display" style="font-size:30px">Levels</h2><div class="lvgrid" id="lvGrid"></div><button class="btn ghost" id="btnLvlBack" type="button" style="min-height:44px">Back</button></section>
+<section id="res" class="screen dim"><h2 class="sel-title" id="rTitle"></h2><div class="stars" id="rStars"></div><p class="tag" id="rSub"></p><div class="btn-row"><button class="btn primary" id="btnRNext" type="button">Next level</button><button class="btn ghost" id="btnRetry" type="button">Try again</button></div></section>
+<div id="how" class="modal"><div class="modal-card" role="dialog" aria-modal="true"><h2>How to play</h2><div class="modal-body"><ul><li>Pick a tool and <b>draw on the level</b>. Your ink is limited.</li><li><b>Ladder / Rope</b>: climb walls. Ropes must hang from something. <b>Plank</b>: a bridge or ramp.</li><li><b>Tunnel</b> digs rock. <b>Cutters</b> clear bars. <b>Vehicle</b>: sketch a car and it carries the prisoner right.</li><li>Press <b>Go</b>. He walks right, climbs, and falls on his own. Less ink used earns more stars.</li></ul></div><button class="btn primary" id="howClose" type="button">Got it</button></div></div>
+<script src="artkit.js"></script><script src="kit.js"></script><script src="game.js"></script>
+</body></html>

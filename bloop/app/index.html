@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bloop — Find a Public Restroom</title>
+  <meta name="description" content="Bloop finds the closest public restroom — clean, accessible, open now. Works offline.">
+  <meta name="theme-color" content="#f4f6fb">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Bloop">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Apply light/dark mode before first paint (no flash)
+    try { var t = JSON.parse(localStorage.getItem('bloop_theme') || '"light"');
+      if (t === 'light' || (t === 'auto' && matchMedia('(prefers-color-scheme: light)').matches)) document.documentElement.classList.add('light'); } catch (e) {}
+  </script>
+  <script>
+    // Catch the install prompt as early as possible so the Install button works on the first tap
+    window.__bip = null;
+    addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); window.__bip = e; dispatchEvent(new Event('bloop:installable')); });
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
+  </script>
+</head>
+<body>
+  <!-- Shared gradients for map pins -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="g-public" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c06bff"/><stop offset="1" stop-color="#6a3dff"/></linearGradient>
+      <linearGradient id="g-business" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5fb0ff"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+      <linearGradient id="g-community" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4ade80"/><stop offset="1" stop-color="#15944a"/></linearGradient>
+      <linearGradient id="g-oos" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ca3af"/><stop offset="1" stop-color="#4b5563"/></linearGradient>
+      <linearGradient id="g-pending" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#d97706"/></linearGradient>
+    </defs>
+  </svg>
+
+  <!-- HOME -->
+  <section id="view-home" class="view active" data-view="home">
+    <header class="home-top">
+      <div class="logo"><img src="icons/logo.svg" alt=""><span class="wordmark">Bloop</span></div>
+      <div class="top-actions">
+        <button class="install-pill" id="homeInstall" hidden><svg class="ico"><use href="#i-download"/></svg>Install app</button>
+        <button class="icon-btn" id="themeBtn" aria-label="Switch theme"></button>
+      </div>
+    </header>
+    <div class="home-head">
+      <h1>Find a Public Restroom</h1>
+      <p>Nearby<span>•</span>Clean<span>•</span>Accessible</p>
+    </div>
+    <div class="bloop-now-wrap">
+      <button class="bloop-now" id="bloopNow" aria-label="Bloop Now — find the closest restroom">
+        <svg class="toilet" viewBox="0 0 24 24" style="color:#fff"><use href="#i-toilet"/></svg>
+        <b>Bloop</b><b>Now</b>
+      </button>
+    </div>
+    <p class="now-sub">Find the closest restroom instantly</p>
+    <div class="cat-grid" id="catGrid"></div>
+    <section class="howto">
+      <button class="howto-card" id="howtoBtn" aria-label="Watch how Bloop works">
+        <div class="howto-thumb"><img src="media/bloop-intro-poster.jpg" alt="" loading="lazy"><span class="howto-play"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z" fill="#fff"/></svg></span></div>
+        <div class="howto-text"><b>See how Bloop works</b><span>30-second tour</span></div>
+      </button>
+    </section>
+    <section class="cleanest" id="fanciest" hidden>
+      <h2>👑 Fanciest restrooms</h2>
+      <div class="cleanest-list" id="fanciestList"></div>
+    </section>
+    <section class="cleanest" id="cleanest" hidden>
+      <h2>✨ Cleanest nearby</h2>
+      <div class="cleanest-list" id="cleanestList"></div>
+    </section>
+  </section>
+
+  <!-- MAP -->
+  <section id="view-map" class="view" data-view="map">
+    <div class="map-top">
+      <div class="logo"><img src="icons/logo.svg" alt=""><span class="wordmark">Bloop</span></div>
+      <form class="searchbar" id="searchForm" role="search" autocomplete="off">
+        <svg class="ico"><use href="#i-search"/></svg>
+        <input id="searchInput" type="search" placeholder="Search location, place, or address" enterkeyhint="search">
+        <button type="button" id="micBtn" aria-label="Search by voice"><svg class="ico"><use href="#i-mic"/></svg></button>
+      </form>
+      <div class="search-results" id="searchResults" hidden></div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="map-area">
+      <div id="map" aria-label="Map of restrooms"></div>
+      <button id="searchAreaBtn" class="pill-btn" hidden>Search this area</button>
+      <div class="map-fabs">
+        <button id="locateBtn" class="fab" aria-label="My location"><svg class="ico"><use href="#i-locate"/></svg></button>
+        <button id="layersBtn" class="fab" aria-label="Map style"><svg class="ico"><use href="#i-layers"/></svg></button>
+      </div>
+      <svg id="crosshair" class="crosshair" viewBox="0 0 40 50" hidden><ellipse cx="20" cy="48.6" rx="7" ry="1.6" fill="rgba(0,0,0,.4)"/><path d="M20 1.8S4.2 19.8 4.2 32a15.8 15.8 0 0 0 31.6 0C35.8 19.8 20 1.8 20 1.8z" fill="url(#g-community)" stroke="#fff" stroke-width="2"/><svg x="9.8" y="22" width="20.4" height="20.4" viewBox="0 0 24 24" style="color:#fff"><use href="#i-toilet"/></svg></svg>
+      <div id="placeHint" class="place-hint" hidden>Drag the map to put the pin on the restroom</div>
+      <div id="placeBar" class="place-bar" hidden>
+        <button id="placeCancel" class="btn">Cancel</button>
+        <button id="placeConfirm" class="btn grad">Pin here</button>
+      </div>
+      <!-- Turn-by-turn -->
+      <div id="navBanner" class="nav-banner" hidden>
+        <div class="nav-man" id="navIcon"></div>
+        <div class="nav-txt"><div class="nav-dist" id="navDist"></div><div class="nav-text" id="navText"></div></div>
+      </div>
+      <button id="recenterBtn" class="recenter" hidden><svg class="ico"><use href="#i-locate"/></svg>Re-center</button>
+      <section id="navCard" class="nav-card" hidden>
+        <div class="nav-row">
+          <div class="nav-eta"><b id="navEta">–</b><span id="navSub"></span></div>
+          <div class="mini-seg" id="navMode"><button data-m="walk">Walk</button><button data-m="drive">Drive</button></div>
+        </div>
+        <ol class="nav-steps" id="navSteps" hidden></ol>
+        <div class="nav-btns">
+          <button class="btn" id="navMute" aria-label="Voice on/off"><svg class="ico"><use href="#i-sound"/></svg></button>
+          <button class="btn" id="navList"><svg class="ico"><use href="#i-list"/></svg>Steps</button>
+          <button class="btn end" id="navEnd">End</button>
+        </div>
+      </section>
+      <section class="list-panel" id="listPanel">
+        <div class="panel-handle" id="panelHandle"><span></span></div>
+        <div class="panel-head"><h2>Nearby Restrooms</h2><span id="listCount"></span></div>
+        <div id="status" class="status"></div>
+        <ul id="list" class="list"></ul>
+      </section>
+    </div>
+  </section>
+
+  <!-- SAVED -->
+  <section id="view-saved" class="view" data-view="saved">
+    <div class="page-head"><svg class="ico" style="width:28px;height:28px;color:#ff4d8d"><use href="#i-heart"/></svg><h1>Saved</h1></div>
+    <ul id="savedList" class="list"></ul>
+  </section>
+
+  <!-- ACCOUNT -->
+  <section id="view-account" class="view" data-view="account">
+    <div class="page-head"><h1>Account</h1></div>
+    <div id="accountBody"></div>
+  </section>
+
+  <!-- TAB BAR -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tab active" data-tab="home"><svg class="ico"><use href="#i-home"/></svg>Home</button>
+    <button class="tab" data-tab="map"><svg class="ico"><use href="#i-map"/></svg>Map</button>
+    <button class="tab" data-tab="add"><svg class="ico"><use href="#i-plus"/></svg>Add</button>
+    <button class="tab" data-tab="saved"><svg class="ico"><use href="#i-heart"/></svg>Saved</button>
+    <button class="tab" data-tab="account"><svg class="ico"><use href="#i-user"/></svg>Account</button>
+  </nav>
+
+  <!-- DETAIL -->
+  <section id="detail" class="detail" hidden aria-modal="true" role="dialog"></section>
+  <div id="detailCta" class="d-cta" hidden>
+    <button class="btn-grad" id="updateBtn"><svg class="ico"><use href="#i-camera"/></svg>Add Update / Photo</button>
+  </div>
+
+  <!-- SHEETS -->
+  <div id="backdrop" class="backdrop" hidden></div>
+  <section id="addSheet" class="sheet" hidden role="dialog" aria-modal="true">
+    <button class="sheet-close" data-close aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+    <h2>Add a restroom</h2>
+    <p class="muted small" style="margin:0">Thanks for helping! Everyone nearby will see it.</p>
+    <form id="addForm">
+      <label class="field">Name / place
+        <input name="name" required minlength="2" maxlength="80" placeholder="e.g. Bayside Marketplace, 2nd floor">
+      </label>
+      <label class="field">Access
+        <select name="access">
+          <option value="public">Public — no purchase needed</option>
+          <option value="customers">Customers only</option>
+          <option value="code">Needs door code / key</option>
+        </select>
+      </label>
+      <div class="toggles">
+        <label class="toggle"><input type="checkbox" name="free" checked><svg class="ico"><use href="#i-tag"/></svg>Free</label>
+        <label class="toggle"><input type="checkbox" name="accessible"><svg class="ico"><use href="#i-wheelchair"/></svg>Accessible</label>
+        <label class="toggle"><input type="checkbox" name="baby"><svg class="ico"><use href="#i-baby"/></svg>Baby change</label>
+        <label class="toggle"><input type="checkbox" name="unisex"><svg class="ico"><use href="#i-people"/></svg>Unisex</label>
+        <label class="toggle"><input type="checkbox" name="showers"><svg class="ico"><use href="#i-shower"/></svg>Showers</label>
+        <label class="toggle"><input type="checkbox" name="h24"><svg class="ico"><use href="#i-clock"/></svg>Open 24/7</label>
+      </div>
+      <label class="field">Hours (optional)
+        <input name="hours" maxlength="60" placeholder="Mo-Su 08:00-22:00">
+      </label>
+      <label class="field">How to get in (optional)
+        <input name="note" maxlength="140" placeholder="Key behind the register, code on receipt…">
+      </label>
+      <p class="muted small" style="margin:14px 0 0">By posting you agree to our <a href="#" data-terms>Terms</a>.</p>
+      <button type="submit" class="btn-grad">Save restroom</button>
+    </form>
+  </section>
+
+  <section id="updateSheet" class="sheet" hidden role="dialog" aria-modal="true">
+    <button class="sheet-close" data-close aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+    <h2>Add update</h2>
+    <p class="muted small" id="updFor" style="margin:0"></p>
+    <form id="updateForm">
+      <div class="field">Overall<div class="rate-big" id="rateBig"></div></div>
+      <button type="button" class="luxe-btn" id="luxeBtn">👑 This restroom is <b>Luxe</b> — really nice looking</button>
+      <div class="field">Rate the details (optional)<div class="sub-rates" id="subRates"></div></div>
+      <label class="field">Review (optional)
+        <textarea name="comment" maxlength="280" placeholder="Clean, well lit, easy access…"></textarea>
+      </label>
+      <div class="field">Is it open right now?
+        <div class="seg" id="segStatus">
+          <button type="button" data-v="open">Open</button>
+          <button type="button" data-v="closed">Closed</button>
+          <button type="button" data-v="out of order">Out of order</button>
+        </div>
+      </div>
+      <div class="field" id="tipField">How do you get in? (optional)
+        <div class="seg tipkinds" id="segTip">
+          <button type="button" data-k="open">Walk in</button>
+          <button type="button" data-k="key">Key</button>
+          <button type="button" data-k="code">Door code</button>
+          <button type="button" data-k="purchase">Buy first</button>
+          <button type="button" data-k="staff">Ask staff</button>
+          <button type="button" data-k="other">Other</button>
+        </div>
+        <input name="tip" maxlength="120" placeholder="e.g. Key is behind the register · Code is on your receipt" style="margin-top:8px">
+      </div>
+      <div class="field" id="whereField">Where’s the restroom inside? (optional)
+        <div class="presets" id="wherePresets">
+          <button type="button" data-w="Back of the store">Back of store</button>
+          <button type="button" data-w="Near customer service">Customer service</button>
+          <button type="button" data-w="By the food court">Food court</button>
+          <button type="button" data-w="Near the entrance">Near entrance</button>
+          <button type="button" data-w="Upstairs">Upstairs</button>
+          <button type="button" data-w="Near the pharmacy">Pharmacy</button>
+        </div>
+        <input name="where" maxlength="120" placeholder="e.g. Past the shoe section, on the left" style="margin-top:8px">
+        <div class="where-pin"><button type="button" class="btn" id="wherePinBtn"><svg class="ico"><use href="#i-pin"/></svg>Pin the exact spot</button><span id="wherePinState" class="small" style="color:#16a34a;font-weight:700"></span></div>
+      </div>
+      <div class="field">Photo (optional)
+        <div class="photo-pick">
+          <label class="btn"><svg class="ico"><use href="#i-camera"/></svg>Choose photo<input type="file" id="photoInput" accept="image/*" hidden></label>
+          <img id="photoPreview" alt="" hidden>
+        </div>
+      </div>
+      <p class="muted small" id="postingAs"></p>
+      <p class="muted small" style="margin:0">By posting you agree to our <a href="#" data-terms>Terms</a>.</p>
+      <button type="submit" class="btn-grad">Post update</button>
+    </form>
+  </section>
+
+  <section id="reportSheet" class="sheet" hidden role="dialog" aria-modal="true">
+    <button class="sheet-close" data-close aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+    <h2>Report a problem</h2>
+    <p class="muted small" id="repFor" style="margin:0"></p>
+    <form id="reportForm">
+      <div class="reasons" id="repReasons">
+        <button type="button" data-r="closed">Permanently closed</button>
+        <button type="button" data-r="location">Wrong location</button>
+        <button type="button" data-r="private">Not open to the public</button>
+        <button type="button" data-r="dirty">Dirty or unsafe</button>
+        <button type="button" data-r="info">Wrong details</button>
+        <button type="button" data-r="other">Something else</button>
+      </div>
+      <label class="field">Details (optional)
+        <textarea name="details" maxlength="280" placeholder="What's wrong?"></textarea>
+      </label>
+      <button type="submit" class="btn-grad">Send report</button>
+    </form>
+  </section>
+
+  <section id="iosSheet" class="sheet" hidden role="dialog" aria-modal="true">
+    <button class="sheet-close" data-close aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+    <h2>Add Bloop to your Home Screen</h2>
+    <p class="muted small" style="margin:0 0 6px">iPhone and iPad only allow this from Safari's Share menu.</p>
+    <div class="info-line" style="font-size:1rem;padding:10px 0"><svg class="ico"><use href="#i-share"/></svg><span><b>1.</b> Tap the <b>Share</b> button in Safari's toolbar</span></div>
+    <div class="info-line" style="font-size:1rem;padding:10px 0"><svg class="ico"><use href="#i-plus"/></svg><span><b>2.</b> Choose <b>Add to Home Screen</b>, then <b>Add</b></span></div>
+    <button class="btn-grad" data-close>Got it</button>
+  </section>
+
+  <section id="legal" class="legal" hidden role="dialog" aria-modal="true">
+    <div class="legal-head"><button id="legalBack" aria-label="Back"><svg class="ico"><use href="#i-back"/></svg></button><h2></h2></div>
+    <div class="legal-body" id="legalBody"></div>
+  </section>
+
+  <section id="herePrompt" class="here-prompt" hidden role="dialog" aria-live="polite">
+    <div class="here-top"><div class="here-art" id="hereArt"></div><div><b id="hereTitle"></b><p id="hereText"></p></div>
+      <button class="here-x" data-here="later" aria-label="Not now"><svg class="ico"><use href="#i-x"/></svg></button></div>
+    <div class="here-btns"><button class="btn grad" data-here="yes"><svg class="ico"><use href="#i-check"/></svg>Yes, there’s one</button><button class="btn" data-here="no">No</button><button class="btn" data-here="later">Not now</button></div>
+  </section>
+
+  <section id="videoModal" class="video-modal" hidden role="dialog" aria-modal="true" aria-label="How Bloop works">
+    <button class="video-close" id="videoClose" aria-label="Close video"><svg class="ico"><use href="#i-x"/></svg></button>
+    <div class="video-wrap" id="videoWrap"></div>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="config.js"></script>
+  <script src="icons.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

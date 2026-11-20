@@ -1,0 +1,60 @@
+{
+  "name": "Roadesy",
+  "short_name": "Roadesy",
+  "theme_color": "#0f1115",
+  "background_color": "#0f1115",
+  "description": "Roadside help near you: towing, mobile mechanics, tire service, shops and plazas, with one-tap highway patrol and an in-app map.",
+  "display": "standalone",
+  "start_url": "/roadesy/app/?mode=pwa",
+  "scope": "/roadesy/",
+  "id": "/roadesy/",
+  "icons": [
+    {
+      "src": "/roadesy/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/roadesy/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/roadesy/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": [
+    "travel"
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/roadesy/1.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/roadesy/2.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/roadesy/3.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/shots/roadesy/4.jpg",
+      "sizes": "360x700",
+      "type": "image/jpeg",
+      "form_factor": "narrow"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "id":"./",
+  "name": "Bloop \u2014 Find a Restroom",
+  "short_name": "Bloop",
+  "description": "Find the closest public restroom \u2014 clean, accessible, open now. Works offline.",
+  "start_url": "./index.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#f4f6fb",
+  "theme_color": "#f4f6fb",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": [
+    "navigation",
+    "travel",
+    "utilities",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Find nearby restrooms",
+      "short_name": "Map",
+      "url": "./index.html?tab=map",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Add a restroom",
+      "short_name": "Add",
+      "url": "./index.html?add=1",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/phone-1.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Tap Bloop Now to find the closest open restroom"
+    },
+    {
+      "src": "screenshots/phone-2.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "See what is open, free and accessible at a glance"
+    },
+    {
+      "src": "screenshots/phone-3.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Know how to get in: key, door code or walk right in"
+    },
+    {
+      "src": "screenshots/phone-4.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Walks you right to it, even inside the store"
+    },
+    {
+      "src": "screenshots/phone-5.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Ratings for cleanliness, stock, smell and safety"
+    },
+    {
+      "src": "screenshots/phone-6.jpg",
+      "sizes": "1080x1920",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Find the cleanest and fanciest restrooms nearby"
+    },
+    {
+      "src": "screenshots/tablet-1.jpg",
+      "sizes": "1920x1200",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Map and nearby restrooms side by side"
+    },
+    {
+      "src": "screenshots/tablet-2.jpg",
+      "sizes": "1920x1200",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Restroom details with ratings and directions"
+    }
+  ]
+}

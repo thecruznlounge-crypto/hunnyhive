@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/sdk/install.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="description" content="Domin8 helps 9-to-5 workers supplement income with schedule-matched gigs, earnings goals, and income tracking." />
+  <title>Domin8 9·5</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <button class="brand" data-route="home" aria-label="Domin8 home">
+        <img src="icons/icon-192.png" alt="" class="brand-icon" />
+        <span><strong>Domin8</strong><small>9·5</small></span>
+      </button>
+      <div class="top-actions">
+        <button id="themeBtn" class="icon-btn" aria-label="Toggle theme">◐</button>
+        <button id="installBtn" class="install-btn hidden">Install</button>
+        <button id="authBtn" class="login-btn">Login</button>
+      </div>
+    </header>
+
+    <main id="view" class="view"></main>
+
+    <nav class="bottom-nav" aria-label="App navigation">
+      <button data-route="home" class="nav-btn active"><span>⌂</span><small>Home</small></button>
+      <button data-route="match" class="nav-btn"><span>◎</span><small>Match</small></button>
+      <button data-route="dashboard" class="nav-btn"><span>▣</span><small>Dash</small></button>
+      <button data-route="gigs" class="nav-btn"><span>＋</span><small>Gigs</small></button>
+      <button data-route="learn" class="nav-btn"><span>◌</span><small>Learn</small></button>
+    </nav>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Submit your PWA – Hunnyhive</title>
+<meta name="description" content="Submit your PWA to Hunnyhive with just a URL and an email.">
+<meta name="theme-color" content="#F2A900"><link rel="manifest" href="/manifest.json"><link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/sdk/install.js"></script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/store.css">
+</head><body>
+<header class="top"><div class="wrap"><div class="row"><a class="brand" href="/"><img src="/icons/icon-192.png" alt="" width="38" height="38">Hunnyhive</a><span class="grow"></span><button class="iconbtn" id="themeBtn" aria-label="Toggle theme">🌙</button></div></div></header>
+<main class="wrap doc">
+  <h1>Submit your PWA</h1>
+  <p>Two fields. We read the rest from your app’s manifest. Need to set up quick install first? <a href="/developers/" style="color:var(--acc);font-weight:800">Developer guide</a>.</p>
+  <form class="f" id="sub" novalidate>
+    <label for="url">App address</label>
+    <input id="url" name="url" type="url" inputmode="url" placeholder="https://yourapp.com" required autocomplete="url">
+    <label for="email">Your email</label>
+    <input id="email" name="email" type="email" inputmode="email" placeholder="you@example.com" required autocomplete="email">
+    <div class="hint">Only used to contact you about this listing.</div>
+    <details style="margin-top:14px"><summary style="cursor:pointer;font-weight:800">More options (optional)</summary>
+      <label for="name">Name</label><input id="name" name="name" placeholder="Filled from your manifest">
+      <label for="tagline">One-line description</label><input id="tagline" name="tagline" maxlength="140" placeholder="Filled from your manifest">
+      <label for="developer">Developer or brand</label><input id="developer" name="developer" placeholder="Your name or company">
+      <label for="category">Category</label><select id="category" name="category"><option value="">Pick for me</option></select>
+    </details>
+    <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div style="margin-top:20px"><button class="btn block" id="go" type="submit">Submit for review</button></div>
+  </form>
+  <div class="panel" id="res" hidden></div>
+</main>
+<div class="wrap"><script src="/assets/store.js"></script><script>document.write(Store.footer())</script></div>
+<script>
+Store.theme(); Store.nav('submit');
+var p=new URLSearchParams(location.search); if(p.get('url')) document.getElementById('url').value=p.get('url');
+Store.load().then(function(D){var s=document.getElementById('category');D.categories.forEach(function(c){var o=document.createElement('option');o.value=c.id;o.textContent=c.icon+' '+c.id;s.appendChild(o)})});
+var f=document.getElementById('sub'),res=document.getElementById('res');
+f.addEventListener('submit',function(e){e.preventDefault();var go=document.getElementById('go');
+  var data={};new FormData(f).forEach(function(v,k){data[k]=v});
+  if(!/^https?:\/\//i.test(data.url||'')&&data.url) data.url='https://'+data.url;
+  go.disabled=true;go.textContent='Checking your app…';res.hidden=true;
+  fetch('/api/submit.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json()}).then(function(j){
+    go.disabled=false;go.textContent='Submit for review';res.hidden=false;
+    if(!j.ok){res.innerHTML='<p style="color:#dc2626;font-weight:700">'+Store.esc(j.error||'Something went wrong')+'</p>';return}
+    var fails=(j.checks||[]).filter(function(c){return c.required&&c.level!=='pass'});
+    res.innerHTML='<h2>'+(j.pass?'🎉 Received. We’ll review it shortly.':'✅ Received, with a few things to fix')+'</h2>'+(j.pass?'<p>Everything required passed. You’ll hear from us at the email you gave.</p>':'<p>These will be listed as <b>Preview</b> until they are done. Fix them and submit again, no need to wait for us.</p>'+fails.map(function(c){return '<div class="check"><span class="ic bad">✕</span><div><b>'+Store.esc(c.label)+'</b><span>'+Store.esc(c.msg)+'</span></div></div>'}).join('')+'<p style="margin-top:12px"><a class="btn ghost" href="/developers/">Open the developer guide</a></p>');
+    if(j.pass) f.reset();
+  }).catch(function(){go.disabled=false;go.textContent='Submit for review';res.hidden=false;res.innerHTML='<p style="color:#dc2626;font-weight:700">Could not reach the server. Try again in a minute.</p>'});
+});
+</script>
+</body></html>

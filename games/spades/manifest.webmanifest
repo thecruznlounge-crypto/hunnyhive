@@ -1,0 +1,63 @@
+{
+  "name": "Spades",
+  "short_name": "Spades",
+  "description": "Bid, trump and take your tricks. Partnership Spades against the table.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#050807",
+  "theme_color": "#0b2a4a",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/shots/spades/1.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/spades/2.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/spades/3.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/spades/4.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/shots/spades/5.jpg",
+      "sizes": "800x380",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ]
+}

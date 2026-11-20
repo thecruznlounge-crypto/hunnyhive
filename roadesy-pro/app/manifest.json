@@ -1,0 +1,65 @@
+{
+  "name": "Roadesy Pro – Roadside Jobs",
+  "short_name": "Roadesy Pro",
+  "description": "Get roadside jobs from drivers near you. Set your prices, share your truck live, accept or quote in one tap.",
+  "id":"./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1115",
+  "theme_color": "#0f1115",
+  "categories": [
+    "business",
+    "auto & vehicles"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/pro-welcome.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Get roadside jobs near you"
+    },
+    {
+      "src": "screenshots/pro-job.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Your job, step by step"
+    },
+    {
+      "src": "screenshots/pro-tablet.png",
+      "sizes": "2360x1640",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "On duty, on a tablet"
+    }
+  ]
+}

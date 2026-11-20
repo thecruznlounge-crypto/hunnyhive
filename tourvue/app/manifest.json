@@ -1,0 +1,1 @@
+{"name":"TourVue Live","short_name":"TourVue","description":"Live guided tourist and open-house rooms for viewers and guides.","start_url":"splash.html","scope":"./","display":"standalone","background_color":"#050712","theme_color":"#050712","orientation":"portrait-primary","icons":[{"src":"assets/icon.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}
