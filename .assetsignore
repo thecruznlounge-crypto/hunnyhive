@@ -3,3 +3,4 @@
 _worker.js
 _routes.json
 wrangler.jsonc
+worker

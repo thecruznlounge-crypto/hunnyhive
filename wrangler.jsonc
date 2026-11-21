@@ -10,4 +10,6 @@
     // the worker sees every request first (subdomains, /apps/<slug>, redirects, headers)
     "run_worker_first": true
   }
+  // Storage for MasterDash, submissions and uploads. Paste the KV namespace ID below, then remove the // marks:
+  // ,"kv_namespaces": [{ "binding": "HIVE", "id": "PASTE_KV_NAMESPACE_ID_HERE" }]
 }

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><title>MasterDash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/store.css">
+<style>.tabs{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:560px){.row2{grid-template-columns:1fr}}
+.item{display:grid;grid-template-columns:54px 1fr auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px 12px;margin:8px 0}.item img{width:54px;height:54px;border-radius:22%;object-fit:cover}.item b{display:block}.item small{color:var(--mut)}
+.btn.sm{padding:8px 12px;font-size:13px;border-radius:11px}.btn.red{background:#B3261E;color:#fff}.btn.grn{background:#276B43;color:#fff}
+.modal{position:fixed;inset:0;background:rgba(23,18,11,.7);z-index:60;display:flex;align-items:flex-end;justify-content:center}.modal>div{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:18px}
+.msg{padding:10px 14px;border-radius:12px;margin:10px 0;background:var(--soft);font-weight:700}.msg.err{background:#fee2e2;color:#991b1b}</style></head>
+<body><main class="wrap" style="padding-top:18px">
+<div style="display:flex;align-items:center;gap:10px"><img src="/icons/icon-192.png" width="38" height="38" style="border-radius:10px" alt=""><h1 style="margin:0;font-size:22px">MasterDash</h1><span class="grow"></span><a class="btn ghost sm" href="/" target="_blank">View store</a></div>
+
+<section id="login" class="panel"><h2>Owner token</h2><p>Paste the <code>ADMIN_TOKEN</code> secret you set on the hunnyhive Worker in Cloudflare. It stays in this tab only.</p>
+<form class="f" id="lf"><input id="tok" type="password" autocomplete="current-password" placeholder="Token" required><div style="margin-top:12px"><button class="btn">Unlock</button></div></form><div id="lmsg"></div></section>
+
+<section id="app" hidden>
+  <div class="tabs" id="tabs"><button class="chip" data-t="review" aria-pressed="true">Submissions <small id="nSub">0</small></button><button class="chip" data-t="catalog" aria-pressed="false">Catalog <small id="nApp">0</small></button><button class="chip" data-t="add" aria-pressed="false">Add app</button><button class="chip" data-t="tools" aria-pressed="false">Tools</button></div>
+  <div id="msg"></div><div id="view"></div>
+</section>
+<div id="modal" class="modal" hidden><div id="mbody"></div></div>
+</main>
+<script>
+(function(){
+var T=null,D=null,subs=[],tab='review',gd=true;
+var $=function(i){return document.getElementById(i)};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+function flash(t,err){$('msg').innerHTML='<div class="msg'+(err?' err':'')+'">'+esc(t)+'</div>';setTimeout(function(){$('msg').innerHTML=''},5000)}
+function api(action,data,files){
+  var opt={method:'POST',headers:{'X-MYPWA-TOKEN':T}};
+  if(files){var fd=new FormData();fd.append('action',action);Object.keys(data||{}).forEach(function(k){fd.append(k,data[k])});Object.keys(files).forEach(function(k){fd.append(k,files[k])});opt.body=fd}
+  else{opt.headers['Content-Type']='application/json';opt.body=JSON.stringify(Object.assign({action:action},data||{}))}
+  return fetch('/api/admin.php',opt).then(function(r){return r.json().catch(function(){return{ok:false,error:'Server error'}})}).then(function(j){if(!j.ok) throw new Error(j.error||'Failed');return j});
+}
+/* Images are prepared here in the browser (the old PHP server did this with GD):
+   icons -> 512x512 PNG, centre-cropped on white; screenshots -> 720px tall JPEG. */
+function prep(file,kind){return new Promise(function(res){
+  var u=URL.createObjectURL(file),im=new Image();
+  im.onload=function(){try{var c=document.createElement('canvas'),x=c.getContext('2d'),w=im.naturalWidth,h=im.naturalHeight;
+    if(kind==='icon'){var s=Math.min(w,h);c.width=c.height=512;x.fillStyle='#fff';x.fillRect(0,0,512,512);x.drawImage(im,(w-s)/2,(h-s)/2,s,s,0,0,512,512);c.toBlob(function(b){URL.revokeObjectURL(u);res(b?new File([b],'icon.png',{type:'image/png'}):file)},'image/png')}
+    else{var nh=Math.min(720,h),nw=Math.max(1,Math.round(w*nh/h));c.width=nw;c.height=nh;x.drawImage(im,0,0,nw,nh);c.toBlob(function(b){URL.revokeObjectURL(u);res(b?new File([b],'shot.jpg',{type:'image/jpeg'}):file)},'image/jpeg',.82)}
+  }catch(e){URL.revokeObjectURL(u);res(file)}};
+  im.onerror=function(){URL.revokeObjectURL(u);res(file)};im.src=u})}
+function load(){return api('list').then(function(j){D=j.registry;subs=j.submissions;gd=j.gd;$('nSub').textContent=subs.filter(function(s){return s.status==='pending'}).length;$('nApp').textContent=D.apps.length;render()})}
+$('lf').onsubmit=function(e){e.preventDefault();T=$('tok').value.trim();api('list').then(function(j){try{sessionStorage.setItem('mp_t',T)}catch(x){}$('login').hidden=true;$('app').hidden=false;D=j.registry;subs=j.submissions;gd=j.gd;$('nSub').textContent=subs.filter(function(s){return s.status==='pending'}).length;$('nApp').textContent=D.apps.length;render()}).catch(function(er){$('lmsg').innerHTML='<div class="msg err">'+esc(er.message)+'</div>'})};
+try{var st=sessionStorage.getItem('mp_t');if(st){$('tok').value=st;$('lf').onsubmit(new Event('s'))}}catch(x){}
+$('tabs').onclick=function(e){var b=e.target.closest('[data-t]');if(!b)return;tab=b.dataset.t;Array.prototype.forEach.call($('tabs').children,function(c){c.setAttribute('aria-pressed',c===b)});render()};
+function opts(list,sel,blank){return (blank?'<option value="">'+blank+'</option>':'')+list.map(function(c){var id=c.id||c;return '<option value="'+esc(id)+'"'+(id===sel?' selected':'')+'>'+esc(c.name||id)+'</option>'}).join('')}
+function checks(s){return (s.checks||[]).map(function(c){return '<div class="check"><span class="ic '+(c.level==='pass'?'ok':c.level==='warn'?'warn':'bad')+'">'+(c.level==='pass'?'✓':c.level==='warn'?'!':'✕')+'</span><div><b>'+esc(c.label)+'</b>'+(c.msg?'<span>'+esc(c.msg)+'</span>':'')+'</div></div>'}).join('')}
+function render(){
+  var v=$('view');
+  if(tab==='review'){
+    var list=subs.filter(function(s){return s.status==='pending'});
+    v.innerHTML=list.length?list.map(function(s){return '<div class="panel"><div style="display:flex;gap:12px;align-items:center">'+(s.icon_url?'<img src="'+esc(s.icon_url)+'" width="54" height="54" style="border-radius:22%;object-fit:cover" alt="">':'')+'<div style="flex:1"><b>'+esc(s.name)+'</b> <span class="tag '+(s.pass?'':'preview')+'">'+(s.pass?'Passes':'Needs work')+'</span><br><small style="color:var(--mut)">'+esc(s.url)+' · '+esc(s.email)+'</small></div></div>'+
+      '<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:800">Checklist</summary>'+checks(s)+'</details>'+
+      '<div class="row2" style="margin-top:12px"><select data-k="cat">'+opts(D.categories,s.category,'Category…')+'</select><select data-k="coll">'+opts(D.collections||[],'','No collection')+'</select></div>'+
+      '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn grn sm" data-a="approve" data-id="'+esc(s.id)+'">Approve & list</button><button class="btn ghost sm" data-a="recheck" data-id="'+esc(s.id)+'">Re-check</button><button class="btn red sm" data-a="reject" data-id="'+esc(s.id)+'">Reject</button></div></div>'}).join(''):'<p class="empty">No pending submissions.</p>';
+  }
+  if(tab==='catalog'){
+    v.innerHTML='<input class="chip" style="width:100%;border-radius:14px;padding:12px;margin-bottom:6px;font-weight:600" id="flt" placeholder="Filter…">'+(!gd?'<div class="msg err">PHP GD is missing: icon and screenshot uploads are disabled.</div>':'')+'<div id="lst"></div>';
+    var draw=function(){var q=($('flt').value||'').toLowerCase();$('lst').innerHTML=D.apps.filter(function(a){return !q||(a.name+a.slug+a.category).toLowerCase().indexOf(q)>-1}).map(function(a){return '<div class="item"><img src="'+esc(a.icon)+'?'+Date.now()%1000+'" alt=""><div><b>'+esc(a.name)+(a.featured?' ⭐':'')+'</b><small>'+esc(a.category)+(a.collection?' · '+esc(a.collection):'')+' · '+esc(a.type)+' · '+esc(a.status)+'</small></div><button class="btn ghost sm" data-a="edit" data-s="'+esc(a.slug)+'">Edit</button></div>'}).join('')};
+    $('flt').oninput=draw;draw();
+  }
+  if(tab==='add'){ v.innerHTML='<div class="panel"><h2>⚡ Quick add</h2><p>Paste the app\'s address. Name, icon and screenshots are pulled from the app itself.</p><form class="f" id="qf"><input name="url" type="url" placeholder="https://myapp.com" required><div class="row2" style="margin-top:10px"><select name="category" required>'+opts(D.categories,'','Category…')+'</select><input name="name" placeholder="Name (optional)"></div><div style="margin-top:12px"><button class="btn">Fetch &amp; add</button></div></form></div><div class="panel"><h2>Add an app by hand</h2>'+form({type:'external',status:'live'},true)+'</div>';bindQuick();bindForm(); }
+  if(tab==='tools'){ v.innerHTML='<div class="panel"><h2>Registry</h2><p>Every change is backed up in Cloudflare storage (last 25 kept).</p><a class="btn ghost" href="/apps.json" download="apps.json">Download apps.json</a></div><div class="panel"><h2>Server</h2><p>Hosting: Cloudflare Workers. Images are resized in your browser before upload. Admin token: set.</p></div>'; }
+}
+function form(a,isNew){
+  return '<form class="f" id="af">'+(isNew?'<label>Slug (url name)</label><input name="slug" required placeholder="my-app" pattern="[a-z0-9-]+">':'<input type="hidden" name="slug" value="'+esc(a.slug)+'">')+
+  '<label>Name</label><input name="name" value="'+esc(a.name||'')+'" required><label>Tagline</label><input name="tagline" maxlength="140" value="'+esc(a.tagline||'')+'"><label>Developer</label><input name="developer" value="'+esc(a.developer||'')+'">'+
+  '<div class="row2"><div><label>Category</label><select name="category">'+opts(D.categories,a.category)+'</select></div><div><label>Collection (games)</label><select name="collection">'+opts(D.collections||[],a.collection||'','None')+'</select></div></div>'+
+  '<div class="row2"><div><label>Type</label><select name="type">'+opts(['hosted','redirect','external'],a.type)+'</select></div><div><label>Status</label><select name="status">'+opts(['live','beta','preview','hidden'],a.status)+'</select></div></div>'+
+  '<label>Open URL</label><input name="url" value="'+esc(a.url||'')+'" placeholder="https://… or /my-app/" required><div class="hint">External apps: their own domain. Hosted: a path like /my-app/</div>'+
+  '<label>Install URL (hosted/redirect only)</label><input name="installUrl" value="'+esc(a.installUrl||'')+'" placeholder="/my-app/">'+
+  '<label>Own domain (optional)</label><input name="domain" value="'+esc(a.domain||'')+'" placeholder="https://myapp.com/"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="domainLive" style="width:auto"'+(a.domainLive?' checked':'')+'> Domain is live: Install and Open go to the domain (untick to use the copy hosted here)</label>'+
+  '<label>Description</label><textarea name="description" rows="3">'+esc(a.description||'')+'</textarea>'+
+  '<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="featured" style="width:auto"'+(a.featured?' checked':'')+'> Featured</label>'+
+  '<div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap"><button class="btn">Save</button>'+(isNew?'':'<button type="button" class="btn red" data-a="del" data-s="'+esc(a.slug)+'">Remove</button>')+'<button type="button" class="btn ghost" data-a="close">Close</button></div></form>'+
+  (isNew?'':'<div class="panel"><h2>Icon</h2><p>Any square image. It is cropped and resized to the 512×512 store standard.</p><input type="file" id="ico" accept="image/*"> <button class="btn sm" data-a="icon" data-s="'+esc(a.slug)+'">Upload icon</button><h2 style="margin-top:18px">Screenshots ('+(a.screenshots||[]).length+')</h2><input type="file" id="shot" accept="image/*" multiple> <button class="btn sm" data-a="shot" data-s="'+esc(a.slug)+'">Add screenshot</button></div>');
+}
+function readForm(){var f=$('af'),o={};Array.prototype.forEach.call(f.elements,function(e){if(!e.name)return;o[e.name]=e.type==='checkbox'?e.checked:e.value});return o}
+function bindQuick(){var q=$('qf');if(!q)return;q.onsubmit=function(e){e.preventDefault();var o={};Array.prototype.forEach.call(q.elements,function(x){if(x.name)o[x.name]=x.value});var bt=q.querySelector('button');bt.disabled=true;bt.textContent='Fetching…';api('quick_add',o).then(function(r){flash('Added '+r.app.name+' ('+r.shots+' screenshots'+(r.icon_ok?'':', placeholder icon')+')');tab='catalog';return load()}).catch(function(er){flash(er.message,true);bt.disabled=false;bt.textContent='Fetch & add'})}}
+function bindForm(){var f=$('af');if(!f)return;f.onsubmit=function(e){e.preventDefault();var o=readForm();var slug=o.slug;if(!o.collection)o.collection='';api('save_app',{slug:slug,app:o}).then(function(){flash('Saved');$('modal').hidden=true;return load()}).catch(function(er){flash(er.message,true)})}}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-a]');if(!b)return;var a=b.dataset.a,id=b.dataset.id,s=b.dataset.s;
+  if(a==='close'){$('modal').hidden=true}
+  if(a==='edit'){var app=D.apps.filter(function(x){return x.slug===s})[0];$('mbody').innerHTML='<h2 style="margin-top:0">Edit '+esc(app.name)+'</h2>'+form(app,false);$('modal').hidden=false;bindForm()}
+  if(a==='del'){if(confirm('Remove this app from the catalog? Its files are not deleted.'))api('delete_app',{slug:s}).then(function(){flash('Removed');$('modal').hidden=true;return load()}).catch(function(er){flash(er.message,true)})}
+  if(a==='icon'){var f=$('ico').files[0];if(!f)return flash('Choose an image first',true);prep(f,'icon').then(function(pf){return api('upload_icon',{slug:s},{icon:pf})}).then(function(){flash('Icon updated (hard refresh to see it)')}).catch(function(er){flash(er.message,true)})}
+  if(a==='shot'){var fl=[].slice.call($('shot').files);if(!fl.length)return flash('Choose one or more images first',true);var n=0;fl.reduce(function(p,f){return p.then(function(){return prep(f,'shot').then(function(pf){return api('upload_shot',{slug:s},{shot:pf})}).then(function(){n++})})},Promise.resolve()).then(function(){flash(n+' screenshot(s) added');return load()}).catch(function(er){flash(er.message,true)})}
+  if(a==='approve'||a==='reject'||a==='recheck'){
+    var card=b.closest('.panel'),cat=card.querySelector('[data-k=cat]'),coll=card.querySelector('[data-k=coll]');
+    if(a==='approve'){if(!cat.value)return flash('Pick a category first',true);api('approve',{id:id,app:{category:cat.value,collection:coll.value||null}}).then(function(){flash('Approved and listed');return load()}).catch(function(er){flash(er.message,true)})}
+    if(a==='reject'){var n=prompt('Optional note for your records:','');if(n===null)return;api('reject',{id:id,note:n}).then(function(){flash('Rejected');return load()}).catch(function(er){flash(er.message,true)})}
+    if(a==='recheck'){api('recheck',{id:id}).then(function(){flash('Re-checked');return load()}).catch(function(er){flash(er.message,true)})}
+  }
+});
+$('view').addEventListener('submit',function(e){if(e.target.id!=='af')return;e.preventDefault();var o=readForm();if(!o.collection)o.collection='';api('save_app',{slug:o.slug,app:o}).then(function(){flash('Added');tab='catalog';Array.prototype.forEach.call($('tabs').children,function(c){c.setAttribute('aria-pressed',c.dataset.t==='catalog')});return load()}).catch(function(er){flash(er.message,true)})});
+})();
+</script></body></html>
