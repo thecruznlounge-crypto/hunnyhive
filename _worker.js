@@ -6,7 +6,17 @@
 import { handleApi, registryRead, getFile } from './worker/api.js';
 const ROOT = 'hunnyhive.app';
 const RESERVED = new Set(['www','mail','cpanel','webmail','admin','masterdash','ftp','games','productivity','activities']);
-const GAME_HOSTS = { artatwar: 'art-at-war', sketchmatch: 'sketch-match', escapesketch: 'escape-sketch' };
+// Every game gets its own origin (<slug>.hunnyhive.app) so each one installs as a separate PWA.
+// Add new game folders here AND as a Custom domain in Cloudflare.
+const GAMES = new Set(('air-rescue art-at-war beat-cops-beat-box blackjack build-a-burger caddy-dash calling-all-cars checkers chess ci-yay ' +
+  'code-word corner-in-one drive-thru-dash dune-buddies escape-sketch fairway-buggy fashion-passion fire-level funchise glacier-rumble ' +
+  'goofball-wash hearts hole-sweet-home hump-jump kings-corner mani-pedi-ready n0n07 nail-saloon orcastra orders-up pair-of-medics ' +
+  'penguin-dash phone-tap polar-opposite powler-lanes purse-vs queendom-come red-light-blue-light roller-shakes sand-castle sealy-of-me ' +
+  'sketch-match sky-eyes spades spy-spotter straw-carry style-era tee-launch up-do water-mirage wave-crash wiredup').split(' '));
+const GAME_ALIASES = { artatwar: 'art-at-war', sketchmatch: 'sketch-match', escapesketch: 'escape-sketch' };
+const gameUrl = slug => `https://${slug}.${ROOT}/`;
+// Store-wide files a game on its own subdomain still loads from the root paths
+const SHARED = /^\/(sdk|shots|icons\/apps)\//;
 const OLD_GAMES = /^\/(air-rescue|beat-cops-beat-box|calling-all-cars|fire-level|pair-of-medics|red-light-blue-light|sky-eyes|wave-crash)(\/.*)?$/;
 const PRIVATE = /^\/(api|data|worker)(\/|$)|^\/(wrangler\.jsonc|_worker\.js|\.assetsignore)$|\.(php|md|sql|zip|log|env|py|sh|bak|ini|lock)$|\/\.(?!well-known)/i;
 
@@ -30,13 +40,21 @@ export default {
       const sub = host.slice(0, -(ROOT.length + 1));
       if (sub === 'masterdash') {
         if (!/^\/(_manage|assets|icons|logo|sdk|apps\.json)/.test(p)) return serve(env, req, url, '/_manage' + (p === '/' ? '/' : p));
-      } else if (GAME_HOSTS[sub]) {
-        const base = '/games/' + GAME_HOSTS[sub];
-        if (!p.startsWith(base + '/')) return serve(env, req, url, base + p);
+      } else if (GAME_ALIASES[sub]) {
+        return go(gameUrl(GAME_ALIASES[sub]).slice(0, -1) + p + url.search);
+      } else if (GAMES.has(sub)) {
+        if (p.startsWith('/games/' + sub + '/')) return go(p.slice(('/games/' + sub).length) + url.search);
+        if (!SHARED.test(p)) return serve(env, req, url, '/games/' + sub + p);
       } else if (!RESERVED.has(sub) && !/^\/[^/]+\/app\//.test(p)) {
         const r = await serve(env, req, url, '/' + sub + '/app' + p);
         if (r.status !== 404) return r;
       }
+    }
+
+    // Old slug paths on the main domain -> the game's own subdomain
+    if (host === ROOT) {
+      const gm = p.match(/^\/games\/([a-z0-9-]+)(\/.*)?$/);
+      if (gm && GAMES.has(gm[1])) return go(gameUrl(gm[1]).slice(0, -1) + (gm[2] || '/') + url.search);
     }
 
     // Retired / renamed paths
@@ -44,9 +62,9 @@ export default {
     if (/^\/apps\/roadbudz\/?$/.test(p)) return go('/apps/roadesy');
     if (/^\/(apps\/)?(myvertise(-app|-market|-media)?|journee(-one)?)(\/.*)?$/.test(p)) return go('/');
     if (/^\/shoppervon(\/.*)?$/.test(p)) return go('/merkuri/');
-    if (/^\/glacier-run(\/.*)?$/.test(p)) return go('/games/glacier-rumble/');
+    if (/^\/glacier-run(\/.*)?$/.test(p)) return go(gameUrl('glacier-rumble'));
     if (/^\/store\/?$/.test(p)) return go('/');
-    const g = p.match(OLD_GAMES); if (g) return go('/games/' + g[1] + (g[2] || ''));
+    const g = p.match(OLD_GAMES); if (g) return go(gameUrl(g[1]).slice(0, -1) + (g[2] || '/'));
     if (/^\/(admin|masterdash|parking-page)(\.html|\.shtml)?\/?$/.test(p)) return notFound(env, url);
 
     // Pretty preview pages: /apps/<slug> -> app.html (it reads the slug from the path)
@@ -56,7 +74,7 @@ export default {
     // Catalog and uploaded images: storage first (MasterDash edits), repo files as fallback
     if (p === '/apps.json' && env.HIVE) {
       const reg = await registryRead(env, url.origin).catch(() => null);
-      if (reg) return withHeaders(new Response(JSON.stringify(reg), { headers: { 'Content-Type': 'application/json; charset=utf-8' } }), p);
+      if (reg) return withHeaders(new Response(JSON.stringify(gameLinks(reg)), { headers: { 'Content-Type': 'application/json; charset=utf-8' } }), p);
     }
     if (/^\/(icons\/apps|shots)\//.test(p)) {
       const f = await getFile(env, decodeURIComponent(p));
@@ -65,6 +83,15 @@ export default {
     return serve(env, req, url, p);
   }
 };
+
+// Catalog entries still pointing at /games/<slug>/ get the game's own subdomain
+function gameLinks(reg) {
+  for (const a of reg.apps || []) for (const k of ['url', 'installUrl']) {
+    const m = typeof a[k] === 'string' && a[k].match(/^\/games\/([a-z0-9-]+)\/?$/);
+    if (m && GAMES.has(m[1])) a[k] = gameUrl(m[1]);
+  }
+  return reg;
+}
 
 async function serve(env, req, url, path) {
   // Ask Pages for the "pretty" path so it never answers with a 308
